@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SYSTEM_PROMPT } from '../../../lib/systemPrompt';
+export const maxDuration = 60;
 
 interface FormData {
   state: string;
