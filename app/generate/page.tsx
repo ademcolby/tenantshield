@@ -1,5 +1,4 @@
-import SecurityDepositForm from '../SecurityDepositForm';
-
+import SecurityDepositForm from '../../SecurityDepositForm';
 export default function Home() {
   return <SecurityDepositForm />;
 }
