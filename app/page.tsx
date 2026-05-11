@@ -1,5 +1,648 @@
-import SecurityDepositForm from '../SecurityDepositForm';
+import Link from 'next/link'
+import { Fraunces, DM_Sans } from 'next/font/google'
 
-export default function Home() {
-  return <SecurityDepositForm />;
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-body',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+})
+
+// ---------- State deadline data ----------
+// NOTE: Cross-reference these against your systemPrompt.ts before launch
+// to ensure the landing-page table matches what the letter generator cites.
+const STATE_DEADLINES: { state: string; days: string; statute: string }[] = [
+  { state: 'Alabama', days: '60 days', statute: 'Ala. Code § 35-9A-201' },
+  { state: 'Alaska', days: '14–30 days', statute: 'Alaska Stat. § 34.03.070' },
+  { state: 'Arizona', days: '14 business days', statute: 'A.R.S. § 33-1321' },
+  { state: 'Arkansas', days: '60 days', statute: 'Ark. Code § 18-16-305' },
+  { state: 'California', days: '21 days', statute: 'Cal. Civ. Code § 1950.5' },
+  { state: 'Colorado', days: '60 days', statute: 'Colo. Rev. Stat. § 38-12-103' },
+  { state: 'Connecticut', days: '30 days', statute: 'Conn. Gen. Stat. § 47a-21' },
+  { state: 'Delaware', days: '20 days', statute: '25 Del. C. § 5514' },
+  { state: 'District of Columbia', days: '45 days', statute: 'D.C. Code § 42-3502.17' },
+  { state: 'Florida', days: '30 days', statute: 'Fla. Stat. § 83.49' },
+  { state: 'Georgia', days: '30 days', statute: 'O.C.G.A. § 44-7-34' },
+  { state: 'Hawaii', days: '14 days', statute: 'Haw. Rev. Stat. § 521-44' },
+  { state: 'Idaho', days: '21 days', statute: 'Idaho Code § 6-321' },
+  { state: 'Illinois', days: '30 days', statute: '765 ILCS 710' },
+  { state: 'Indiana', days: '45 days', statute: 'Ind. Code § 32-31-3-12' },
+  { state: 'Iowa', days: '30 days', statute: 'Iowa Code § 562A.12' },
+  { state: 'Kansas', days: '30 days', statute: 'Kan. Stat. § 58-2550' },
+  { state: 'Kentucky', days: '30–60 days', statute: 'Ky. Rev. Stat. § 383.580' },
+  { state: 'Louisiana', days: '30 days', statute: 'La. R.S. § 9:3251' },
+  { state: 'Maine', days: '21–30 days', statute: '14 M.R.S. § 6033' },
+  { state: 'Maryland', days: '45 days', statute: 'Md. Real Prop. § 8-203' },
+  { state: 'Massachusetts', days: '30 days', statute: 'Mass. Gen. Laws ch. 186, § 15B' },
+  { state: 'Michigan', days: '30 days', statute: 'Mich. Comp. Laws § 554.609' },
+  { state: 'Minnesota', days: '21 days', statute: 'Minn. Stat. § 504B.178' },
+  { state: 'Mississippi', days: '45 days', statute: 'Miss. Code § 89-8-21' },
+  { state: 'Missouri', days: '30 days', statute: 'Mo. Rev. Stat. § 535.300' },
+  { state: 'Montana', days: '30 days', statute: 'Mont. Code § 70-25-202' },
+  { state: 'Nebraska', days: '14 days', statute: 'Neb. Rev. Stat. § 76-1416' },
+  { state: 'Nevada', days: '30 days', statute: 'NRS § 118A.242' },
+  { state: 'New Hampshire', days: '30 days', statute: 'N.H. Rev. Stat. § 540-A:7' },
+  { state: 'New Jersey', days: '30 days', statute: 'N.J. Stat. § 46:8-21.1' },
+  { state: 'New Mexico', days: '30 days', statute: 'N.M. Stat. § 47-8-18' },
+  { state: 'New York', days: '14 days', statute: 'N.Y. Real Prop. Law § 227-e' },
+  { state: 'North Carolina', days: '30 days', statute: 'N.C. Gen. Stat. § 42-52' },
+  { state: 'North Dakota', days: '30 days', statute: 'N.D. Cent. Code § 47-16-07.1' },
+  { state: 'Ohio', days: '30 days', statute: 'Ohio Rev. Code § 5321.16' },
+  { state: 'Oklahoma', days: '45 days', statute: '41 Okla. Stat. § 115' },
+  { state: 'Oregon', days: '31 days', statute: 'ORS § 90.300' },
+  { state: 'Pennsylvania', days: '30 days', statute: '68 Pa. C.S. § 250.512' },
+  { state: 'Rhode Island', days: '20 days', statute: 'R.I. Gen. Laws § 34-18-19' },
+  { state: 'South Carolina', days: '30 days', statute: 'S.C. Code § 27-40-410' },
+  { state: 'South Dakota', days: '14 days', statute: 'S.D. Codified Laws § 43-32-24' },
+  { state: 'Tennessee', days: '30 days', statute: 'Tenn. Code § 66-28-301' },
+  { state: 'Texas', days: '30 days', statute: 'Tex. Prop. Code § 92.103' },
+  { state: 'Utah', days: '30 days', statute: 'Utah Code § 57-17-3' },
+  { state: 'Vermont', days: '14 days', statute: '9 V.S.A. § 4461' },
+  { state: 'Virginia', days: '45 days', statute: 'Va. Code § 55.1-1226' },
+  { state: 'Washington', days: '30 days', statute: 'RCW § 59.18.280' },
+  { state: 'West Virginia', days: '60 days', statute: 'W. Va. Code § 37-6A-2' },
+  { state: 'Wisconsin', days: '21 days', statute: 'Wis. Stat. § 704.28' },
+  { state: 'Wyoming', days: '30 days', statute: 'Wyo. Stat. § 1-21-1208' },
+]
+
+// ---------- Inline icons (no extra deps) ----------
+const Check = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 20 20" fill="none" aria-hidden>
+    <path
+      d="M4 10.5l3.5 3.5L16 6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+const ShieldMark = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path
+      d="M12 2.5l8 3v6.5c0 4.5-3.4 8.6-8 9.5-4.6-.9-8-5-8-9.5V5.5l8-3z"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.5 12l2.5 2.5L16 9.5"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+const Arrow = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 20 20" fill="none" aria-hidden>
+    <path
+      d="M4 10h12m0 0l-4.5-4.5M16 10l-4.5 4.5"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+// ---------- Page ----------
+export default function LandingPage() {
+  return (
+    <div
+      className={`${fraunces.variable} ${dmSans.variable} min-h-screen bg-[#FAFAF7] text-slate-900 antialiased`}
+      style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}
+    >
+      {/* ==================== NAVBAR ==================== */}
+      <header className="sticky top-0 z-50 border-b border-[#E7E5E0] bg-[#FAFAF7]/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+          <Link href="/" className="flex items-center gap-2">
+            <ShieldMark className="h-6 w-6 text-slate-900" />
+            <span
+              className="text-xl font-semibold tracking-tight text-slate-900"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              TenantShield
+            </span>
+          </Link>
+          <nav className="hidden items-center gap-7 text-sm font-medium text-slate-700 md:flex">
+            <a href="#how-it-works" className="transition hover:text-slate-900">
+              How it works
+            </a>
+            <a href="#deadlines" className="transition hover:text-slate-900">
+              State deadlines
+            </a>
+            <a href="#faq" className="transition hover:text-slate-900">
+              FAQ
+            </a>
+          </nav>
+          <Link
+            href="/generate"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
+          >
+            Get my letter
+            <span className="hidden text-amber-100/80 sm:inline">— $39</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* ==================== HERO ==================== */}
+      <section className="relative overflow-hidden">
+        {/* Soft radial backdrop */}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 opacity-60"
+          style={{
+            background:
+              'radial-gradient(900px 500px at 15% 0%, rgba(180,83,9,0.07), transparent 60%), radial-gradient(700px 400px at 90% 20%, rgba(15,23,42,0.05), transparent 60%)',
+          }}
+        />
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-14 pb-20 sm:px-8 sm:pt-20 sm:pb-28 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
+          {/* Left: copy */}
+          <div>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-900/10 bg-white/60 px-3 py-1 text-xs font-medium uppercase tracking-widest text-slate-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#B45309]" />
+              Demand letters for tenants — all 50 states + DC
+            </div>
+            <h1
+              className="text-[2.65rem] font-medium leading-[1.04] tracking-[-0.02em] text-slate-900 sm:text-6xl lg:text-[4.25rem]"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Get your security{' '}
+              <span className="italic text-[#B45309]" style={{ fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>
+                deposit
+              </span>{' '}
+              back.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600 sm:text-xl">
+              Answer a few questions. Get a state-specific demand letter with real statute
+              citations — ready to print, sign, and send.
+            </p>
+
+            {/* Trust badges */}
+            <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-700">
+              <li className="inline-flex items-center gap-2">
+                <Check className="h-4 w-4 text-[#15803D]" />
+                All 50 states + DC
+              </li>
+              <li className="inline-flex items-center gap-2">
+                <Check className="h-4 w-4 text-[#15803D]" />
+                Real statute citations
+              </li>
+              <li className="inline-flex items-center gap-2">
+                <Check className="h-4 w-4 text-[#15803D]" />
+                Ready in under 60 seconds
+              </li>
+            </ul>
+
+            {/* CTA */}
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <Link
+                href="/generate"
+                className="group inline-flex items-center gap-2 rounded-full bg-slate-900 px-7 py-4 text-base font-semibold text-white shadow-[0_6px_24px_-8px_rgba(15,23,42,0.5)] transition hover:bg-slate-800"
+              >
+                Generate my letter — $39
+                <Arrow className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </Link>
+              <span className="text-sm text-slate-500">
+                One-time payment. No subscription.
+              </span>
+            </div>
+          </div>
+
+          {/* Right: letter preview card */}
+          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+            {/* Background card (slight rotation, depth) */}
+            <div
+              aria-hidden
+              className="absolute inset-0 translate-x-3 translate-y-3 rotate-2 rounded-md border border-[#E7E5E0] bg-white/70 shadow-[0_25px_50px_-12px_rgba(15,23,42,0.18)]"
+            />
+            {/* Foreground letter */}
+            <div className="relative -rotate-[1.5deg] rounded-md border border-[#E7E5E0] bg-white p-7 shadow-[0_30px_70px_-20px_rgba(15,23,42,0.28)] sm:p-9">
+              {/* Letterhead */}
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div className="flex items-center gap-2">
+                  <ShieldMark className="h-4 w-4 text-slate-900" />
+                  <span
+                    className="text-sm font-semibold tracking-tight"
+                    style={{ fontFamily: 'var(--font-display)' }}
+                  >
+                    TenantShield
+                  </span>
+                </div>
+                <span className="text-[10px] uppercase tracking-widest text-slate-400">
+                  Demand letter
+                </span>
+              </div>
+              {/* Letter body */}
+              <div
+                className="mt-5 space-y-3 text-[13px] leading-relaxed text-slate-700"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                <p className="text-slate-500">May 11, 2026</p>
+                <p>
+                  <span className="font-medium text-slate-900">RE:</span> Return of security
+                  deposit — 1428 Magnolia Ave, Unit 3
+                </p>
+                <p>Dear Mr. Patterson,</p>
+                <p>
+                  Pursuant to <span className="font-semibold text-[#B45309]">Fla. Stat. § 83.49(3)(a)</span>, a
+                  landlord must return a tenant&apos;s security deposit within{' '}
+                  <span className="font-semibold">15 days</span> of lease termination, or
+                  provide written notice of intent to impose a claim within{' '}
+                  <span className="font-semibold">30 days</span>.
+                </p>
+                <p>
+                  As of the date of this letter, <span className="font-semibold">45 days</span>{' '}
+                  have elapsed since I vacated the premises on March 27, 2026, and you have
+                  failed to comply with either obligation…
+                </p>
+                <div className="!mt-5 flex h-1 w-12 rounded-full bg-slate-200" />
+                <div className="flex h-1 w-2/3 rounded-full bg-slate-200" />
+                <div className="flex h-1 w-1/2 rounded-full bg-slate-200" />
+              </div>
+              {/* Footer stamp */}
+              <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4 text-[10px] uppercase tracking-widest text-slate-400">
+                <span>Page 1 of 2</span>
+                <span>Generated by TenantShield</span>
+              </div>
+            </div>
+            {/* Floating tag */}
+            <div className="absolute -bottom-4 left-6 hidden rounded-full bg-slate-900 px-4 py-2 text-xs font-medium text-white shadow-lg sm:left-10 sm:inline-flex">
+              ✓ Statute-cited
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== HOW IT WORKS ==================== */}
+      <section id="how-it-works" className="border-y border-[#E7E5E0] bg-white">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
+          <div className="max-w-2xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">
+              How it works
+            </p>
+            <h2
+              className="text-4xl font-medium tracking-tight text-slate-900 sm:text-5xl"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Three steps. Roughly two minutes.
+            </h2>
+          </div>
+
+          <ol className="mt-12 grid gap-8 md:grid-cols-3 md:gap-6">
+            {[
+              {
+                n: '01',
+                title: 'Describe your situation',
+                body: 'Tell us your state, what happened with your landlord, and the deposit amount. Most people finish in about two minutes.',
+              },
+              {
+                n: '02',
+                title: 'Pay securely — $39',
+                body: 'One-time payment via Stripe. No subscription, no upsells, no account to create.',
+              },
+              {
+                n: '03',
+                title: 'Download your PDF',
+                body: 'Your letter is generated instantly with real statute citations, exact deadlines, and professional formatting. Sign and mail.',
+              },
+            ].map((step) => (
+              <li key={step.n} className="relative">
+                <div
+                  className="text-5xl font-medium text-[#B45309]/30"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {step.n}
+                </div>
+                <h3
+                  className="mt-3 text-2xl font-medium tracking-tight text-slate-900"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-slate-600 leading-relaxed">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ==================== WHY A DEMAND LETTER WORKS ==================== */}
+      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">
+              Why it works
+            </p>
+            <h2
+              className="text-4xl font-medium leading-[1.1] tracking-tight text-slate-900 sm:text-5xl"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Most landlords pay up once they see real statute citations.
+            </h2>
+            <p className="mt-5 text-lg text-slate-600 leading-relaxed">
+              A demand letter isn&apos;t a lawsuit. It&apos;s a clear, professional notice
+              that you know your rights — and you&apos;re prepared to enforce them.
+            </p>
+          </div>
+          <ul className="space-y-5">
+            {[
+              {
+                title: 'Puts your landlord on notice',
+                body: 'Real statute citations show this isn&apos;t a generic template — and that you&apos;re ready to act.',
+              },
+              {
+                title: 'Creates a paper trail',
+                body: 'Courts heavily favor tenants who can show they gave the landlord a clear chance to comply.',
+              },
+              {
+                title: 'Required in some states',
+                body: 'Several states require a written demand before you can file in small claims court.',
+              },
+              {
+                title: 'Triggers penalty multipliers',
+                body: 'Many statutes allow 2x or 3x damages when a landlord ignores a properly delivered demand.',
+              },
+            ].map((item) => (
+              <li
+                key={item.title}
+                className="flex gap-4 rounded-xl border border-[#E7E5E0] bg-white p-5 transition hover:border-slate-300 hover:shadow-sm"
+              >
+                <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#B45309]/10 text-[#B45309]">
+                  <Check className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900">{item.title}</h3>
+                  <p
+                    className="mt-1 text-sm leading-relaxed text-slate-600"
+                    dangerouslySetInnerHTML={{ __html: item.body }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ==================== WHAT'S INCLUDED ==================== */}
+      <section className="border-y border-[#E7E5E0] bg-slate-900 text-slate-100">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
+          <div className="max-w-2xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-amber-300">
+              What you get
+            </p>
+            <h2
+              className="text-4xl font-medium tracking-tight text-white sm:text-5xl"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Everything a real demand letter needs.
+            </h2>
+          </div>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                title: 'State-specific citations',
+                body: 'Exact statute references for your state — not a generic template.',
+              },
+              {
+                title: 'Calculated deadlines',
+                body: 'We do the math on return windows, response windows, and effective dates.',
+              },
+              {
+                title: 'Penalty language',
+                body: 'Where applicable, your letter cites 2x or 3x damages and attorney-fee provisions.',
+              },
+              {
+                title: 'Next-step guidance',
+                body: 'Clear instructions on small claims court if your landlord still refuses.',
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-white/20 hover:bg-white/[0.06]"
+              >
+                <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-amber-300/15 text-amber-300">
+                  <Check className="h-5 w-5" />
+                </div>
+                <h3 className="font-semibold text-white">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-300">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== STATE DEADLINE TABLE ==================== */}
+      <section id="deadlines" className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
+        <div className="max-w-2xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">
+            Know your deadline
+          </p>
+          <h2
+            className="text-4xl font-medium tracking-tight text-slate-900 sm:text-5xl"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Security deposit return deadlines by state.
+          </h2>
+          <p className="mt-5 text-slate-600 leading-relaxed">
+            Every state sets its own deadline for landlords to return security deposits. If
+            your landlord missed it, you may be entitled to penalties on top of your deposit.
+          </p>
+        </div>
+
+        <div className="mt-10 overflow-hidden rounded-xl border border-[#E7E5E0] bg-white">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-[#E7E5E0] bg-slate-50/70 text-xs uppercase tracking-widest text-slate-500">
+              <tr>
+                <th className="px-5 py-3 font-medium">State</th>
+                <th className="px-5 py-3 font-medium">Deadline</th>
+                <th className="hidden px-5 py-3 font-medium md:table-cell">Statute</th>
+              </tr>
+            </thead>
+            <tbody>
+              {STATE_DEADLINES.map((row, i) => (
+                <tr
+                  key={row.state}
+                  className={i % 2 === 0 ? 'bg-white' : 'bg-[#FAFAF7]/60'}
+                >
+                  <td className="px-5 py-3 font-medium text-slate-900">{row.state}</td>
+                  <td className="px-5 py-3 text-slate-700">{row.days}</td>
+                  <td className="hidden px-5 py-3 font-mono text-xs text-slate-500 md:table-cell">
+                    {row.statute}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-4 text-xs text-slate-500">
+          Deadlines and citations are general references. Your actual letter will cite the
+          specific subsection that applies to your situation.
+        </p>
+      </section>
+
+      {/* ==================== FAQ ==================== */}
+      <section id="faq" className="border-y border-[#E7E5E0] bg-white">
+        <div className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-24">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">
+            Questions
+          </p>
+          <h2
+            className="text-4xl font-medium tracking-tight text-slate-900 sm:text-5xl"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Common questions, answered.
+          </h2>
+
+          <div className="mt-10 divide-y divide-[#E7E5E0] border-t border-[#E7E5E0]">
+            {[
+              {
+                q: 'Is this legal advice?',
+                a: "No. TenantShield generates a demand letter based on the law in your state, but we&apos;re not a law firm and we don&apos;t represent you. The letter is a tool — for case-specific legal advice, consult a licensed attorney in your state.",
+              },
+              {
+                q: 'What if my landlord ignores the letter?',
+                a: "Most landlords respond once they see real statute citations. If yours doesn&apos;t, your next step is small claims court — your letter becomes a key piece of evidence, and many state statutes allow you to recover 2x or 3x your deposit plus attorney fees.",
+              },
+              {
+                q: 'What states do you cover?',
+                a: 'All 50 states and Washington, D.C. — with special handling for cities that have additional protections (Chicago, NYC, Seattle, Portland, SF, LA, Berkeley, West Hollywood, Santa Monica, DC).',
+              },
+              {
+                q: 'How is this different from a free template?',
+                a: "Free templates are generic — same letter for every state, no citations, no calculated deadlines. Our letters are written for your specific state, situation, and timeline, with real statute references that signal to your landlord this isn&apos;t a fishing expedition.",
+              },
+              {
+                q: 'Can I get a refund?',
+                a: "Because letters are generated and delivered instantly, we don&apos;t offer refunds once your letter has been produced. If a technical issue prevented you from receiving your letter, contact us and we&apos;ll make it right.",
+              },
+              {
+                q: 'Is my data safe?',
+                a: 'We never sell or share your personal information. Payment is handled by Stripe (PCI compliant), and your form data is only used to generate your letter.',
+              },
+            ].map((item) => (
+              <details key={item.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-left">
+                  <span className="text-lg font-medium text-slate-900">{item.q}</span>
+                  <span
+                    aria-hidden
+                    className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-300 text-slate-500 transition group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p
+                  className="mt-3 pr-10 leading-relaxed text-slate-600"
+                  dangerouslySetInnerHTML={{ __html: item.a }}
+                />
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== TRUST SIGNALS ==================== */}
+      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+        <div className="grid gap-6 sm:grid-cols-3">
+          {[
+            {
+              title: 'Your data is never sold',
+              body: 'We only use your information to generate your letter. Period.',
+            },
+            {
+              title: 'Secure payment via Stripe',
+              body: 'PCI-compliant checkout. We never see or store your card details.',
+            },
+            {
+              title: 'Based on real statutes',
+              body: 'Not legal advice — but every citation in your letter is a real law.',
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="rounded-xl border border-[#E7E5E0] bg-white p-6"
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">
+                <ShieldMark className="h-5 w-5" />
+              </div>
+              <h3 className="font-semibold text-slate-900">{item.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ==================== FINAL CTA ==================== */}
+      <section className="px-5 pb-20 sm:px-8 sm:pb-28">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl bg-slate-900 px-8 py-16 text-center sm:px-16 sm:py-20">
+          <h2
+            className="mx-auto max-w-3xl text-4xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Ready to get your{' '}
+            <span className="italic text-amber-300">deposit</span> back?
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-slate-300 sm:text-lg">
+            Two minutes of your time. A real, statute-cited letter on the other side.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/generate"
+              className="group inline-flex items-center gap-2 rounded-full bg-amber-400 px-8 py-4 text-base font-semibold text-slate-900 shadow-[0_10px_30px_-10px_rgba(251,191,36,0.6)] transition hover:bg-amber-300"
+            >
+              Generate my letter — $39
+              <Arrow className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </Link>
+            <span className="text-sm text-slate-400">
+              One-time payment. No subscription.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== FOOTER ==================== */}
+      <footer className="border-t border-[#E7E5E0] bg-[#FAFAF7]">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div className="flex items-center gap-2">
+            <ShieldMark className="h-5 w-5 text-slate-900" />
+            <span
+              className="font-semibold tracking-tight text-slate-900"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              TenantShield
+            </span>
+          </div>
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+            <Link href="/terms" className="transition hover:text-slate-900">
+              Terms
+            </Link>
+            <Link href="/privacy" className="transition hover:text-slate-900">
+              Privacy
+            </Link>
+            <Link href="/refund" className="transition hover:text-slate-900">
+              Refund Policy
+            </Link>
+          </nav>
+        </div>
+        <div className="border-t border-[#E7E5E0]">
+          <div className="mx-auto max-w-6xl px-5 py-5 text-xs text-slate-500 sm:px-8">
+            © {new Date().getFullYear()} TenantShield. Not legal advice. The information
+            provided does not, and is not intended to, constitute legal advice. For
+            case-specific advice, consult a licensed attorney in your state.
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
 }
