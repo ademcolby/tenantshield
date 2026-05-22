@@ -55,7 +55,7 @@ function SuccessContent() {
       format: 'letter',
     });
 
-    // Letterhead area (placeholder - can add logo later)
+    // Letterhead area
     pdf.setFontSize(10);
     pdf.setTextColor(100, 100, 100);
     pdf.text('TenantShield', 40, 40);
@@ -69,7 +69,7 @@ function SuccessContent() {
     const lines = pdf.splitTextToSize(letter, 500);
     let yPosition = 80;
     const lineHeight = 14;
-    const pageHeight = 752; // letter size height minus margins
+    const pageHeight = 752;
     
     lines.forEach((line: string) => {
       if (yPosition > pageHeight) {
@@ -116,6 +116,26 @@ function SuccessContent() {
   return (
     <div className="min-h-screen bg-slate-900 py-10 px-4">
       <div className="max-w-3xl mx-auto">
+
+        {/* Top nav bar */}
+        <div className="flex items-center justify-between mb-8">
+          <a
+            href="/"
+            className="text-slate-400 hover:text-white text-sm flex items-center gap-1 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            TenantShield
+          </a>
+          <a
+            href="/generate"
+            className="text-sm text-amber-500 hover:text-amber-400 font-medium transition-colors"
+          >
+            Generate another letter →
+          </a>
+        </div>
+
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">Your Demand Letter</h1>
@@ -164,9 +184,21 @@ function SuccessContent() {
           </ol>
         </div>
 
+        {/* Bottom CTA */}
+        <div className="mt-8 text-center">
+          <p className="text-slate-400 text-sm mb-3">Need a letter for another property?</p>
+          <a
+            href="/generate"
+            className="inline-block bg-amber-700 hover:bg-amber-800 text-white px-8 py-3 rounded-lg text-sm font-medium transition-colors"
+          >
+            Generate Another Letter
+          </a>
+        </div>
+
         <p className="text-slate-500 text-xs text-center mt-6">
           TenantShield generates demand letters for informational purposes. This is not legal advice. Consult an attorney for legal guidance specific to your situation.
         </p>
+
       </div>
     </div>
   );
