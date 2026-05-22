@@ -181,6 +181,9 @@ export default function LandingPage() {
               </Link>
               <span className="text-sm text-slate-500">One-time payment. No subscription.</span>
             </div>
+            <p className="mt-4 text-sm text-slate-500">
+              Average security deposit: <span className="font-medium text-slate-700">$1,500–$2,500</span> — spend $39 to recover it.
+            </p>
           </div>
 
           <div className="relative mx-auto w-full max-w-md lg:max-w-none">
@@ -382,6 +385,54 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ==================== COMPARISON ==================== */}
+      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
+        <div className="max-w-2xl mx-auto text-center mb-12">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">Why TenantShield</p>
+          <h2 className="text-4xl font-medium tracking-tight text-slate-900 sm:text-5xl" style={{ fontFamily: 'var(--font-display)' }}>
+            Not all demand letters are equal.
+          </h2>
+        </div>
+        <div className="overflow-hidden rounded-xl border border-[#E7E5E0] bg-white">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[#E7E5E0]">
+                <th className="px-6 py-4 text-left font-medium text-slate-500 w-1/2"></th>
+                <th className="px-6 py-4 text-center font-semibold text-slate-900 bg-amber-50/60 border-x border-[#E7E5E0]">TenantShield</th>
+                <th className="px-6 py-4 text-center font-medium text-slate-500">Free template</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E7E5E0]">
+              {[
+                { feature: 'State-specific statute citations', us: true, them: false },
+                { feature: 'Calculated deadlines for your situation', us: true, them: false },
+                { feature: 'Penalty multiplier language (2x, 3x)', us: true, them: false },
+                { feature: 'Special city protections (NYC, Chicago, SF…)', us: true, them: false },
+                { feature: 'Professional PDF formatting', us: true, them: false },
+                { feature: 'Ready in under 60 seconds', us: true, them: true },
+                { feature: 'Free', us: false, them: true },
+              ].map((row) => (
+                <tr key={row.feature} className="hover:bg-slate-50/50">
+                  <td className="px-6 py-4 text-slate-700">{row.feature}</td>
+                  <td className="px-6 py-4 text-center bg-amber-50/40 border-x border-[#E7E5E0]">
+                    {row.us
+                      ? <Check className="h-5 w-5 text-[#15803D] mx-auto" />
+                      : <span className="text-slate-300 text-lg leading-none">—</span>
+                    }
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {row.them
+                      ? <Check className="h-5 w-5 text-[#15803D] mx-auto" />
+                      : <span className="text-slate-300 text-lg leading-none">—</span>
+                    }
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* ==================== TRUST SIGNALS ==================== */}
       <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
         <div className="grid gap-6 sm:grid-cols-3">
@@ -440,13 +491,13 @@ export default function LandingPage() {
             <Link href="/terms" className="transition hover:text-slate-900">Terms</Link>
             <Link href="/privacy" className="transition hover:text-slate-900">Privacy</Link>
             <Link href="/refund" className="transition hover:text-slate-900">Refund Policy</Link>
+            <a href="mailto:support@gettenantshield.com" className="transition hover:text-slate-900">Contact</a>
           </nav>
         </div>
         <div className="border-t border-[#E7E5E0]">
-          <div className="mx-auto max-w-6xl px-5 py-5 text-xs text-slate-500 sm:px-8">
-            © {new Date().getFullYear()} TenantShield LLC. Not legal advice. The information
-            provided does not, and is not intended to, constitute legal advice. For
-            case-specific advice, consult a licensed attorney in your state.
+          <div className="mx-auto max-w-6xl px-5 py-5 text-xs text-slate-500 sm:px-8 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <span>© {new Date().getFullYear()} TenantShield LLC. Not legal advice. The information provided does not, and is not intended to, constitute legal advice. For case-specific advice, consult a licensed attorney in your state.</span>
+            <span className="shrink-0 text-slate-400">7901 4th St N Ste 300, St. Petersburg, FL 33702</span>
           </div>
         </div>
       </footer>
