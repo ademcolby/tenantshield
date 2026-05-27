@@ -116,11 +116,11 @@ Dear [Landlord Name or "Landlord/Property Manager"],
 **California** — Civil Code §1950.5. Return within 21 days. Wrongful withholding in bad faith: up to 2x the deposit as a penalty, plus actual damages.
 **Colorado** — CRS § 38-12-103. Return within 30 days (up to 60 days if specified in lease). Wrongful withholding: 3x the wrongfully withheld amount plus attorney fees.
 **Connecticut** — CGS § 47a-21. Return within 30 days OR 15 days after receiving tenant's forwarding address, whichever is later. Wrongful withholding: 2x the wrongfully withheld amount.
-**Delaware** — Title 25 §5514. Return within 20 days. Wrongful withholding: deposit plus damages.
+**Delaware** — Title 25 § 5514. Return within 20 days. Wrongful withholding: double the amount wrongfully withheld under § 5514(g). Failure to disclose deposit account location or deposit funds in a Delaware-based federally insured institution: deposit is forfeited to tenant.
 **Florida** — FS § 83.49. CONDITIONAL DEADLINE: If landlord intends to return the full deposit, return must occur within 15 days of lease termination. If landlord intends to make any deductions, landlord must send written notice of intent to impose a claim within 30 days. Failure to send notice within 30 days forfeits right to impose any claim. Apply 15 days if subtype indicates no deductions attempted (no_response, full_withholding_vague without itemization). Apply 30 days if any deduction was claimed. Tenant may recover deposit plus attorney fees.
 **Georgia** — OCGA §44-7-34. Return within 30 days. Wrongful withholding: 3x the deposit plus attorney fees.
 **Hawaii** — HRS §521-44. Return within 14 days. Wrongful withholding: 3x the amount wrongfully withheld.
-**Idaho** — IC §6-321. Return within 21 days. No statutory penalty multiplier.
+**Idaho** — IC §6-321 (security deposit) and §6-320 (action by tenant). Return within 21 days (default), or up to 30 days if specified in lease. Wrongful withholding in bad faith: up to 3x (treble) damages plus attorney fees under Idaho Code §6-317 and §6-324. Cite §6-321 for the return requirement and §6-317/§6-320 for the treble damages remedy.
 **Illinois** — 765 ILCS 710. Return within 30 days. Wrongful withholding: 2x the withheld deposit.
 **Indiana** — IC § 32-31-3-12. Return within 45 days. Wrongful withholding: landlord forfeits right to retain any portion of deposit, plus attorney fees.
 **Iowa** — Iowa Code §562A.12. Return within 30 days. Wrongful withholding: up to 2x the deposit.
@@ -132,9 +132,9 @@ Dear [Landlord Name or "Landlord/Property Manager"],
 **Massachusetts** — MGL c.186 §15B. Return within 30 days. Wrongful withholding: 3x the amount wrongfully withheld plus interest, costs, and attorney fees.
 **Michigan** — MCL §554.609. Return within 30 days. Wrongful withholding: 2x the amount wrongfully withheld.
 **Minnesota** — Minn. Stat. § 504B.178. Return within 21 days. Wrongful withholding: 2x the amount wrongfully withheld PLUS $500 statutory penalty PLUS attorney fees.
-**Mississippi** — Miss. Code §89-8-21. Return within 45 days. No statutory penalty multiplier.
+**Mississippi** — Miss. Code §89-8-21. Return within 45 days. Wrongful withholding in bad faith: up to $200 statutory damages PLUS actual damages PLUS court costs under § 89-8-21(4).
 **Missouri** — RSMo §535.300. Return within 30 days. Wrongful withholding: up to 2x the amount withheld.
-**Montana** — MCA §70-25-202. Return within 30 days. Wrongful withholding: actual damages only.
+**Montana** — MCA §70-25-202 (return/itemization) and §70-25-204 (wrongful withholding). CONDITIONAL DEADLINE: 10 days if no damages/cleaning/unpaid rent/utilities; 30 days otherwise (with itemized statement). Wrongful withholding in bad faith: amount wrongfully withheld PLUS an equal amount as a penalty (effectively 2x) PLUS reasonable attorney fees and court costs. Apply 10-day deadline if subtype indicates no deductions; 30-day deadline if any deduction was claimed.
 **Nebraska** — Neb. Rev. Stat. §76-1416. Return within 14 days. Wrongful withholding: up to 2x the withheld amount.
 **Nevada** — NRS § 118A.242. Return within 30 days. Wrongful withholding in bad faith: up to 3x the amount wrongfully withheld.
 **New Hampshire** — RSA 540-A:7. Return within 30 days. Wrongful withholding: 2x the deposit.
@@ -144,20 +144,20 @@ Dear [Landlord Name or "Landlord/Property Manager"],
 **North Carolina** — NCGS §42-52. Return within 30 days. Wrongful withholding: actual damages only.
 **North Dakota** — NDCC §47-16-07.1. Return within 30 days. Wrongful withholding: up to 3x the wrongfully withheld amount.
 **Ohio** — ORC §5321.16. Return within 30 days. Wrongful withholding: withheld amount plus damages equal to that amount (effectively 2x) plus attorney fees.
-**Oklahoma** — Title 41 O.S. §115. Return within 45 days. Wrongful withholding: actual damages.
+**Oklahoma** — Title 41 O.S. §115. Return within 45 days. Standard wrongful withholding: actual damages plus court costs. NOTE: Misappropriation of escrow funds (using deposit for non-escrow purposes, failure to keep in Oklahoma-based federally insured institution) is criminally punishable under § 41-115(A) — up to 6 months in county jail and a fine of up to 2x the amount misappropriated. Reference § 41-115(A) only if the tenant alleges actual misappropriation.
 **Oregon** — ORS §90.300. Return within 31 days. Wrongful withholding: 2x the wrongfully withheld amount.
 **Pennsylvania** — 68 P.S. § 250.512. Return within 30 days. Wrongful withholding: 2x the amount due (applies to the portion exceeding twice the monthly rent).
 **Rhode Island** — RIGL §34-18-19. Return within 20 days. Wrongful withholding: 2x the deposit.
-**South Carolina** — SC Code §27-40-410. Return within 30 days. Wrongful withholding: actual damages only.
+**South Carolina** — SC Code § 27-40-410. Return within 30 days. Wrongful withholding in bad faith: up to 3x the amount wrongfully withheld plus reasonable attorney fees under § 27-40-410(c).
 **South Dakota** — SDCL § 43-32-24. CONDITIONAL DEADLINE: If landlord intends to return the full deposit, return must occur within 14 days. If landlord intends to make any deductions, return plus itemized statement must occur within 45 days. Apply 14 days if subtype indicates no deductions (no_response, full_withholding_vague without itemization). Apply 45 days if any deduction was claimed. Wrongful withholding: actual damages plus up to $200 punitive damages for bad faith.
-**Tennessee** — TCA §66-28-301. Return within 30 days. Wrongful withholding: deposit plus 2x the amount wrongfully withheld.
+**Tennessee** — TCA §66-28-301. Return within 30 days. Wrongful withholding: actual damages only (no statutory multiplier). NOTE: TURLTA only applies to counties with population over 75,000 (Davidson, Shelby, Knox, Hamilton, Rutherford, Williamson, Montgomery, Sumner, Wilson, Maury). For other counties, no statutory framework applies and tenant relies on common-law contract remedies.
 **Texas** — Texas Property Code § 92.103 (return deadline) and § 92.109 (bad faith penalty). Return within 30 days. Wrongful withholding in bad faith: $100 plus 3x the amount wrongfully withheld plus attorney fees under § 92.109. Cite both sections in letters where bad faith is plausibly alleged.
-**Utah** — Utah Code §57-17-3. Return within 30 days. Wrongful withholding: actual damages only.
+**Utah** — Utah Code § 57-17-3 and § 57-17-5. Return within 30 days. Wrongful withholding in bad faith: full deposit return PLUS civil penalty equal to 3x the deposit amount PLUS court costs (amended 2024 from previous $100 civil penalty). Tenant must serve the statutory "Notice to Provide Deposit Disposition" form before penalty applies — letter should reference this 5-day notice requirement.
 **Vermont** — 9 VSA §4461. Return within 14 days. Wrongful withholding: 2x the amount due.
 **Virginia** — Va. Code §55.1-1226. Return within 45 days. Wrongful withholding: deposit plus damages.
 **Washington** — RCW §59.18.280. Return within 30 days. Wrongful withholding: 2x the amount wrongfully withheld plus attorney fees and court costs.
 **West Virginia** — WV Code §37-6A-2. Return within 60 days. Wrongful withholding: 1.5x the amount due.
-**Wisconsin** — Wis. Stat. §704.28. Return within 21 days. Wrongful withholding: 2x the amount wrongfully withheld plus attorney fees.
+**Wisconsin** — Wis. Admin. Code ATCP 134.06 (return rules and itemization) AND Wis. Stat. § 704.28 (lawful withholding limits). Return within 21 days after lease termination or surrender of premises. Wrongful withholding: 2x the amount wrongfully withheld plus attorney fees under Wis. Stat. § 100.20(5). Cite ATCP 134.06 as primary authority for the 21-day deadline.
 **Wyoming** — Wyo. Stat. § 1-21-1208. Return within 30 days (15 days if no deductions). Wrongful withholding in bad faith: 3x the amount wrongfully withheld.
 
 ---
