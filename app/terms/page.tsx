@@ -1,5 +1,12 @@
 import Link from 'next/link'
 import { Fraunces, DM_Sans } from 'next/font/google'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description:
+    'The terms and conditions governing your use of TenantShield. We are not a law firm; we generate state-specific demand letters as a self-help tool.',
+}
 
 const fraunces = Fraunces({
   subsets: ['latin'],

@@ -1,5 +1,12 @@
 import Link from 'next/link'
 import { Fraunces, DM_Sans } from 'next/font/google'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description:
+    'How TenantShield collects, uses, and protects your information. We only use your data to generate your letter — we never sell or share it.',
+}
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -19,7 +26,7 @@ const dmSans = DM_Sans({
 //  EDIT THESE TWO LINES WHEN YOUR LLC IS APPROVED / ON REVISION
 // ============================================================
 const ENTITY = 'TenantShield LLC'
-const LAST_UPDATED = 'May 17, 2026'
+const LAST_UPDATED = 'May 27, 2026'
 // ============================================================
 
 const ShieldMark = ({ className = '' }: { className?: string }) => (
@@ -196,13 +203,14 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
-        <Section n="6." title="Browser storage">
+        <Section n="6." title="How your form data is handled in your browser">
           <p>
-            To carry your form information from the intake step through checkout, the
-            Service temporarily stores your form entries in your own browser&apos;s local
-            storage on your device. This data stays on your device and is cleared after
-            your letter is generated. We do not use third-party advertising or tracking
-            cookies.
+            While you fill out the intake form, your entries are held in your
+            browser&apos;s working memory for the duration of your visit so you can review
+            and edit them before submitting. When you submit the form, your information is
+            transmitted to our servers to generate your letter. We do not persist your
+            form entries in local storage, cookies, or any other long-term browser
+            storage, and we do not use third-party advertising or tracking cookies.
           </p>
         </Section>
 

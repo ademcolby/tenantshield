@@ -168,7 +168,7 @@ export default function LandingPage() {
               </li>
               <li className="inline-flex items-center gap-2">
                 <Check className="h-4 w-4 text-[#15803D]" />
-                Ready in under 60 seconds
+                Ready in about two minutes
               </li>
             </ul>
             <div className="mt-9 flex flex-wrap items-center gap-4">
@@ -409,7 +409,7 @@ export default function LandingPage() {
                 { feature: 'Penalty multiplier language (2x, 3x)', us: true, them: false },
                 { feature: 'Special city protections (NYC, Chicago, SF…)', us: true, them: false },
                 { feature: 'Professional PDF formatting', us: true, them: false },
-                { feature: 'Ready in under 60 seconds', us: true, them: true },
+                { feature: 'Ready in about two minutes', us: true, them: true },
                 { feature: 'Free', us: false, them: true },
               ].map((row) => (
                 <tr key={row.feature} className="hover:bg-slate-50/50">
