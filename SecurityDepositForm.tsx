@@ -47,9 +47,9 @@ const STATE_ABBR: { [key: string]: string } = {
 // IMPORTANT: The special-jurisdiction city strings below are matched verbatim
 // by lib/systemPrompt.ts (Chicago RLTO, NYC escrow, etc.) and by the
 // showRentStabilized logic (=== 'New York City'). DO NOT alter these strings:
-//   San Francisco, Los Angeles, Berkeley, West Hollywood, Santa Monica, Oakland,
+//   San Francisco, Los Angeles, Berkeley, West Hollywood, Santa Monica,
 //   Chicago, Cook County (outside Chicago), Evanston, New York City, Seattle,
-//   Tacoma, Portland, Eugene, Boston, Cambridge, Washington DC
+//   Portland, Boston, Cambridge, Washington DC
 // General cities are added alongside them and carry no special legal logic.
 // An "Other city" option is appended to every state and reveals a write-in.
 const CITIES_BY_STATE: { [key: string]: string[] } = {
@@ -57,7 +57,7 @@ const CITIES_BY_STATE: { [key: string]: string[] } = {
   'Alaska': ['Anchorage', 'Fairbanks', 'Juneau', 'Wasilla', 'Sitka', 'Ketchikan', 'Kenai'],
   'Arizona': ['Phoenix', 'Tucson', 'Mesa', 'Chandler', 'Scottsdale', 'Glendale', 'Tempe'],
   'Arkansas': ['Little Rock', 'Fayetteville', 'Fort Smith', 'Springdale', 'Jonesboro', 'Conway', 'Rogers'],
-  'California': ['San Francisco', 'Los Angeles', 'Berkeley', 'West Hollywood', 'Santa Monica', 'Oakland', 'San Diego', 'San Jose', 'Sacramento', 'Long Beach', 'Fresno'],
+  'California': ['San Francisco', 'Los Angeles', 'Berkeley', 'West Hollywood', 'Santa Monica', 'San Diego', 'San Jose', 'Sacramento', 'Long Beach', 'Fresno'],
   'Colorado': ['Denver', 'Colorado Springs', 'Aurora', 'Fort Collins', 'Lakewood', 'Boulder', 'Pueblo'],
   'Connecticut': ['Bridgeport', 'New Haven', 'Hartford', 'Stamford', 'Waterbury', 'Norwalk', 'Danbury'],
   'Delaware': ['Wilmington', 'Dover', 'Newark', 'Middletown', 'Smyrna', 'Milford', 'Bear'],
@@ -90,7 +90,7 @@ const CITIES_BY_STATE: { [key: string]: string[] } = {
   'North Dakota': ['Fargo', 'Bismarck', 'Grand Forks', 'Minot', 'West Fargo', 'Williston', 'Mandan'],
   'Ohio': ['Columbus', 'Cleveland', 'Cincinnati', 'Toledo', 'Akron', 'Dayton', 'Parma'],
   'Oklahoma': ['Oklahoma City', 'Tulsa', 'Norman', 'Broken Arrow', 'Edmond', 'Lawton', 'Moore'],
-  'Oregon': ['Portland', 'Eugene', 'Salem', 'Gresham', 'Hillsboro', 'Bend', 'Beaverton'],
+  'Oregon': ['Portland', 'Salem', 'Gresham', 'Hillsboro', 'Bend', 'Beaverton'],
   'Pennsylvania': ['Philadelphia', 'Pittsburgh', 'Allentown', 'Erie', 'Reading', 'Scranton', 'Bethlehem'],
   'Rhode Island': ['Providence', 'Warwick', 'Cranston', 'Pawtucket', 'East Providence', 'Woonsocket', 'Newport'],
   'South Carolina': ['Charleston', 'Columbia', 'North Charleston', 'Mount Pleasant', 'Rock Hill', 'Greenville', 'Summerville'],
@@ -100,7 +100,7 @@ const CITIES_BY_STATE: { [key: string]: string[] } = {
   'Utah': ['Salt Lake City', 'West Valley City', 'Provo', 'West Jordan', 'Orem', 'Sandy', 'St. George'],
   'Vermont': ['Burlington', 'South Burlington', 'Rutland', 'Essex', 'Colchester', 'Bennington', 'Montpelier'],
   'Virginia': ['Virginia Beach', 'Norfolk', 'Chesapeake', 'Richmond', 'Arlington', 'Alexandria', 'Newport News'],
-  'Washington': ['Seattle', 'Tacoma', 'Spokane', 'Vancouver', 'Bellevue', 'Kent', 'Everett'],
+  'Washington': ['Seattle', 'Spokane', 'Vancouver', 'Bellevue', 'Kent', 'Everett'],
   'West Virginia': ['Charleston', 'Huntington', 'Morgantown', 'Parkersburg', 'Wheeling', 'Martinsburg', 'Fairmont'],
   'Wisconsin': ['Milwaukee', 'Madison', 'Green Bay', 'Kenosha', 'Racine', 'Appleton', 'Waukesha'],
   'Wyoming': ['Cheyenne', 'Casper', 'Laramie', 'Gillette', 'Rock Springs', 'Sheridan', 'Green River'],

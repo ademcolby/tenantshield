@@ -1,145 +1,133 @@
 ---
-title: "Security Deposit Demand Letter: What to Include (And Why It Matters)"
-description: "A demand letter is your most powerful tool for recovering a security deposit. Here's exactly what it needs to say — and what makes it legally credible."
-slug: "security-deposit-demand-letter-what-to-include"
+title: "What to Do If Your Landlord Won't Return Your Security Deposit"
+description: "Your landlord missed the deadline — or kept your deposit without explanation. Here's exactly what to do, step by step, to get your money back."
+slug: "what-to-do-if-landlord-wont-return-security-deposit"
 publishedAt: "2026-05-26"
 ---
 
-# Security Deposit Demand Letter: What to Include (And Why It Matters)
+You moved out weeks ago. You cleaned the place, patched the nail holes, handed back the keys — and you're still waiting. No check. No itemized list. Maybe a vague text saying "we're working on it," or silence.
 
-When a landlord doesn't return your security deposit, most tenants do one of two things: they send an angry text, or they do nothing and assume they're out of luck.
+This happens constantly. And most tenants don't realize they have real leverage.
 
-Both are mistakes.
+Here's the good news: security deposit law is one of the most tenant-friendly areas of landlord-tenant law in the United States. Most states require landlords to return your deposit within 14 to 30 days. Miss that deadline, and landlords often lose the legal right to keep *any* of it — plus they can owe you penalty damages on top.
 
-The right move is a written demand letter — formal, statute-cited, and sent before any legal action. It's the step that turns a vague dispute into a documented legal record. And in many cases, it's the only step you need.
-
-This guide breaks down exactly what a security deposit demand letter should include, why each element matters, and what separates a letter that gets results from one that gets ignored.
+This guide walks you through exactly what to do, in order, to get your money back.
 
 ---
 
-## Why a Demand Letter Works
+## Step 1: Know Your State's Deadline
 
-Landlords who withhold deposits aren't always acting in bad faith — sometimes they're disorganized, hoping you'll forget, or testing whether you'll push back. A formal demand letter changes the dynamic immediately.
+Before you do anything else, look up your state's return deadline. Every state has one. This single fact determines everything — whether your landlord is in violation, and what remedies you're entitled to.
 
-It signals:
-- You know your rights
-- You know the specific statute they've violated
-- You're prepared to take this to court if needed
+Here are a few examples:
 
-That last point matters. Small claims court is straightforward, inexpensive, and judges rule for tenants in clear deadline-violation cases. A landlord who receives a statute-cited demand letter knows you've done your homework and that ignoring it has real consequences.
+| State | Return Deadline |
+|---|---|
+| California | 21 days |
+| Texas | 30 days |
+| Florida | 15 days (if no deductions) / 30 days (if deductions claimed) |
+| New York | 14 days |
+| Illinois | 30 days (45 days in Chicago under RLTO) |
 
-Most deposits get returned — or negotiated — at this stage.
+If the deadline has passed and you haven't received your deposit *or* a written itemization of deductions — your landlord is already in violation.
 
----
-
-## What Your Demand Letter Must Include
-
-### 1. Your Full Name and the Rental Address
-
-This seems obvious, but be exact. Use the name on your lease and the complete address (unit number included). Ambiguity gives landlords room to claim the letter wasn't directed at them or wasn't about the correct tenancy.
-
-### 2. The Security Deposit Amount
-
-State the exact amount you paid, and if you have it, reference the date it was paid. If your lease specifies the amount, that's the controlling number.
-
-### 3. Your Move-Out Date and Forwarding Address Confirmation
-
-Note the date you vacated the property and confirm that you provided a forwarding address — and when. This matters because most state statutes start the return clock from the date the tenant vacates *and* provides a forwarding address in writing.
-
-If your landlord tries to argue the clock never started, this shuts that down.
-
-### 4. The Specific State Statute
-
-This is the element that separates a credible demand letter from a complaint. Cite the exact statute governing security deposit returns in your state — by code name and section number.
-
-For example:
-- **California**: Civil Code § 1950.5
-- **Texas**: Property Code § 92.103 and § 92.109
-- **Florida**: Florida Statutes § 83.49
-- **New York**: General Obligations Law § 7-108
-- **Illinois**: 765 ILCS 710 (Chicago tenants: Chicago RLTO § 5-12-080)
-
-Stating the statute tells your landlord — and any judge who later sees this letter — that you understand the legal framework. It's not optional.
-
-### 5. The Violation
-
-State clearly what your landlord failed to do and when the deadline passed. Keep it factual and unemotional:
-
-> *"As of [date], [X] days have passed since I vacated the property and provided my forwarding address. Under [State Statute], you were required to return my security deposit within [X] days. You have not done so, nor have you provided an itemized statement of deductions."*
-
-Don't editorialize. Courts respond to facts and timelines, not frustration.
-
-### 6. The Demand
-
-State clearly what you are requesting:
-
-- Return of the full deposit, or
-- Return of the balance plus an itemized accounting of any legitimate deductions
-
-Include a specific deadline — typically 10 to 14 days from the date of the letter. This gives the landlord a reasonable window to respond and creates a clear record of when they failed to act.
-
-### 7. Consequence Statement
-
-Let the landlord know what happens if they don't comply. This doesn't need to be threatening — just factual:
-
-> *"If I do not receive the full deposit or a written itemization of deductions by [deadline date], I will pursue all available legal remedies, including filing a claim in small claims court."*
-
-In states with penalty provisions (Texas, California, Georgia, and others), you can also reference the statutory damages available — often 2x or 3x the deposit amount. This alone resolves a lot of disputes quickly.
-
-### 8. Your Signature and Contact Information
-
-Sign the letter with your name and include your mailing address and email. If you're sending it digitally, follow up with a certified mail copy when possible — it creates proof of delivery that's admissible in court.
+Not sure what your state requires? Check out our [complete 50-state security deposit deadline guide](/blog/security-deposit-return-deadlines-all-50-states).
 
 ---
 
-## What to Leave Out
+## Step 2: Confirm You Did Your Part
 
-**Emotional language.** "I'm furious" or "this is theft" may be accurate, but they weaken the legal credibility of your letter. Stick to facts.
+Before you send anything, make sure you've satisfied the conditions that trigger the deposit return clock. In most states, the clock starts when *both* of these happen:
 
-**Exaggerated claims.** Don't claim you're owed an amount you can't support. If deductions were legitimate, acknowledge it. Courts and landlords both respond better to a measured, accurate demand than an inflated one.
+- **You vacated the unit** (moved out completely)
+- **You provided a forwarding address in writing**
 
-**Threats you won't follow through on.** Only reference legal remedies you're actually prepared to pursue. Empty threats are easy to call.
-
----
-
-## Sending the Letter: Format and Method
-
-**Format**: Written. Either a typed letter (PDF) or a formal email. Handwritten letters are harder to preserve as clean evidence.
-
-**Method**: Email with read receipt *and* certified mail. Email gives you a timestamp; certified mail gives you proof of physical delivery. Either one alone works — both together is stronger.
-
-**Tone**: Professional. Imagine this letter being read aloud in a courtroom. Write accordingly.
+If you never gave your landlord a written forwarding address, the clock may not have started yet — or your landlord may try to use that as a defense. If you haven't done this, send it now via text or email so you have a timestamp.
 
 ---
 
-## The DIY Problem
+## Step 3: Send a Written Demand Letter
 
-You can absolutely write a demand letter yourself. The framework above gives you everything you need.
+This is the most important step — and the one most tenants skip.
 
-The catch: getting the statute citation right matters. The wrong section number, an outdated code reference, or a citation that doesn't directly address return deadlines weakens your letter. Statutes also vary significantly by city — Chicago renters operate under the RLTO, which has different timelines and penalty structures than the rest of Illinois. San Francisco has local ordinances layered on top of California state law.
+A demand letter does three things:
 
-This is why templated demand letters often fall short. A letter that cites the right California statute but misses a San Francisco tenant's additional protections leaves money on the table.
+1. **Creates a paper trail** that shows you formally requested your deposit
+2. **Sets a hard deadline** for the landlord to respond
+3. **Signals you're serious** — landlords know what a demand letter means
 
-**TenantShield generates a state-specific, statute-cited demand letter built from your actual details** — including city-level ordinances where they apply. It takes about five minutes and costs $39 flat.
+Your demand letter should reference your state's specific security deposit statute by name and section number. This matters. A letter that cites *Florida Statutes § 83.49* or *California Civil Code § 1950.5* reads as legally credible. A letter that says "I want my money back" reads as a complaint.
+
+The letter should include:
+- Your name and the rental address
+- The amount of your security deposit
+- The date you vacated and provided your forwarding address
+- The state statute your landlord has violated
+- The deadline for them to respond (typically 10–14 days)
+- A clear statement that you will pursue legal action if they don't comply
+
+**This is exactly what TenantShield generates** — a state-specific, statute-cited demand letter built from your details. For $39, you get a letter that looks like it came from an attorney's office, because it cites the same law an attorney would cite.
 
 [Generate your demand letter →](https://gettenantshield.com/generate)
 
 ---
 
-## After You Send the Letter
+## Step 4: Understand What You're Owed
 
-**Keep everything.** Every email, text, and certified mail receipt goes into a folder — digital or physical. If this ends up in small claims court, your documentation is your case.
+Depending on your state and what your landlord did wrong, you may be entitled to more than just your deposit back.
 
-**Note the deadline.** When your 10–14 day response window closes, you have a clear decision point: the landlord responded (negotiation or resolution), or they didn't (small claims filing).
+**If the landlord missed the deadline:**
+Many states have automatic penalty provisions. In Texas, a landlord who fails to return the deposit in bad faith owes the tenant *three times the deposit amount* plus attorney's fees (Texas Property Code § 92.109). California allows courts to award up to twice the deposit as a penalty.
 
-**Don't keep negotiating indefinitely.** Landlords sometimes stall hoping you'll accept less or walk away. Once you've sent the letter and the deadline passes, the next move is filing. The filing fee is usually $30–$100 and takes less than an hour.
+**If the landlord kept your deposit without an itemization:**
+Most states require landlords to send a written list of deductions along with the remaining balance. Keeping the deposit without that itemization is itself a violation — separate from whether the deductions were legitimate.
+
+**If the deductions are bogus:**
+Landlords cannot deduct for normal wear and tear. Faded paint, minor carpet wear, small scuffs — that's on them. They can deduct for actual damage beyond normal use. If you documented your move-out condition (photos, video, a signed move-out inspection), those deductions become very hard to defend.
 
 ---
 
-## Bottom Line
+## Step 5: File in Small Claims Court If Needed
 
-A well-written demand letter is the single highest-leverage action you can take to recover a security deposit. It costs almost nothing, creates a legal record, and resolves most disputes without ever setting foot in a courthouse.
+If the demand letter doesn't get a response, small claims court is your next move. It costs between $30 and $100 to file in most states, you don't need a lawyer, and security deposit cases are exactly the kind of clear-cut dispute small claims judges handle every day.
 
-The key is getting it right — with the correct statute, the correct timeline, and the professional tone that signals you're serious.
+To file, you'll need:
+- Your lease
+- Proof of the security deposit paid (bank record, receipt, or check)
+- Move-out documentation (photos, emails, forwarding address confirmation)
+- Your demand letter and any response (or evidence of no response)
 
-[Generate your statute-cited demand letter for $39 →](https://gettenantshield.com/generate)
+Small claims limits vary by state — most go up to $5,000–$10,000, which covers the vast majority of security deposits. Check your state's specific limit.
+
+The demand letter you sent in Step 3 becomes your first exhibit. Courts take seriously the fact that you followed proper procedure before filing.
+
+---
+
+## Step 6: Escalate If Necessary
+
+If your landlord ignores a small claims judgment, you have additional options:
+
+- **Wage garnishment** — in some states, you can collect the judgment directly from their paycheck
+- **Bank levy** — courts can order funds taken directly from a business account
+- **Report to your state attorney general** — many states have tenant protection hotlines and will investigate repeat offenders
+- **Leave documented reviews** — Google, Yelp, and apartment review sites are public record; factual, documented complaints are legally protected
+
+Most landlords pay up well before it gets here. A formal demand letter resolves the majority of these disputes without court.
+
+---
+
+## The Biggest Mistake Tenants Make
+
+Waiting. 
+
+Every day you wait, you're closer to your state's statute of limitations for filing a claim (typically 2–4 years, but varies). More practically, memories fade, landlords claim they never received your forwarding address, and the leverage you have right now weakens.
+
+The demand letter is the move. Send it within the first week after the return deadline passes.
+
+---
+
+## Ready to Get Your Deposit Back?
+
+TenantShield generates a professional, state-specific demand letter in minutes — with the exact statute citations your state requires. One flat fee. No subscription.
+
+[Generate your demand letter for $39 →](https://gettenantshield.com/generate)

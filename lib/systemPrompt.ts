@@ -109,56 +109,56 @@ Dear [Landlord Name or "Landlord/Property Manager"],
 
 ## STATE-SPECIFIC LEGAL KNOWLEDGE
 
-**Alabama** — §35-9A-201. Return within 60 days. No statutory penalty multiplier.
+**Alabama** — § 35-9A-201. Return within 35 days. Wrongful withholding: actual damages.
 **Alaska** — AS 34.03.070. Return within 14 days (month-to-month) or 30 days (fixed term). Wrongful withholding: landlord forfeits right to retain any amount.
 **Arizona** — ARS §33-1321. Return within 14 business days. Wrongful withholding: 2x the wrongfully withheld amount.
 **Arkansas** — ACA §18-16-305. Return within 60 days. No statutory penalty multiplier.
 **California** — Civil Code §1950.5. Return within 21 days. Wrongful withholding in bad faith: up to 2x the deposit as a penalty, plus actual damages.
-**Colorado** — CRS §38-12-103. Return within 60 days. Wrongful withholding: 3x the wrongfully withheld amount plus attorney fees.
-**Connecticut** — CGS §47a-21. Return within 30 days. Wrongful withholding: 2x the wrongfully withheld amount.
+**Colorado** — CRS § 38-12-103. Return within 30 days (up to 60 days if specified in lease). Wrongful withholding: 3x the wrongfully withheld amount plus attorney fees.
+**Connecticut** — CGS § 47a-21. Return within 30 days OR 15 days after receiving tenant's forwarding address, whichever is later. Wrongful withholding: 2x the wrongfully withheld amount.
 **Delaware** — Title 25 §5514. Return within 20 days. Wrongful withholding: deposit plus damages.
-**Florida** — FS §83.49. Return OR send written notice of intent to impose claim within 30 days. Failure to send notice within 30 days: forfeits right to impose any claim. Tenant may recover deposit plus attorney fees.
+**Florida** — FS § 83.49. CONDITIONAL DEADLINE: If landlord intends to return the full deposit, return must occur within 15 days of lease termination. If landlord intends to make any deductions, landlord must send written notice of intent to impose a claim within 30 days. Failure to send notice within 30 days forfeits right to impose any claim. Apply 15 days if subtype indicates no deductions attempted (no_response, full_withholding_vague without itemization). Apply 30 days if any deduction was claimed. Tenant may recover deposit plus attorney fees.
 **Georgia** — OCGA §44-7-34. Return within 30 days. Wrongful withholding: 3x the deposit plus attorney fees.
 **Hawaii** — HRS §521-44. Return within 14 days. Wrongful withholding: 3x the amount wrongfully withheld.
 **Idaho** — IC §6-321. Return within 21 days. No statutory penalty multiplier.
 **Illinois** — 765 ILCS 710. Return within 30 days. Wrongful withholding: 2x the withheld deposit.
-**Indiana** — IC §32-31-3-12. Return within 45 days. No statutory penalty.
+**Indiana** — IC § 32-31-3-12. Return within 45 days. Wrongful withholding: landlord forfeits right to retain any portion of deposit, plus attorney fees.
 **Iowa** — Iowa Code §562A.12. Return within 30 days. Wrongful withholding: up to 2x the deposit.
 **Kansas** — KSA §58-2550. Return within 30 days. Wrongful withholding: 1.5x the wrongfully withheld amount.
 **Kentucky** — KRS §383.580. Return within 30-60 days. Wrongful withholding: actual damages.
-**Louisiana** — RS 9:3251. Return within 30 days. Failure: deposit plus damages up to $500, plus attorney fees.
+**Louisiana** — RS § 9:3251. Return within 30 days. Wrongful withholding in bad faith: $200 minimum plus actual damages plus attorney fees.
 **Maine** — 14 MRS §6033. Return within 30 days (21 days month-to-month). Wrongful withholding: 2x the amount wrongfully withheld.
 **Maryland** — MD Code Real Property §8-203. Return within 45 days. Wrongful withholding: up to 3x the wrongfully withheld amount plus attorney fees.
 **Massachusetts** — MGL c.186 §15B. Return within 30 days. Wrongful withholding: 3x the amount wrongfully withheld plus interest, costs, and attorney fees.
 **Michigan** — MCL §554.609. Return within 30 days. Wrongful withholding: 2x the amount wrongfully withheld.
-**Minnesota** — Minn. Stat. §504B.178. Return within 21 days. Wrongful withholding: 2x the amount wrongfully withheld plus attorney fees.
+**Minnesota** — Minn. Stat. § 504B.178. Return within 21 days. Wrongful withholding: 2x the amount wrongfully withheld PLUS $500 statutory penalty PLUS attorney fees.
 **Mississippi** — Miss. Code §89-8-21. Return within 45 days. No statutory penalty multiplier.
 **Missouri** — RSMo §535.300. Return within 30 days. Wrongful withholding: up to 2x the amount withheld.
 **Montana** — MCA §70-25-202. Return within 30 days. Wrongful withholding: actual damages only.
 **Nebraska** — Neb. Rev. Stat. §76-1416. Return within 14 days. Wrongful withholding: up to 2x the withheld amount.
-**Nevada** — NRS §118A.242. Return within 30 days. Wrongful withholding: actual damages.
+**Nevada** — NRS § 118A.242. Return within 30 days. Wrongful withholding in bad faith: up to 3x the amount wrongfully withheld.
 **New Hampshire** — RSA 540-A:7. Return within 30 days. Wrongful withholding: 2x the deposit.
-**New Jersey** — NJSA §46:8-21.1. Return within 30 days. Wrongful withholding: double the amount due plus court costs.
+**New Jersey** — NJSA § 46:8-21.1. Return within 30 days. Wrongful withholding: 2x the amount due plus court costs and attorney fees.
 **New Mexico** — NMSA §47-8-18. Return within 30 days. Wrongful withholding: up to 3x the withheld amount.
-**New York** — RPL §227-e. Return within 14 days. Wrongful withholding: up to 2x the deposit.
+**New York** — General Obligations Law § 7-108. Return within 14 days. Landlord must provide itemized statement of deductions. Wrongful withholding: up to 2x the deposit. (Note: For NYC tenants, also apply GOL § 7-103 escrow requirements — see city overrides below.)
 **North Carolina** — NCGS §42-52. Return within 30 days. Wrongful withholding: actual damages only.
 **North Dakota** — NDCC §47-16-07.1. Return within 30 days. Wrongful withholding: up to 3x the wrongfully withheld amount.
 **Ohio** — ORC §5321.16. Return within 30 days. Wrongful withholding: withheld amount plus damages equal to that amount (effectively 2x) plus attorney fees.
 **Oklahoma** — Title 41 O.S. §115. Return within 45 days. Wrongful withholding: actual damages.
 **Oregon** — ORS §90.300. Return within 31 days. Wrongful withholding: 2x the wrongfully withheld amount.
-**Pennsylvania** — 68 P.S. §250.512. Return within 30 days. Wrongful withholding: 2x the amount due.
+**Pennsylvania** — 68 P.S. § 250.512. Return within 30 days. Wrongful withholding: 2x the amount due (applies to the portion exceeding twice the monthly rent).
 **Rhode Island** — RIGL §34-18-19. Return within 20 days. Wrongful withholding: 2x the deposit.
 **South Carolina** — SC Code §27-40-410. Return within 30 days. Wrongful withholding: actual damages only.
-**South Dakota** — SDCL §43-32-24. Return within 2 weeks. Wrongful withholding: actual damages.
+**South Dakota** — SDCL § 43-32-24. CONDITIONAL DEADLINE: If landlord intends to return the full deposit, return must occur within 14 days. If landlord intends to make any deductions, return plus itemized statement must occur within 45 days. Apply 14 days if subtype indicates no deductions (no_response, full_withholding_vague without itemization). Apply 45 days if any deduction was claimed. Wrongful withholding: actual damages plus up to $200 punitive damages for bad faith.
 **Tennessee** — TCA §66-28-301. Return within 30 days. Wrongful withholding: deposit plus 2x the amount wrongfully withheld.
-**Texas** — Texas Property Code §92.103. Return within 30 days. Wrongful withholding in bad faith: $100 plus 3x the amount wrongfully withheld plus attorney fees.
+**Texas** — Texas Property Code § 92.103 (return deadline) and § 92.109 (bad faith penalty). Return within 30 days. Wrongful withholding in bad faith: $100 plus 3x the amount wrongfully withheld plus attorney fees under § 92.109. Cite both sections in letters where bad faith is plausibly alleged.
 **Utah** — Utah Code §57-17-3. Return within 30 days. Wrongful withholding: actual damages only.
 **Vermont** — 9 VSA §4461. Return within 14 days. Wrongful withholding: 2x the amount due.
 **Virginia** — Va. Code §55.1-1226. Return within 45 days. Wrongful withholding: deposit plus damages.
 **Washington** — RCW §59.18.280. Return within 30 days. Wrongful withholding: 2x the amount wrongfully withheld plus attorney fees and court costs.
 **West Virginia** — WV Code §37-6A-2. Return within 60 days. Wrongful withholding: 1.5x the amount due.
 **Wisconsin** — Wis. Stat. §704.28. Return within 21 days. Wrongful withholding: 2x the amount wrongfully withheld plus attorney fees.
-**Wyoming** — Wyo. Stat. §1-21-1208. Return within 30 days. No statutory penalty multiplier.
+**Wyoming** — Wyo. Stat. § 1-21-1208. Return within 30 days (15 days if no deductions). Wrongful withholding in bad faith: 3x the amount wrongfully withheld.
 
 ---
 
@@ -170,11 +170,11 @@ When the city matches one of the jurisdictions below, apply BOTH state baseline 
 
 **Cook County, IL (outside Chicago)** — CCRTLO. Mirrors Chicago RLTO with similar penalty structure.
 
-**New York City, NY** — NYC Admin Code §26-4001 + NY General Obligations Law §7-103. Deposits must be held in escrow in a New York bank. Bank disclosure required. For rent-stabilized units, additional protections under 9 NYCRR §2520 et seq.
+**New York City, NY** — NY General Obligations Law § 7-103 (escrow) and § 7-108 (return rules). Deposits must be held in escrow in a New York bank. Bank disclosure required (name and address of depository). For rent-stabilized units, additional protections under 9 NYCRR § 2520 et seq.
 
 **Seattle, WA** — Seattle Municipal Code §22.206 and §7.24. Caps total move-in costs at one month's rent. Mandatory installment plans. Interest required after one year.
 
-**Portland, OR** — Portland City Code §30.01.087. Caps deposits at half month's rent if last month's rent collected. Separate bank account required. Mandatory PHB depreciation schedule. Violations: up to 2x the deposit plus attorney fees.
+**Portland, OR (Oregon only — not Portland, ME)** — Portland City Code § 30.01.087. Caps deposits at half month's rent if last month's rent collected. Separate bank account required. Mandatory PHB depreciation schedule. Violations: up to 2x the deposit plus attorney fees. If the tenant's state is Maine, do NOT apply these Oregon rules — follow Maine state law only.
 
 **San Francisco, CA** — SF Admin Code Chapter 49. Annual interest payments mandatory on deposits held over one year. Rate set by SF Rent Board (~5%).
 
@@ -182,7 +182,13 @@ When the city matches one of the jurisdictions below, apply BOTH state baseline 
 
 **Berkeley, West Hollywood, Santa Monica, CA** — Each has interest payment ordinance for deposits held over one year.
 
-**District of Columbia** — DC Code §42-3502.17, 14 DCMR §§308-311. One-month deposit cap. 30 days written notice of intent to withhold. 45-day return. Mandatory DC-based escrow. Annual interest required. Failure to comply forfeits any claim.
+**Boston, MA** — Standard Massachusetts state law applies (MGL c.186 § 15B). Note that Boston has active tenant-protection enforcement through the City of Boston's Office of Housing Stability. Reference the strong MA penalty (3x plus interest plus attorney fees) prominently. No additional municipal escrow requirements beyond state law.
+
+**Cambridge, MA** — Standard Massachusetts state law applies (MGL c.186 § 15B). Cambridge has the Cambridge Rent Stabilization Board legacy but no current municipal security deposit ordinance exceeding state law. Apply MA penalty (3x plus interest plus attorney fees) prominently.
+
+**Evanston, IL** — Standard Illinois state law applies (765 ILCS 710). Evanston does NOT follow the Chicago RLTO. Apply the standard Illinois 30-day deadline and 2x penalty only.
+
+**District of Columbia** — DC Code § 42-3241, 14 DCMR §§ 308-311. One-month deposit cap. 30 days written notice of intent to withhold. 45-day return. Mandatory DC-based escrow. Annual interest required. Failure to comply forfeits any claim.
 
 ---
 
