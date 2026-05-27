@@ -7,3 +7,166 @@
     @apply antialiased;
   }
 }
+
+/* Blog prose styles */
+.prose-tenantshield h1 {
+  display: none;
+}
+
+.prose-tenantshield h2 {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-top: 52px;
+  margin-bottom: 16px;
+}
+
+.prose-tenantshield h3 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-top: 36px;
+  margin-bottom: 12px;
+}
+
+.prose-tenantshield p {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  color: #334155;
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+.prose-tenantshield a {
+  color: #B45309;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-tenantshield a:hover {
+  color: #92400E;
+}
+
+.prose-tenantshield strong {
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.prose-tenantshield ul {
+  margin: 20px 0;
+  padding-left: 24px;
+}
+
+.prose-tenantshield ul li {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  color: #334155;
+  line-height: 1.75;
+  margin-bottom: 8px;
+}
+
+.prose-tenantshield ol {
+  margin: 20px 0;
+  padding-left: 24px;
+}
+
+.prose-tenantshield ol li {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  color: #334155;
+  line-height: 1.75;
+  margin-bottom: 8px;
+}
+
+.prose-tenantshield hr {
+  border: none;
+  border-top: 1px solid #E7E5E0;
+  margin: 48px 0;
+}
+
+.prose-tenantshield blockquote {
+  border-left: 3px solid #B45309;
+  padding-left: 20px;
+  margin: 28px 0;
+  font-style: italic;
+  color: #475569;
+}
+
+.prose-tenantshield blockquote p {
+  margin-bottom: 0;
+}
+
+/* Table styles — used in the 50-states post */
+.prose-tenantshield table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 32px 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  overflow-x: auto;
+  display: block;
+}
+
+.prose-tenantshield thead tr {
+  background: #0F172A;
+  color: white;
+}
+
+.prose-tenantshield th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.prose-tenantshield td {
+  padding: 11px 16px;
+  color: #334155;
+  border-bottom: 1px solid #E7E5E0;
+  vertical-align: top;
+}
+
+.prose-tenantshield tr:nth-child(even) td {
+  background: #F8F7F4;
+}
+
+.prose-tenantshield tr:hover td {
+  background: #FEF3C7;
+}
+
+/* Code inline */
+.prose-tenantshield code {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  background: #F1F5F9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #0F172A;
+}
+
+/* Blog index post titles */
+.blog-post-link {
+  text-decoration: none;
+}
+
+.blog-post-title {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  transition: color 0.15s;
+}
+
+.blog-post-title:hover {
+  color: #B45309;
+}
