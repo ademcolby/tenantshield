@@ -12,6 +12,29 @@ export const metadata: Metadata = {
   verification: {
     google: 'J3ScHTY5sizuugxxEYLDZkRezugJeSYDSajUNYJ_W7Y',
   },
+  openGraph: {
+    type: 'website',
+    siteName: 'TenantShield',
+    title: 'TenantShield — Get Your Security Deposit Back',
+    description:
+      'State-specific demand letters with real statute citations. All 50 states. $39 flat fee.',
+    url: 'https://gettenantshield.com',
+    images: [
+      {
+        url: '/og-image.svg',
+        width: 1200,
+        height: 630,
+        alt: 'TenantShield — Get your security deposit back',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TenantShield — Get Your Security Deposit Back',
+    description:
+      'State-specific demand letters with real statute citations. All 50 states. $39 flat fee.',
+    images: ['/og-image.svg'],
+  },
 };
 
 const organizationSchema = {
@@ -21,6 +44,7 @@ const organizationSchema = {
   legalName: 'TenantShield LLC',
   url: 'https://gettenantshield.com',
   logo: 'https://gettenantshield.com/icon.svg',
+  image: 'https://gettenantshield.com/og-image.svg',
   contactPoint: {
     '@type': 'ContactPoint',
     email: 'support@gettenantshield.com',
