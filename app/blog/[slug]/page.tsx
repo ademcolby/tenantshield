@@ -18,8 +18,15 @@ export async function generateMetadata({
   const post = getPostBySlug(slug)
   if (!post) return {}
   return {
-    title: `${post.title} | TenantShield`,
+    title: post.title,
     description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      url: `https://gettenantshield.com/blog/${post.slug}`,
+    },
   }
 }
 
@@ -31,6 +38,59 @@ function formatDate(dateStr: string) {
   })
 }
 
+function buildArticleSchema(post: {
+  title: string
+  description: string
+  slug: string
+  publishedAt: string
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    url: `https://gettenantshield.com/blog/${post.slug}`,
+    publisher: {
+      '@type': 'Organization',
+      name: 'TenantShield',
+      url: 'https://gettenantshield.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://gettenantshield.com/icon.svg',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://gettenantshield.com/blog/${post.slug}`,
+    },
+  }
+}
+
+function buildDatasetSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: 'Security Deposit Return Deadlines — All 50 US States + DC',
+    description:
+      'Complete table of security deposit return deadlines, penalty provisions, and statute citations for all 50 US states plus the District of Columbia. Updated 2026.',
+    url: 'https://gettenantshield.com/blog/security-deposit-return-deadlines-all-50-states',
+    creator: {
+      '@type': 'Organization',
+      name: 'TenantShield',
+      url: 'https://gettenantshield.com',
+    },
+    temporalCoverage: '2026',
+    spatialCoverage: {
+      '@type': 'Country',
+      name: 'United States',
+    },
+    keywords:
+      'security deposit, return deadline, tenant rights, landlord law, state law, demand letter',
+  }
+}
+
 export default async function BlogPostPage({
   params,
 }: {
@@ -40,8 +100,28 @@ export default async function BlogPostPage({
   const post = getPostBySlug(slug)
   if (!post) notFound()
 
+  const is50StatesPost =
+    slug === 'security-deposit-return-deadlines-all-50-states'
+
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+      {/* JSON-LD — Article schema on all posts */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildArticleSchema(post)),
+        }}
+      />
+      {/* JSON-LD — Dataset schema only on 50-states post */}
+      {is50StatesPost && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(buildDatasetSchema()),
+          }}
+        />
+      )}
+
       {/* Header */}
       <header
         style={{
@@ -144,6 +224,7 @@ export default async function BlogPostPage({
 
         {/* Meta */}
         <time
+          dateTime={post.publishedAt}
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: '13px',
