@@ -44,14 +44,22 @@ function buildArticleSchema(post: {
   slug: string
   publishedAt: string
 }) {
+  // Convert YYYY-MM-DD to full ISO 8601 with timezone
+  const dateISO = `${post.publishedAt}T00:00:00-05:00`
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
     description: post.description,
-    datePublished: post.publishedAt,
-    dateModified: post.publishedAt,
+    datePublished: dateISO,
+    dateModified: dateISO,
     url: `https://gettenantshield.com/blog/${post.slug}`,
+    author: {
+      '@type': 'Organization',
+      name: 'TenantShield',
+      url: 'https://gettenantshield.com',
+    },
     publisher: {
       '@type': 'Organization',
       name: 'TenantShield',
@@ -76,16 +84,14 @@ function buildDatasetSchema() {
     description:
       'Complete table of security deposit return deadlines, penalty provisions, and statute citations for all 50 US states plus the District of Columbia. Updated 2026.',
     url: 'https://gettenantshield.com/blog/security-deposit-return-deadlines-all-50-states',
+    license: 'https://gettenantshield.com/terms',
     creator: {
       '@type': 'Organization',
       name: 'TenantShield',
       url: 'https://gettenantshield.com',
     },
     temporalCoverage: '2026',
-    spatialCoverage: {
-      '@type': 'Country',
-      name: 'United States',
-    },
+    spatialCoverage: 'United States',
     keywords:
       'security deposit, return deadline, tenant rights, landlord law, state law, demand letter',
   }
