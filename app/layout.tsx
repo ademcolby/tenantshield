@@ -15,13 +15,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'TenantShield',
-    title: 'TenantShield — Get Your Security Deposit Back',
+    title: 'TenantShield — Get Your Security Deposit Back Today',
     description:
-      'State-specific demand letters with real statute citations. All 50 states. $39 flat fee.',
+      'Generate a state-specific demand letter with real statute citations in minutes. Covers all 50 states plus DC. One flat fee of $39 — no subscription.',
     url: 'https://gettenantshield.com',
     images: [
       {
-        url: '/og-image.svg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'TenantShield — Get your security deposit back',
@@ -30,10 +30,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TenantShield — Get Your Security Deposit Back',
+    title: 'TenantShield — Get Your Security Deposit Back Today',
     description:
-      'State-specific demand letters with real statute citations. All 50 states. $39 flat fee.',
-    images: ['/og-image.svg'],
+      'Generate a state-specific demand letter with real statute citations in minutes. Covers all 50 states plus DC. One flat fee of $39 — no subscription.',
+    images: ['/og-image.png'],
   },
 };
 
@@ -44,7 +44,7 @@ const organizationSchema = {
   legalName: 'TenantShield LLC',
   url: 'https://gettenantshield.com',
   logo: 'https://gettenantshield.com/icon.svg',
-  image: 'https://gettenantshield.com/og-image.svg',
+  image: 'https://gettenantshield.com/og-image.png',
   contactPoint: {
     '@type': 'ContactPoint',
     email: 'support@gettenantshield.com',
