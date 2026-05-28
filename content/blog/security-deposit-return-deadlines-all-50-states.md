@@ -33,7 +33,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | Arkansas | 60 days | — | A.C.A. § 18-16-305 |
 | California | 21 days | 2x bad-faith withholding | Cal. Civ. Code § 1950.5 |
 | Colorado | 30 days (60 days if specified in lease) | 3x + attorney's fees | C.R.S. § 38-12-103 |
-| Connecticut | 30 days (15 days if no deductions) | 2x | C.G.S. § 47a-21 |
+| Connecticut | 15 days (forwarding address provided) / 30 days (otherwise) | 2x | C.G.S. § 47a-21 |
 | Delaware | 20 days | — | 25 Del. C. § 5514 |
 | DC | 45 days | 3x + attorney's fees | D.C. Code § 42-3241 |
 | Florida | 15 days (no deductions) / 30 days (with deductions) | Forfeiture of right to deductions | Fla. Stat. § 83.49 |
@@ -53,7 +53,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | Minnesota | 21 days | 2x + $500 penalty | Minn. Stat. § 504B.178 |
 | Mississippi | 45 days | — | Miss. Code § 89-8-21 |
 | Missouri | 30 days | 2x | Mo. Rev. Stat. § 535.300 |
-| Montana | 30 days (10 days if no deductions) | — | Mont. Code § 70-25-202 |
+| Montana | 10 days (no deductions) / 30 days (with deductions) | — | Mont. Code § 70-25-202 |
 | Nebraska | 14 days | Up to 2x | Neb. Rev. Stat. § 76-1416 |
 | Nevada | 30 days | 3x | NRS § 118A.242 |
 | New Hampshire | 30 days | 2x | N.H. Rev. Stat. § 540-A:7 |
@@ -68,7 +68,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | Pennsylvania | 30 days | 2x | 68 Pa. Stat. § 250.512 |
 | Rhode Island | 20 days | 2x | R.I. Gen. Laws § 34-18-19 |
 | South Carolina | 30 days | — | S.C. Code § 27-40-410 |
-| South Dakota | 45 days (14 days if no deductions) | — | SDCL § 43-32-24 |
+| South Dakota | 14 days (no deductions) / 45 days (with deductions) | — | SDCL § 43-32-24 |
 | Tennessee | 30 days | 2x amount wrongfully withheld | Tenn. Code § 66-28-301 |
 | Texas | 30 days | $100 + 3x + attorney's fees (bad faith) | Tex. Prop. Code § 92.103, § 92.109 |
 | Utah | 30 days | — | Utah Code § 57-17-3 |
@@ -77,7 +77,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | Washington | 30 days (21 days if tenant requests earlier accounting) | 2x + attorney's fees | RCW § 59.18.280 |
 | West Virginia | 60 days | — | W. Va. Code § 37-6A-2 |
 | Wisconsin | 21 days | 2x | Wis. Stat. § 704.28 |
-| Wyoming | 30 days (15 days if no deductions) | 3x (bad faith) | Wyo. Stat. § 1-21-1208 |
+| Wyoming | 30 days | Full deposit + court costs | Wyo. Stat. § 1-21-1208 |
 
 *Note: This table reflects general state law as of 2026. Local ordinances (Chicago, San Francisco, Seattle, and others) may apply additional protections. Always verify your current state statute.*
 
