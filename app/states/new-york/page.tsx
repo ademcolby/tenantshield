@@ -5,7 +5,7 @@ const STATE = 'New York';
 
 export const metadata: Metadata = {
   title: 'Security Deposit Demand Letter New York | TenantShield',
-  description: 'Get your security deposit back in New York. State-specific demand letter citing NY Real Property Law § 227-e, the 14-day deadline, and 2x bad faith penalty. Generated in 60 seconds for $39.',
+  description: 'Get your security deposit back in New York. State-specific demand letter citing NY General Obligations Law § 7-108, the 14-day deadline, and 2x willful violation penalty. Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/new-york',
   },
@@ -28,7 +28,7 @@ export default function NewYorkPage() {
           Get your security deposit back in {STATE}.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-700">
-          A professional demand letter citing {STATE} Real Property Law &sect; 227-e, the 14-day deadline, and the 2&times; willful violation penalty. Generated in 60 seconds.
+          A professional demand letter citing {STATE} General Obligations Law &sect; 7-108, the 14-day deadline, and the 2&times; willful violation penalty. Ready in minutes.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link href="/generate" className="inline-flex items-center rounded-md bg-[#B45309] px-7 py-3.5 text-base font-medium text-white transition hover:bg-[#92400E]">Generate my letter — $39</Link>
@@ -50,8 +50,8 @@ export default function NewYorkPage() {
           </div>
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Statute</p>
-            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>&sect; 227-e</p>
-            <p className="mt-1 text-sm text-slate-600">{STATE} Real Property Law</p>
+            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>&sect; 7-108</p>
+            <p className="mt-1 text-sm text-slate-600">{STATE} General Obligations Law</p>
           </div>
         </div>
       </section>
@@ -60,19 +60,19 @@ export default function NewYorkPage() {
         <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>What {STATE} law actually says.</h2>
         <div className="mt-8 space-y-6 text-slate-700">
           <p>
-            Under <strong>{STATE} Real Property Law &sect; 227-e</strong>, your landlord has only <strong>14 days</strong> from the date you vacate to return your security deposit or provide an itemized statement of any deductions. This is one of the <strong>shortest deadlines in the country</strong>.
+            Under <strong>{STATE} General Obligations Law &sect; 7-108</strong>, your landlord has only <strong>14 days</strong> from the date you vacate to return your security deposit or provide an itemized statement of any deductions. This is one of the <strong>shortest deadlines in the country</strong>.
           </p>
           <p>
             {STATE}&apos;s 2019 Housing Stability and Tenant Protection Act significantly strengthened tenant protections:
           </p>
           <ul className="ml-6 list-disc space-y-2">
             <li>Security deposits are <strong>capped at one month&apos;s rent</strong></li>
-            <li>If the landlord fails to provide itemization within 14 days, they <strong>forfeit any right to retain the deposit</strong></li>
-            <li>Landlords must hold deposits in a <strong>separate New York bank account</strong> and disclose where</li>
-            <li>Willful violations can result in damages of <strong>2&times; the deposit amount</strong></li>
+            <li>If the landlord fails to provide the itemized statement and any remaining deposit within 14 days, they <strong>forfeit any right to retain the deposit</strong></li>
+            <li>For buildings with <strong>six or more units</strong>, deposits must be held in a separate interest-bearing New York bank account, with the bank&apos;s name and address disclosed to you</li>
+            <li>Willful violations can result in damages of <strong>up to 2&times; the deposit amount</strong> under &sect; 7-108(g)</li>
           </ul>
           <p>
-            <strong>Rent-stabilized tenants</strong> in NYC have additional protections under the Rent Stabilization Code (9 NYCRR &sect; 2520). TenantShield&apos;s letter automatically applies these enhanced protections if you indicate rent-stabilized status.
+            Deposit escrow rules are set out separately in <strong>General Obligations Law &sect; 7-103</strong>. <strong>Rent-stabilized tenants</strong> in NYC may have additional protections; TenantShield&apos;s letter applies the relevant rules based on the details you provide.
           </p>
         </div>
       </section>
@@ -82,7 +82,7 @@ export default function NewYorkPage() {
           <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>What you get for $39.</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <div><h3 className="font-medium text-slate-900">A professional demand letter</h3><p className="mt-2 text-sm text-slate-600">Properly formatted, addressed to your landlord by name, citing the exact {STATE} statutes that apply.</p></div>
-            <div><h3 className="font-medium text-slate-900">Specific statute citations</h3><p className="mt-2 text-sm text-slate-600">{STATE} Real Property Law &sect; 227-e, General Obligations Law &sect; 7-103, and rent stabilization protections where applicable.</p></div>
+            <div><h3 className="font-medium text-slate-900">Specific statute citations</h3><p className="mt-2 text-sm text-slate-600">{STATE} General Obligations Law &sect; 7-108, &sect; 7-103 escrow rules, and rent stabilization protections where applicable.</p></div>
             <div><h3 className="font-medium text-slate-900">Calculated penalty math</h3><p className="mt-2 text-sm text-slate-600">The letter computes the exact dollar amount you&apos;re entitled to demand including 2&times; willful violation damages.</p></div>
             <div><h3 className="font-medium text-slate-900">Ready-to-send PDF</h3><p className="mt-2 text-sm text-slate-600">Download instantly, print, sign, and send via USPS Certified Mail with Return Receipt.</p></div>
           </div>

@@ -5,7 +5,7 @@ const STATE = 'California';
 
 export const metadata: Metadata = {
   title: 'Security Deposit Demand Letter California | TenantShield',
-  description: 'Get your security deposit back in California. State-specific demand letter citing Civil Code § 1950.5, the 21-day deadline, and 2x bad faith penalty. Generated in 60 seconds for $39.',
+  description: 'Get your security deposit back in California. State-specific demand letter citing Civil Code § 1950.5, the 21-day deadline, and 2x bad faith penalty. Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/california',
   },
@@ -28,7 +28,7 @@ export default function CaliforniaPage() {
           Get your security deposit back in {STATE}.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-700">
-          A professional demand letter citing California Civil Code &sect; 1950.5, the 21-day return deadline, and 2&times; bad-faith damages. Generated in 60 seconds.
+          A professional demand letter citing California Civil Code &sect; 1950.5, the 21-day return deadline, and 2&times; bad-faith damages. Ready in minutes.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link href="/generate" className="inline-flex items-center rounded-md bg-[#B45309] px-7 py-3.5 text-base font-medium text-white transition hover:bg-[#92400E]">Generate my letter — $39</Link>
@@ -69,10 +69,10 @@ export default function CaliforniaPage() {
             <li>Landlords <strong>cannot</strong> deduct for normal wear and tear (faded paint, worn carpet from foot traffic, minor scuffs)</li>
             <li>Deductions must be supported by <strong>receipts or invoices</strong> for the actual cost</li>
             <li>For deductions over $125, the landlord must provide <strong>actual documentation</strong></li>
-            <li>Bad-faith retention can result in <strong>2&times; the deposit</strong> as statutory damages</li>
+            <li>Bad-faith retention can result in <strong>2&times; the deposit</strong> as statutory damages, in addition to actual damages</li>
           </ul>
           <p>
-            Cities like <strong>San Francisco, Los Angeles, Berkeley, Santa Monica, and Oakland</strong> add even stronger local protections. TenantShield&apos;s letter automatically applies the right city-specific law if you live in one of these jurisdictions.
+            Cities like <strong>San Francisco, Los Angeles, Berkeley, and Santa Monica</strong> add even stronger local protections, such as mandatory annual interest on deposits. TenantShield&apos;s letter automatically applies the right city-specific law if you live in one of these jurisdictions.
           </p>
         </div>
       </section>

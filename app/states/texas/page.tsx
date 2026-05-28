@@ -3,12 +3,12 @@ import Link from 'next/link';
 
 const STATE = 'Texas';
 const DEADLINE = '30 days';
-const STATUTE = 'Texas Property Code § 92.103';
+const STATUTE = 'Texas Property Code § 92.103 & § 92.109';
 const PENALTY = '$100 + 3× wrongfully withheld amount + attorney fees';
 
 export const metadata: Metadata = {
   title: 'Security Deposit Demand Letter Texas | TenantShield',
-  description: 'Get your security deposit back in Texas. State-specific demand letter citing Texas Property Code § 92.103, the 30-day deadline, and 3x penalty law. Generated in 60 seconds for $39.',
+  description: 'Get your security deposit back in Texas. State-specific demand letter citing Texas Property Code § 92.103 and § 92.109, the 30-day deadline, and 3x penalty law. Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/texas',
   },
@@ -40,7 +40,7 @@ export default function TexasPage() {
           Get your security deposit back in {STATE}.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-700">
-          A professional demand letter citing {STATE} Property Code &sect; 92.103, the 30-day return deadline, and the triple damages penalty for bad-faith withholding. Generated in 60 seconds.
+          A professional demand letter citing {STATE} Property Code &sect; 92.103, the 30-day return deadline, and the triple damages penalty for bad-faith withholding. Ready in minutes.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link

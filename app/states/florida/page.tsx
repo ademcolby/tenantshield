@@ -5,7 +5,7 @@ const STATE = 'Florida';
 
 export const metadata: Metadata = {
   title: 'Security Deposit Demand Letter Florida | TenantShield',
-  description: 'Get your security deposit back in Florida. State-specific demand letter citing Florida Statutes § 83.49, the 30-day notice rule, and 15-day tenant response window. Generated in 60 seconds for $39.',
+  description: 'Get your security deposit back in Florida. State-specific demand letter citing Florida Statutes § 83.49, the 15/30-day landlord deadlines, and forfeiture rule. Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/florida',
   },
@@ -28,7 +28,7 @@ export default function FloridaPage() {
           Get your security deposit back in {STATE}.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-700">
-          A professional demand letter citing {STATE} Statutes &sect; 83.49, the strict 30-day notice rule, and your statutory rights. Generated in 60 seconds.
+          A professional demand letter citing {STATE} Statutes &sect; 83.49, the strict 15- and 30-day landlord deadlines, and your statutory rights. Ready in minutes.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link href="/generate" className="inline-flex items-center rounded-md bg-[#B45309] px-7 py-3.5 text-base font-medium text-white transition hover:bg-[#92400E]">Generate my letter — $39</Link>
@@ -39,14 +39,14 @@ export default function FloridaPage() {
       <section className="mx-auto max-w-4xl px-5 pb-16 sm:px-8">
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Landlord deadline</p>
-            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>30 days</p>
-            <p className="mt-1 text-sm text-slate-600">to send written notice of deductions</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">No deductions</p>
+            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>15 days</p>
+            <p className="mt-1 text-sm text-slate-600">to return the full deposit</p>
           </div>
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Your response</p>
-            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>15 days</p>
-            <p className="mt-1 text-sm text-slate-600">to object in writing</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">With deductions</p>
+            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>30 days</p>
+            <p className="mt-1 text-sm text-slate-600">to send certified notice of claim</p>
           </div>
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Statute</p>
@@ -60,17 +60,24 @@ export default function FloridaPage() {
         <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>What {STATE} law actually says.</h2>
         <div className="mt-8 space-y-6 text-slate-700">
           <p>
-            Under <strong>{STATE} Statutes &sect; 83.49</strong>, your landlord has <strong>30 days</strong> from the date you vacate to send you a written notice by certified mail listing any intended deductions. If the landlord <strong>fails to send this notice within 30 days</strong>, they <strong>forfeit the right to make any deductions</strong> and must return the full deposit.
+            Under <strong>{STATE} Statutes &sect; 83.49</strong>, the deadline depends on whether your landlord intends to keep any of your deposit:
+          </p>
+          <ul className="ml-6 list-disc space-y-2">
+            <li>If the landlord <strong>does not intend to make any deductions</strong>, they must return your full deposit within <strong>15 days</strong> of the end of the tenancy.</li>
+            <li>If the landlord <strong>does intend to make deductions</strong>, they must send written notice by certified mail within <strong>30 days</strong> listing the intended claim.</li>
+          </ul>
+          <p>
+            If the landlord <strong>fails to send the required notice within 30 days</strong>, they <strong>forfeit the right to make any deductions</strong> and must return the full deposit.
           </p>
           <p>
-            If you receive a notice of deductions you disagree with, you have <strong>15 days</strong> to send a written objection. {STATE} is unusual in placing this affirmative response burden on the tenant &mdash; missing the window can weaken your position in court.
+            If you receive a notice of deductions you disagree with, you have <strong>15 days</strong> to send a written objection. {STATE} places this affirmative response burden on the tenant &mdash; though missing the window does not waive your right to sue separately, responding promptly protects your position.
           </p>
           <p>
             Your strongest leverage in {STATE}:
           </p>
           <ul className="ml-6 list-disc space-y-2">
-            <li>If the landlord missed the 30-day notice deadline, they owe the <strong>full deposit back</strong> regardless of any actual damage</li>
-            <li>Deductions must be specifically itemized &mdash; vague "repairs" or "cleaning" claims are insufficient</li>
+            <li>If the landlord missed the applicable deadline, they owe the <strong>full deposit back</strong> regardless of any actual damage</li>
+            <li>Deductions must be specifically itemized &mdash; vague &quot;repairs&quot; or &quot;cleaning&quot; claims are insufficient</li>
             <li>Normal wear and tear is not deductible under {STATE} law</li>
             <li>The prevailing party in a deposit dispute may recover <strong>attorney&apos;s fees</strong></li>
           </ul>
@@ -83,7 +90,7 @@ export default function FloridaPage() {
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <div><h3 className="font-medium text-slate-900">A professional demand letter</h3><p className="mt-2 text-sm text-slate-600">Properly formatted, addressed to your landlord by name, citing the exact {STATE} statutes that apply.</p></div>
             <div><h3 className="font-medium text-slate-900">Specific statute citations</h3><p className="mt-2 text-sm text-slate-600">{STATE} Statutes &sect; 83.49 with reference to the specific subsection that supports your claim.</p></div>
-            <div><h3 className="font-medium text-slate-900">Forfeiture language</h3><p className="mt-2 text-sm text-slate-600">If your landlord missed the 30-day deadline, the letter invokes statutory forfeiture of their right to withhold.</p></div>
+            <div><h3 className="font-medium text-slate-900">Forfeiture language</h3><p className="mt-2 text-sm text-slate-600">If your landlord missed the applicable deadline, the letter invokes statutory forfeiture of their right to withhold.</p></div>
             <div><h3 className="font-medium text-slate-900">Ready-to-send PDF</h3><p className="mt-2 text-sm text-slate-600">Download instantly, print, sign, and send via USPS Certified Mail with Return Receipt.</p></div>
           </div>
         </div>
