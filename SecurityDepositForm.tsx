@@ -108,6 +108,23 @@ const CITIES_BY_STATE: { [key: string]: string[] } = {
 
 const OTHER_CITY = 'Other city';
 
+// States whose statutory return clock is triggered by (or measured from) the
+// date the tenant provided a forwarding/new mailing address. For these states
+// the letter's deadline math needs that date, so the form surfaces an optional
+// forwarding-address-date field when one of them is selected.
+//   - Connecticut: 30 days OR 15 days after forwarding address, whichever is later
+//   - South Dakota: 14-day clock runs from the later of move-out or forwarding address
+//   - Iowa: 30-day clock starts on receipt of the mailing address
+//   - Nebraska: 14-day clock runs after demand and designation of address
+//   - Wyoming: 30 days OR 15 days after receipt of new mailing address, whichever is later
+const FORWARDING_ADDRESS_STATES = [
+  'Connecticut',
+  'South Dakota',
+  'Iowa',
+  'Nebraska',
+  'Wyoming',
+];
+
 const SUB_TYPES = [
   { id: 'no_response', label: 'No response / total silence', icon: '📭' },
   { id: 'partial_no_itemization', label: 'Partial return without itemization', icon: '📄' },
@@ -181,6 +198,7 @@ export default function SecurityDepositForm() {
     rentalPropertyAddress: '',
     depositAmount: '',
     vacatedDate: '',
+    forwardingAddressDate: '',
     situation: '',
     subtypes: [] as string[],
     specialCircumstances: [] as string[],
@@ -763,6 +781,23 @@ export default function SecurityDepositForm() {
                 />
                 {errors.vacatedDate && <p className="mt-1 text-sm text-red-600">{errors.vacatedDate}</p>}
               </div>
+              {FORWARDING_ADDRESS_STATES.includes(formData.state) && (
+                <div>
+                  <label className={labelClass}>
+                    Date you gave your landlord a forwarding address
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.forwardingAddressDate}
+                    onChange={(e) => handleInputChange('forwardingAddressDate', e.target.value)}
+                    className={inputClass(false)}
+                  />
+                  <p className="mt-1 text-xs text-slate-500">
+                    In {formData.state}, the deadline is measured from your forwarding
+                    address date. Leave blank if you never provided one or aren&apos;t sure.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
