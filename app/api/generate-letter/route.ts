@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 import { SYSTEM_PROMPT } from '../../../lib/systemPrompt';
+import { redis, formKey, letterKey, LETTER_TTL_SECONDS } from '../../../lib/redis';
+import { computeDates, renderComputedDatesBlock } from '../../../lib/dates';
+
 export const maxDuration = 60;
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 interface FormData {
   state: string;
@@ -12,30 +18,22 @@ interface FormData {
   rentalPropertyAddress: string;
   depositAmount: string;
   vacatedDate: string;
+  forwardingAddressDate: string; // P10: was previously dropped before reaching the model
   situation: string;
   subtypes: string[];
   specialCircumstances: string[];
   leaseDesignation: string;
   isRentStabilized: string;
+  buildingUnitCount: string;      // P5: scope thresholds (IL 5+, AR 6+, NY 6+, Cook County ≤6)
+  gaveWrittenNotice: string;      // P4: Alaska 14-vs-30-day branch
+  leaseType: string;              // P4: Maine 21-vs-30-day (tenancy-at-will vs written lease)
 }
 
-// Format the form data into a clear user message for Claude
+// Format the form data into a clear user message for Claude.
 function buildUserMessage(data: FormData): string {
-  const today = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  let vacatedFormatted = data.vacatedDate;
-  if (data.vacatedDate) {
-    const date = new Date(data.vacatedDate);
-    vacatedFormatted = date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
+  // P1: all dates are pre-computed by the app and injected; the model never
+  // does calendar arithmetic.
+  const computed = computeDates(data.vacatedDate, data.forwardingAddressDate);
 
   let message = `Generate a security deposit demand letter for the following situation:
 
@@ -45,6 +43,9 @@ LOCATION:
 
   if (data.isRentStabilized) {
     message += `\n- Rent-stabilized status: ${data.isRentStabilized}`;
+  }
+  if (data.buildingUnitCount) {
+    message += `\n- Number of rental units in the building: ${data.buildingUnitCount}`;
   }
 
   message += `
@@ -60,9 +61,19 @@ LANDLORD:
 RENTAL PROPERTY:
 - Address: ${data.rentalPropertyAddress}
 - Security deposit amount: ${data.depositAmount ? '$' + data.depositAmount : 'not provided'}
-- Date tenant vacated: ${vacatedFormatted}
+- Date tenant vacated: ${computed.vacatedDateFormatted || 'not provided'}`;
 
-DISPUTE TYPE: Security Deposit`;
+  if (data.forwardingAddressDate) {
+    message += `\n- Date tenant provided forwarding address: ${computed.forwardingAddressDateFormatted}`;
+  }
+  if (data.gaveWrittenNotice) {
+    message += `\n- Tenant gave proper written notice of termination: ${data.gaveWrittenNotice}`;
+  }
+  if (data.leaseType) {
+    message += `\n- Lease type: ${data.leaseType}`;
+  }
+
+  message += `\n\nDISPUTE TYPE: Security Deposit`;
 
   if (data.subtypes && data.subtypes.length > 0) {
     message += `\n\nSUB-TYPES SELECTED: ${data.subtypes.join(', ')}`;
@@ -73,7 +84,8 @@ DISPUTE TYPE: Security Deposit`;
   }
 
   if (data.leaseDesignation) {
-    message += `\n\nLEASE DESIGNATION (for non-refundable fee): ${data.leaseDesignation}`;
+    // Pass both names so it matches the prompt regardless of casing convention.
+    message += `\n\nlease_designation (non-refundable fee designation): ${data.leaseDesignation}`;
   }
 
   message += `
@@ -81,18 +93,48 @@ DISPUTE TYPE: Security Deposit`;
 TENANT'S DESCRIPTION OF WHAT HAPPENED:
 ${data.situation}
 
-CURRENT DATE: ${today}
+${renderComputedDatesBlock(computed)}
 
-Generate the complete demand letter following all the rules in the system prompt. Output only the letter itself.`;
+Generate the complete demand letter following all the rules in the system prompt. Use the pre-calculated dates above for every date in the letter. Output only the letter itself.`;
 
   return message;
 }
 
+async function callAnthropic(apiKey: string, userMessage: string): Promise<string | null> {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 4000, // P12: raised from 2000 to avoid truncating complex multi-overlay letters
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userMessage }],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    console.error('Anthropic API error:', response.status, errorData);
+    return null;
+  }
+
+  const data = await response.json();
+  return data.content?.[0]?.text ?? null;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const formData: FormData = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const sessionId: string | undefined = body?.sessionId;
 
-    // Verify API key is configured
+    if (!sessionId) {
+      return NextResponse.json({ error: 'Missing session id.' }, { status: 400 });
+    }
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       console.error('ANTHROPIC_API_KEY is not set');
@@ -102,78 +144,83 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Basic validation - ensure required fields are present
-    const requiredFields: (keyof FormData)[] = [
-      'state', 'city', 'tenantName', 'landlordName',
-      'rentalPropertyAddress', 'vacatedDate', 'situation'
-    ];
-    const missingFields = requiredFields.filter(field => !formData[field]);
-    if (missingFields.length > 0) {
+    // P8: verify the payment with Stripe before doing anything that costs money.
+    let session: Stripe.Checkout.Session;
+    try {
+      session = await stripe.checkout.sessions.retrieve(sessionId);
+    } catch {
+      return NextResponse.json({ error: 'Invalid session.' }, { status: 400 });
+    }
+
+    if (session.payment_status !== 'paid') {
       return NextResponse.json(
-        { error: `Missing required fields: ${missingFields.join(', ')}` },
-        { status: 400 }
+        { error: 'Payment not confirmed for this session.' },
+        { status: 402 }
       );
     }
 
-    // Build the user message
+    // P9: if we've already generated a letter for this paid session, return the
+    // cached copy instead of regenerating (retry-safe, and avoids a second
+    // Anthropic charge if the user reloads the success page).
+    const cached = await redis.get<string>(letterKey(sessionId));
+    if (cached) {
+      return NextResponse.json({
+        type: 'letter',
+        letter: cached,
+        generatedAt: new Date().toISOString(),
+        cached: true,
+      });
+    }
+
+    const formId = session.metadata?.formId;
+    if (!formId) {
+      console.error('No formId in session metadata:', sessionId);
+      return NextResponse.json(
+        { error: 'We could not find your form data for this session. Please contact support with your payment confirmation.' },
+        { status: 404 }
+      );
+    }
+
+    const stored = await redis.get<string | Record<string, unknown>>(formKey(formId));
+    if (!stored) {
+      return NextResponse.json(
+        { error: 'Your form data has expired or could not be found. Please contact support with your payment confirmation.' },
+        { status: 404 }
+      );
+    }
+
+    // Upstash may return a parsed object or a JSON string depending on how it
+    // was stored/serialized; handle both.
+    const formData: FormData =
+      typeof stored === 'string' ? JSON.parse(stored) : (stored as unknown as FormData);
+
     const userMessage = buildUserMessage(formData);
+    const letterText = await callAnthropic(apiKey, userMessage);
 
-    // Call Anthropic API
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 2000,
-        system: SYSTEM_PROMPT,
-        messages: [
-          {
-            role: 'user',
-            content: userMessage
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Anthropic API error:', response.status, errorData);
+    if (!letterText) {
       return NextResponse.json(
         { error: 'Failed to generate letter. Please try again.' },
         { status: 500 }
       );
     }
 
-    const data = await response.json();
-    const letterText = data.content?.[0]?.text;
-
-    if (!letterText) {
-      console.error('No content in API response:', data);
-      return NextResponse.json(
-        { error: 'Failed to generate letter content.' },
-        { status: 500 }
-      );
-    }
-
-    // Check if the response is a special structured response
+    // Structured non-letter responses pass through without being cached as a
+    // letter (so the user can fix inputs and retry).
     if (letterText.startsWith('MISSING_INFORMATION') || letterText.startsWith('SCOPE_LIMITATION')) {
       return NextResponse.json({
         type: letterText.startsWith('MISSING_INFORMATION') ? 'missing_info' : 'out_of_scope',
-        message: letterText
+        message: letterText,
       });
     }
 
-    // Return the generated letter
+    // Cache the successful letter against the paid session for retry-safety.
+    await redis.set(letterKey(sessionId), letterText, { ex: LETTER_TTL_SECONDS });
+
     return NextResponse.json({
       type: 'letter',
       letter: letterText,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Error generating letter:', error);
     return NextResponse.json(

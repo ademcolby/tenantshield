@@ -125,6 +125,22 @@ const FORWARDING_ADDRESS_STATES = [
   'Wyoming',
 ];
 
+// States whose statute applies only above a building unit-count threshold (or
+// where unit count changes the rule), so the letter must know the building size:
+//   - Illinois: Security Deposit Return Act applies only to 5+ unit landlords
+//   - Arkansas: deposit statute applies only to 6+ unit / corporate landlords
+//   - New York: 6+ unit buildings trigger the interest-bearing-account rule
+const UNIT_COUNT_STATES = ['Illinois', 'Arkansas', 'New York'];
+
+// Alaska's return deadline is 14 days if the tenant gave proper written notice
+// of termination (and no damages are deducted) vs 30 days otherwise, so the
+// letter needs to know whether proper notice was given.
+const NOTICE_STATES = ['Alaska'];
+
+// Maine's deadline is 21 days for a tenancy-at-will (no written lease) vs 30
+// days under a written lease, so the letter needs the lease type.
+const LEASE_TYPE_STATES = ['Maine'];
+
 const SUB_TYPES = [
   { id: 'no_response', label: 'No response / total silence', icon: '📭' },
   { id: 'partial_no_itemization', label: 'Partial return without itemization', icon: '📄' },
@@ -204,6 +220,9 @@ export default function SecurityDepositForm() {
     specialCircumstances: [] as string[],
     leaseDesignation: '',
     isRentStabilized: '',
+    buildingUnitCount: '',
+    gaveWrittenNotice: '',
+    leaseType: '',
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -220,6 +239,9 @@ export default function SecurityDepositForm() {
     ['Arizona', 'Washington', 'Oregon'].includes(formData.state) &&
     formData.specialCircumstances.includes('non_refundable_cleaning_fee');
   const showRentStabilized = effectiveCity === 'New York City';
+  const showUnitCount = UNIT_COUNT_STATES.includes(formData.state);
+  const showNotice = NOTICE_STATES.includes(formData.state);
+  const showLeaseType = LEASE_TYPE_STATES.includes(formData.state);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -328,12 +350,12 @@ export default function SecurityDepositForm() {
     };
 
     setViewState('loading');
-    localStorage.setItem('tenantshield_pending_form', JSON.stringify(payload));
 
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) throw new Error('Failed to create checkout session');
@@ -795,6 +817,92 @@ export default function SecurityDepositForm() {
                   <p className="mt-1 text-xs text-slate-500">
                     In {formData.state}, the deadline is measured from your forwarding
                     address date. Leave blank if you never provided one or aren&apos;t sure.
+                  </p>
+                </div>
+              )}
+              {showUnitCount && (
+                <div>
+                  <label className={labelClass}>
+                    How many rental units are in the building?
+                  </label>
+                  <div className="space-y-2">
+                    {[
+                      ['1-4', '1–4 units'],
+                      ['5+', '5 or more units'],
+                      ['unknown', 'I\u2019m not sure'],
+                    ].map(([v, l]) => (
+                      <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
+                        <input
+                          type="radio"
+                          value={v}
+                          checked={formData.buildingUnitCount === v}
+                          onChange={(e) => handleInputChange('buildingUnitCount', e.target.value)}
+                          className="w-4 h-4 accent-[#B45309]"
+                        />
+                        {l}
+                      </label>
+                    ))}
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">
+                    In {formData.state}, the security-deposit statute only applies to
+                    landlords above a certain building size, so this affects which law
+                    your letter cites.
+                  </p>
+                </div>
+              )}
+              {showNotice && (
+                <div>
+                  <label className={labelClass}>
+                    Did you give your landlord proper written notice that you were moving out?
+                  </label>
+                  <div className="space-y-2">
+                    {[
+                      ['yes', 'Yes, I gave written notice'],
+                      ['no', 'No / I\u2019m not sure'],
+                    ].map(([v, l]) => (
+                      <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
+                        <input
+                          type="radio"
+                          value={v}
+                          checked={formData.gaveWrittenNotice === v}
+                          onChange={(e) => handleInputChange('gaveWrittenNotice', e.target.value)}
+                          className="w-4 h-4 accent-[#B45309]"
+                        />
+                        {l}
+                      </label>
+                    ))}
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">
+                    In {formData.state}, whether you gave proper notice affects the return
+                    deadline that applies.
+                  </p>
+                </div>
+              )}
+              {showLeaseType && (
+                <div>
+                  <label className={labelClass}>
+                    What kind of tenancy did you have?
+                  </label>
+                  <div className="space-y-2">
+                    {[
+                      ['written_lease', 'A written lease'],
+                      ['tenancy_at_will', 'Tenancy at will / month-to-month (no written lease)'],
+                    ].map(([v, l]) => (
+                      <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
+                        <input
+                          type="radio"
+                          value={v}
+                          checked={formData.leaseType === v}
+                          onChange={(e) => handleInputChange('leaseType', e.target.value)}
+                          className="w-4 h-4 accent-[#B45309]"
+                        />
+                        {l}
+                      </label>
+                    ))}
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">
+                    In {formData.state}, a tenancy-at-will has a shorter return deadline
+                    than a written lease.
                   </p>
                 </div>
               )}

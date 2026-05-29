@@ -18,7 +18,7 @@ const dmSans = DM_Sans({
 })
 
 const STATE_DEADLINES: { state: string; days: string; statute: string }[] = [
-  { state: 'Alabama', days: '35 days', statute: 'Ala. Code § 35-9A-201' },
+  { state: 'Alabama', days: '60 days', statute: 'Ala. Code § 35-9A-201' },
   { state: 'Alaska', days: '14–30 days', statute: 'Alaska Stat. § 34.03.070' },
   { state: 'Arizona', days: '14 business days', statute: 'A.R.S. § 33-1321' },
   { state: 'Arkansas', days: '60 days', statute: 'Ark. Code § 18-16-305' },
@@ -26,12 +26,12 @@ const STATE_DEADLINES: { state: string; days: string; statute: string }[] = [
   { state: 'Colorado', days: '30–60 days', statute: 'Colo. Rev. Stat. § 38-12-103' },
   { state: 'Connecticut', days: '15–30 days', statute: 'Conn. Gen. Stat. § 47a-21' },
   { state: 'Delaware', days: '20 days', statute: '25 Del. C. § 5514' },
-  { state: 'District of Columbia', days: '45 days', statute: 'D.C. Code § 42-3241' },
+  { state: 'District of Columbia', days: '45 days', statute: '14 DCMR § 309' },
   { state: 'Florida', days: '15–30 days', statute: 'Fla. Stat. § 83.49' },
   { state: 'Georgia', days: '30 days', statute: 'O.C.G.A. § 44-7-34' },
   { state: 'Hawaii', days: '14 days', statute: 'Haw. Rev. Stat. § 521-44' },
   { state: 'Idaho', days: '21 days', statute: 'Idaho Code § 6-321' },
-  { state: 'Illinois', days: '30 days', statute: '765 ILCS 710' },
+  { state: 'Illinois', days: '30–45 days', statute: '765 ILCS 710' },
   { state: 'Indiana', days: '45 days', statute: 'Ind. Code § 32-31-3-12' },
   { state: 'Iowa', days: '30 days', statute: 'Iowa Code § 562A.12' },
   { state: 'Kansas', days: '30 days', statute: 'Kan. Stat. § 58-2550' },
