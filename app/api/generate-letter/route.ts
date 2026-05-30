@@ -109,7 +109,11 @@ async function callAnthropic(apiKey: string, userMessage: string): Promise<strin
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20250929',
+      // P13: upgraded from Sonnet 4.5 to Opus 4.8 for maximum instruction-
+      // following reliability on statute-cited legal output. The letter is a
+      // one-shot, post-payment generation, so the extra latency is irrelevant,
+      // and the cost delta (~2 cents/letter) is immaterial at $39/letter.
+      model: 'claude-opus-4-8',
       max_tokens: 4000, // P12: raised from 2000 to avoid truncating complex multi-overlay letters
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMessage }],
