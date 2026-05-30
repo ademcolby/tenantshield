@@ -316,8 +316,8 @@ export default function SecurityDepositForm() {
     if (!composed.city) newErrors.city = 'City is required';
     if (!formData.tenantName) newErrors.tenantName = 'Your name is required';
     if (!formData.landlordName) newErrors.landlordName = 'Landlord name is required';
-    if (!rentalAddr.street || !rentalAddr.city) {
-      newErrors.rentalPropertyAddress = 'Rental property street and city are required';
+    if (!rentalAddr.street) {
+      newErrors.rentalPropertyAddress = 'Rental property street address is required';
     }
     if (!formData.vacatedDate) newErrors.vacatedDate = 'Move-out date is required';
     if (!formData.situation || formData.situation.length < 50) {
@@ -334,8 +334,16 @@ export default function SecurityDepositForm() {
     // the API contract expects. API + systemPrompt are unchanged.
     const composedTenant = composeAddress(tenantAddr);
     const composedLandlord = composeAddress(landlordAddr);
-    const composedRental = composeAddress(rentalAddr);
     const composedCity = effectiveCity;
+    // The rental's city/state are taken from the top "Rental location" section
+    // (the single source of truth that also drives jurisdiction). The rental
+    // card only collects street/unit/zip, so merge them here for the printed
+    // property address.
+    const composedRental = composeAddress({
+      ...rentalAddr,
+      city: composedCity,
+      state: formData.state,
+    });
 
     if (!validateForm({ city: composedCity, rentalPropertyAddress: composedRental })) {
       return;
@@ -553,7 +561,7 @@ export default function SecurityDepositForm() {
   const renderAddressBlock = (
     which: 'tenant' | 'landlord' | 'rental',
     addr: AddressParts,
-    opts: { required?: boolean }
+    opts: { required?: boolean; hideCityState?: boolean }
   ) => (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
       <div className="sm:col-span-4">
@@ -578,29 +586,33 @@ export default function SecurityDepositForm() {
           className={inputClass(false)}
         />
       </div>
-      <div className="sm:col-span-2">
-        <label className={labelClass}>
-          City {opts.required && <span className="text-red-500">*</span>}
-        </label>
-        <input
-          type="text"
-          value={addr.city}
-          onChange={(e) => updateAddr(which, 'city', e.target.value)}
-          placeholder="Austin"
-          className={inputClass(which === 'rental' && !!errors.rentalPropertyAddress)}
-        />
-      </div>
-      <div className="sm:col-span-2">
-        <label className={labelClass}>State</label>
-        <select
-          value={addr.state}
-          onChange={(e) => updateAddr(which, 'state', e.target.value)}
-          className={inputClass(false)}
-        >
-          <option value="">Select…</option>
-          {US_STATES.map(s => (<option key={s} value={s}>{s}</option>))}
-        </select>
-      </div>
+      {!opts.hideCityState && (
+        <>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>
+              City {opts.required && <span className="text-red-500">*</span>}
+            </label>
+            <input
+              type="text"
+              value={addr.city}
+              onChange={(e) => updateAddr(which, 'city', e.target.value)}
+              placeholder="Austin"
+              className={inputClass(which === 'rental' && !!errors.rentalPropertyAddress)}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>State</label>
+            <select
+              value={addr.state}
+              onChange={(e) => updateAddr(which, 'state', e.target.value)}
+              className={inputClass(false)}
+            >
+              <option value="">Select…</option>
+              {US_STATES.map(s => (<option key={s} value={s}>{s}</option>))}
+            </select>
+          </div>
+        </>
+      )}
       <div className="sm:col-span-2">
         <label className={labelClass}>ZIP code</label>
         <input
@@ -653,9 +665,16 @@ export default function SecurityDepositForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* LOCATION */}
+          {/* RENTAL LOCATION (single source of truth for jurisdiction) */}
           <div className={cardClass}>
-            <h3 className={sectionLabel}>Location</h3>
+            <div>
+              <h3 className={`${sectionLabel} mb-2`}>Rental location</h3>
+              <p className="text-sm text-slate-600">
+                Where was the rental you&apos;re writing about located? This sets which
+                state and local laws your letter cites — enter the rental&apos;s state and
+                city, not your current address.
+              </p>
+            </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <label className={labelClass}>State <span className="text-red-500">*</span></label>
@@ -771,10 +790,13 @@ export default function SecurityDepositForm() {
                 Address of the rental you moved out of{' '}
                 <span className="text-red-500">*</span>
               </p>
-              {renderAddressBlock('rental', rentalAddr, { required: true })}
+              {renderAddressBlock('rental', rentalAddr, { required: true, hideCityState: true })}
               {errors.rentalPropertyAddress && (
                 <p className="mt-2 text-sm text-red-600">{errors.rentalPropertyAddress}</p>
               )}
+              <p className="mt-2 text-xs text-slate-500">
+                City and state are taken from the rental location at the top of the form.
+              </p>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
@@ -825,28 +847,32 @@ export default function SecurityDepositForm() {
                   <label className={labelClass}>
                     How many rental units are in the building?
                   </label>
-                  <div className="space-y-2">
-                    {[
-                      ['1-4', '1–4 units'],
-                      ['5+', '5 or more units'],
-                      ['unknown', 'I\u2019m not sure'],
-                    ].map(([v, l]) => (
-                      <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
-                        <input
-                          type="radio"
-                          value={v}
-                          checked={formData.buildingUnitCount === v}
-                          onChange={(e) => handleInputChange('buildingUnitCount', e.target.value)}
-                          className="w-4 h-4 accent-[#B45309]"
-                        />
-                        {l}
-                      </label>
-                    ))}
-                  </div>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="1"
+                    step="1"
+                    value={formData.buildingUnitCount === 'unknown' ? '' : formData.buildingUnitCount}
+                    onChange={(e) => handleInputChange('buildingUnitCount', e.target.value)}
+                    disabled={formData.buildingUnitCount === 'unknown'}
+                    placeholder="e.g., 8"
+                    className={`${inputClass(false)} disabled:bg-slate-100 disabled:cursor-not-allowed`}
+                  />
+                  <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={formData.buildingUnitCount === 'unknown'}
+                      onChange={(e) =>
+                        handleInputChange('buildingUnitCount', e.target.checked ? 'unknown' : '')
+                      }
+                      className="w-4 h-4 accent-[#B45309]"
+                    />
+                    I&apos;m not sure how many units the building has
+                  </label>
                   <p className="mt-1 text-xs text-slate-500">
-                    In {formData.state}, the security-deposit statute only applies to
-                    landlords above a certain building size, so this affects which law
-                    your letter cites.
+                    In {formData.state}, the security-deposit statute applies differently
+                    depending on the building&apos;s size, so this affects which law your
+                    letter cites. Enter the exact number of units if you know it.
                   </p>
                 </div>
               )}
