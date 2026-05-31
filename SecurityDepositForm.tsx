@@ -189,6 +189,46 @@ function composeAddress(a: AddressParts): string {
   return [line1, cityStateZip].filter(Boolean).join(', ').trim();
 }
 
+// --- Validation helpers (pure) ---
+
+// Sanitize then validate a deposit amount. Strips a leading $ and commas, then
+// requires digits with optional cents (no letters, no exponent, no symbols, no
+// 3+ decimals) and a value greater than zero. Returns the parsed number.
+function parseDeposit(raw: string): {
+  ok: boolean;
+  value: number;
+  reason: 'blank' | 'invalid' | 'nonpositive' | '';
+} {
+  const cleaned = (raw || '').replace(/[$,\s]/g, '');
+  if (cleaned === '') return { ok: false, value: 0, reason: 'blank' };
+  if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) return { ok: false, value: 0, reason: 'invalid' };
+  const num = parseFloat(cleaned);
+  if (!(num > 0)) return { ok: false, value: 0, reason: 'nonpositive' };
+  return { ok: true, value: num, reason: '' };
+}
+
+// Parse a yyyy-mm-dd string into a LOCAL midnight Date (avoids the UTC
+// off-by-one that new Date('yyyy-mm-dd') introduces).
+function parseLocalDate(s: string): Date | null {
+  if (!s) return null;
+  const parts = s.split('-').map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+  const [y, m, d] = parts;
+  const dt = new Date(y, m - 1, d);
+  dt.setHours(0, 0, 0, 0);
+  return dt;
+}
+
+function startOfToday(): Date {
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  return t;
+}
+
+function daysBetween(a: Date, b: Date): number {
+  return Math.round((a.getTime() - b.getTime()) / 86400000);
+}
+
 export default function SecurityDepositForm() {
   const [viewState, setViewState] = useState<ViewState>('form');
   const [generatedLetter, setGeneratedLetter] = useState('');
@@ -226,6 +266,11 @@ export default function SecurityDepositForm() {
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  // Amber, non-blocking notices (warn tier). Unlike errors, these don't stop
+  // submission — but the customer must see them once before we proceed.
+  const [warnings, setWarnings] = useState<{ [key: string]: string }>({});
+  const [warningsShown, setWarningsShown] = useState(false);
+  const todayISO = new Date().toISOString().slice(0, 10);
 
   // Effective city value: the typed value when "Other city" is selected,
   // otherwise the dropdown selection. This is what feeds the API + the
@@ -245,9 +290,8 @@ export default function SecurityDepositForm() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+    if (warnings[field]) setWarnings(prev => ({ ...prev, [field]: '' }));
   };
 
   const handleStateChange = (value: string) => {
@@ -284,8 +328,16 @@ export default function SecurityDepositForm() {
     if (which === 'tenant') setTenantAddr(p => ({ ...p, [field]: value }));
     else if (which === 'landlord') setLandlordAddr(p => ({ ...p, [field]: value }));
     else setRentalAddr(p => ({ ...p, [field]: value }));
-    if (which === 'rental' && errors.rentalPropertyAddress) {
-      setErrors(prev => ({ ...prev, rentalPropertyAddress: '' }));
+    if (which === 'rental') {
+      if (errors.rentalPropertyAddress) setErrors(prev => ({ ...prev, rentalPropertyAddress: '' }));
+      if (warnings.rentalZip) setWarnings(prev => ({ ...prev, rentalZip: '' }));
+    } else if (which === 'tenant') {
+      if (errors.tenantAddress) setErrors(prev => ({ ...prev, tenantAddress: '' }));
+      if (warnings.tenantZip) setWarnings(prev => ({ ...prev, tenantZip: '' }));
+    } else {
+      if (warnings.landlordAddress || warnings.landlordZip || warnings.identicalParties) {
+        setWarnings(prev => ({ ...prev, landlordAddress: '', landlordZip: '', identicalParties: '' }));
+      }
     }
   };
 
@@ -307,24 +359,146 @@ export default function SecurityDepositForm() {
     }));
   };
 
+  // DOM order of fields, used to scroll to the first issue on submit.
+  const FIELD_ORDER = [
+    'state', 'city', 'tenantName', 'tenantAddress', 'landlordName', 'landlordAddress',
+    'rentalPropertyAddress', 'depositAmount', 'vacatedDate', 'forwardingAddressDate',
+    'buildingUnitCount', 'gaveWrittenNotice', 'leaseType', 'situation',
+    'tenantZip', 'landlordZip', 'rentalZip', 'identicalParties',
+  ];
+  // Warn keys that don't have their own anchor map onto a nearby field's anchor.
+  const SCROLL_ALIAS: { [k: string]: string } = {
+    tenantZip: 'tenantAddress',
+    landlordZip: 'landlordAddress',
+    rentalZip: 'rentalPropertyAddress',
+    identicalParties: 'landlordAddress',
+  };
+
+  const scrollToFirstIssue = (keys: string[]) => {
+    const first = FIELD_ORDER.find(k => keys.includes(k));
+    if (!first || typeof document === 'undefined') return;
+    const el = document.getElementById('f-' + (SCROLL_ALIAS[first] || first));
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const focusable = el.querySelector('input, select, textarea') as HTMLElement | null;
+    focusable?.focus?.();
+  };
+
+  const SITUATION_MAX = 4000;
+
+  // Returns { blocks, warns }. Blocks stop submission; warns are amber and the
+  // customer must acknowledge them once (a second click) before checkout.
   const validateForm = (composed: {
     city: string;
     rentalPropertyAddress: string;
+    tenantAddress: string;
+    landlordAddress: string;
   }) => {
-    const newErrors: { [key: string]: string } = {};
-    if (!formData.state) newErrors.state = 'State is required';
-    if (!composed.city) newErrors.city = 'City is required';
-    if (!formData.tenantName) newErrors.tenantName = 'Your name is required';
-    if (!formData.landlordName) newErrors.landlordName = 'Landlord name is required';
-    if (!rentalAddr.street) {
-      newErrors.rentalPropertyAddress = 'Rental property street address is required';
+    const b: { [key: string]: string } = {};
+    const w: { [key: string]: string } = {};
+
+    // Presence (BLOCK)
+    if (!formData.state) b.state = 'State is required';
+    if (!composed.city) b.city = 'City is required';
+    if (!formData.tenantName) b.tenantName = 'Your name is required';
+    if (!formData.landlordName) b.landlordName = 'Landlord name is required';
+    if (!rentalAddr.street) b.rentalPropertyAddress = 'Rental property street address is required';
+    if (!formData.vacatedDate) b.vacatedDate = 'Move-out date is required';
+
+    // Tenant mailing address (BLOCK) — this is the return address the letter uses.
+    if (!(tenantAddr.street && tenantAddr.city && tenantAddr.state && tenantAddr.zip)) {
+      b.tenantAddress =
+        'Enter your full mailing address (street, city, state, ZIP) \u2014 this is the return address the letter tells your landlord to send your deposit to.';
     }
-    if (!formData.vacatedDate) newErrors.vacatedDate = 'Move-out date is required';
+
+    // Deposit (BLOCK / WARN) — must resolve to a clean positive dollar value.
+    const dep = parseDeposit(formData.depositAmount);
+    if (!dep.ok) {
+      if (dep.reason === 'blank') b.depositAmount = 'Enter the security deposit amount you paid.';
+      else if (dep.reason === 'nonpositive') b.depositAmount = 'The deposit must be greater than $0.';
+      else b.depositAmount = 'Enter a dollar amount using numbers only (for example, 2400 or 2400.00).';
+    } else if (dep.value < 100) {
+      w.depositAmount = `That deposit ($${dep.value.toLocaleString()}) is lower than usual \u2014 double-check the amount before continuing.`;
+    } else if (dep.value > 100000) {
+      w.depositAmount = `That deposit ($${dep.value.toLocaleString()}) is unusually high \u2014 please confirm it\u2019s correct.`;
+    }
+
+    // Move-out date (BLOCK future / WARN if very old).
+    const today = startOfToday();
+    const vac = parseLocalDate(formData.vacatedDate);
+    if (vac) {
+      if (vac.getTime() > today.getTime()) {
+        b.vacatedDate =
+          'Your move-out date is in the future. We can only demand a deposit back after you have moved out.';
+      } else if (daysBetween(today, vac) > 730) {
+        w.vacatedDate =
+          'This move-out was over two years ago. Deposit claims can expire \u2014 you may want to confirm your state\u2019s deadline before sending.';
+      }
+    }
+
+    // Forwarding-address date (WARN only), when that field is in play.
+    if (FORWARDING_ADDRESS_STATES.includes(formData.state) && formData.forwardingAddressDate) {
+      const fwd = parseLocalDate(formData.forwardingAddressDate);
+      if (fwd) {
+        if (fwd.getTime() > today.getTime()) {
+          w.forwardingAddressDate = 'The forwarding-address date is in the future \u2014 please double-check it.';
+        } else if (vac && daysBetween(vac, fwd) > 60) {
+          w.forwardingAddressDate =
+            'The forwarding-address date is more than 60 days before your move-out \u2014 please confirm it\u2019s correct.';
+        }
+      }
+    }
+
+    // Conditional drivers that change the deadline must be answered when shown (BLOCK).
+    if (showLeaseType && !formData.leaseType) {
+      b.leaseType = `Select your tenancy type \u2014 it determines the return deadline in ${formData.state}.`;
+    }
+    if (showNotice && !formData.gaveWrittenNotice) {
+      b.gaveWrittenNotice = `Let us know whether you gave written notice \u2014 it changes the deadline in ${formData.state}.`;
+    }
+
+    // Unit count sanity when shown (BLOCK only if they typed something invalid;
+    // blank or "I'm not sure" is allowed and handled conditionally by the letter).
+    if (showUnitCount && formData.buildingUnitCount !== '' && formData.buildingUnitCount !== 'unknown') {
+      if (!/^\d+$/.test(formData.buildingUnitCount) || parseInt(formData.buildingUnitCount, 10) < 1) {
+        b.buildingUnitCount = 'Enter the number of units as a whole number (1 or more), or check \u201cI\u2019m not sure.\u201d';
+      }
+    }
+
+    // Situation length (BLOCK).
     if (!formData.situation || formData.situation.length < 50) {
-      newErrors.situation = 'Please provide at least 50 characters describing your situation';
+      b.situation = 'Please provide at least 50 characters describing your situation';
+    } else if (formData.situation.length > SITUATION_MAX) {
+      b.situation = `Please shorten your description to ${SITUATION_MAX.toLocaleString()} characters or fewer.`;
     }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    // Landlord address blank (WARN, neutral).
+    if (!composed.landlordAddress) {
+      w.landlordAddress =
+        'No landlord address entered. That\u2019s fine if you\u2019re delivering by email or in person, but it won\u2019t appear on the printed letter.';
+    }
+
+    // ZIP format (WARN) — only when something was entered.
+    const zipOk = (z: string) => /^\d{5}$/.test(z);
+    if (tenantAddr.zip && !zipOk(tenantAddr.zip)) w.tenantZip = 'Your ZIP code doesn\u2019t look like a 5-digit code \u2014 please double-check it.';
+    if (landlordAddr.zip && !zipOk(landlordAddr.zip)) w.landlordZip = 'The landlord ZIP code doesn\u2019t look like a 5-digit code \u2014 please double-check it.';
+    if (rentalAddr.zip && !zipOk(rentalAddr.zip)) w.rentalZip = 'The rental ZIP code doesn\u2019t look like a 5-digit code \u2014 please double-check it.';
+
+    // Identical tenant & landlord (WARN) — likely a fill error.
+    const sameName =
+      !!formData.tenantName && !!formData.landlordName &&
+      formData.tenantName.trim().toLowerCase() === formData.landlordName.trim().toLowerCase();
+    const sameAddr =
+      !!composed.tenantAddress && !!composed.landlordAddress &&
+      composed.tenantAddress.trim().toLowerCase() === composed.landlordAddress.trim().toLowerCase();
+    if (sameName && sameAddr) {
+      w.identicalParties =
+        'Your information and the landlord\u2019s information look identical \u2014 please double-check you didn\u2019t enter the same details twice.';
+    }
+
+    setErrors(b);
+    setWarnings(w);
+    return { blocks: b, warns: w };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -345,12 +519,37 @@ export default function SecurityDepositForm() {
       state: formData.state,
     });
 
-    if (!validateForm({ city: composedCity, rentalPropertyAddress: composedRental })) {
+    const { blocks, warns } = validateForm({
+      city: composedCity,
+      rentalPropertyAddress: composedRental,
+      tenantAddress: composedTenant,
+      landlordAddress: composedLandlord,
+    });
+
+    const blockKeys = Object.keys(blocks).filter(k => blocks[k]);
+    const warnKeys = Object.keys(warns).filter(k => warns[k]);
+
+    // Blocks always stop us; fix those first.
+    if (blockKeys.length > 0) {
+      setWarningsShown(false);
+      scrollToFirstIssue(blockKeys);
       return;
     }
 
+    // No blocks, but unseen warnings: show them once and make the customer
+    // click again to confirm — so they never pay before seeing a concern.
+    if (warnKeys.length > 0 && !warningsShown) {
+      setWarningsShown(true);
+      scrollToFirstIssue(warnKeys);
+      return;
+    }
+
+    // Normalize the deposit to a clean numeric string for the API + letter.
+    const cleanedDeposit = parseDeposit(formData.depositAmount).value.toString();
+
     const payload = {
       ...formData,
+      depositAmount: cleanedDeposit,
       city: composedCity,
       tenantAddress: composedTenant,
       landlordAddress: composedLandlord,
@@ -561,71 +760,86 @@ export default function SecurityDepositForm() {
   const renderAddressBlock = (
     which: 'tenant' | 'landlord' | 'rental',
     addr: AddressParts,
-    opts: { required?: boolean; hideCityState?: boolean }
-  ) => (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
-      <div className="sm:col-span-4">
-        <label className={labelClass}>
-          Street address {opts.required && <span className="text-red-500">*</span>}
-        </label>
-        <input
-          type="text"
-          value={addr.street}
-          onChange={(e) => updateAddr(which, 'street', e.target.value)}
-          placeholder="789 Elm St"
-          className={inputClass(which === 'rental' && !!errors.rentalPropertyAddress)}
-        />
+    opts: {
+      required?: boolean;
+      hideCityState?: boolean;
+      fieldErrors?: Partial<Record<keyof AddressParts, boolean>>;
+      message?: string;
+      warnMessage?: string;
+    }
+  ) => {
+    const fe = opts.fieldErrors || {};
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
+        <div className="sm:col-span-4">
+          <label className={labelClass}>
+            Street address {opts.required && <span className="text-red-500">*</span>}
+          </label>
+          <input
+            type="text"
+            value={addr.street}
+            onChange={(e) => updateAddr(which, 'street', e.target.value)}
+            placeholder="789 Elm St"
+            className={inputClass(!!fe.street)}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className={labelClass}>Apt / Suite / Unit</label>
+          <input
+            type="text"
+            value={addr.unit}
+            onChange={(e) => updateAddr(which, 'unit', e.target.value)}
+            placeholder="Apt 4, Suite 200, Unit B"
+            className={inputClass(!!fe.unit)}
+          />
+        </div>
+        {!opts.hideCityState && (
+          <>
+            <div className="sm:col-span-2">
+              <label className={labelClass}>
+                City {opts.required && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="text"
+                value={addr.city}
+                onChange={(e) => updateAddr(which, 'city', e.target.value)}
+                placeholder="Austin"
+                className={inputClass(!!fe.city)}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelClass}>State</label>
+              <select
+                value={addr.state}
+                onChange={(e) => updateAddr(which, 'state', e.target.value)}
+                className={inputClass(!!fe.state)}
+              >
+                <option value="">Select…</option>
+                {US_STATES.map(s => (<option key={s} value={s}>{s}</option>))}
+              </select>
+            </div>
+          </>
+        )}
+        <div className="sm:col-span-2">
+          <label className={labelClass}>ZIP code</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={addr.zip}
+            onChange={(e) => updateAddr(which, 'zip', e.target.value)}
+            placeholder="78701"
+            className={inputClass(!!fe.zip)}
+          />
+        </div>
+        {opts.message && (
+          <p className="sm:col-span-6 mt-1 text-sm text-red-600">{opts.message}</p>
+        )}
+        {opts.warnMessage && (
+          <p className="sm:col-span-6 mt-1 text-sm text-amber-700">{opts.warnMessage}</p>
+        )}
       </div>
-      <div className="sm:col-span-2">
-        <label className={labelClass}>Apt / Unit</label>
-        <input
-          type="text"
-          value={addr.unit}
-          onChange={(e) => updateAddr(which, 'unit', e.target.value)}
-          placeholder="Apt 4B"
-          className={inputClass(false)}
-        />
-      </div>
-      {!opts.hideCityState && (
-        <>
-          <div className="sm:col-span-2">
-            <label className={labelClass}>
-              City {opts.required && <span className="text-red-500">*</span>}
-            </label>
-            <input
-              type="text"
-              value={addr.city}
-              onChange={(e) => updateAddr(which, 'city', e.target.value)}
-              placeholder="Austin"
-              className={inputClass(which === 'rental' && !!errors.rentalPropertyAddress)}
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label className={labelClass}>State</label>
-            <select
-              value={addr.state}
-              onChange={(e) => updateAddr(which, 'state', e.target.value)}
-              className={inputClass(false)}
-            >
-              <option value="">Select…</option>
-              {US_STATES.map(s => (<option key={s} value={s}>{s}</option>))}
-            </select>
-          </div>
-        </>
-      )}
-      <div className="sm:col-span-2">
-        <label className={labelClass}>ZIP code</label>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={addr.zip}
-          onChange={(e) => updateAddr(which, 'zip', e.target.value)}
-          placeholder="78701"
-          className={inputClass(false)}
-        />
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className={`${fontVars} bg-[#FAFAF7]`}
@@ -676,7 +890,7 @@ export default function SecurityDepositForm() {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
+              <div id="f-state">
                 <label className={labelClass}>State <span className="text-red-500">*</span></label>
                 <select
                   value={formData.state}
@@ -688,7 +902,7 @@ export default function SecurityDepositForm() {
                 </select>
                 {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state}</p>}
               </div>
-              <div>
+              <div id="f-city">
                 <label className={labelClass}>City <span className="text-red-500">*</span></label>
                 <select
                   value={citySelect}
@@ -737,7 +951,7 @@ export default function SecurityDepositForm() {
           {/* YOUR INFORMATION */}
           <div className={cardClass}>
             <h3 className={sectionLabel}>Your information</h3>
-            <div>
+            <div id="f-tenantName">
               <label className={labelClass}>Your full name <span className="text-red-500">*</span></label>
               <input
                 type="text"
@@ -748,19 +962,30 @@ export default function SecurityDepositForm() {
               />
               {errors.tenantName && <p className="mt-1 text-sm text-red-600">{errors.tenantName}</p>}
             </div>
-            <div>
+            <div id="f-tenantAddress">
               <p className="mb-3 text-sm font-medium text-slate-700">
                 Your current mailing address{' '}
                 <span className="font-normal text-slate-500">(where the response should be sent)</span>
               </p>
-              {renderAddressBlock('tenant', tenantAddr, {})}
+              {renderAddressBlock('tenant', tenantAddr, {
+                fieldErrors: errors.tenantAddress
+                  ? {
+                      street: !tenantAddr.street,
+                      city: !tenantAddr.city,
+                      state: !tenantAddr.state,
+                      zip: !tenantAddr.zip,
+                    }
+                  : {},
+                message: errors.tenantAddress,
+                warnMessage: warnings.tenantZip,
+              })}
             </div>
           </div>
 
           {/* LANDLORD INFORMATION */}
           <div className={cardClass}>
             <h3 className={sectionLabel}>Landlord information</h3>
-            <div>
+            <div id="f-landlordName">
               <label className={labelClass}>
                 Landlord / property manager name <span className="text-red-500">*</span>
               </label>
@@ -773,24 +998,32 @@ export default function SecurityDepositForm() {
               />
               {errors.landlordName && <p className="mt-1 text-sm text-red-600">{errors.landlordName}</p>}
             </div>
-            <div>
+            <div id="f-landlordAddress">
               <p className="mb-3 text-sm font-medium text-slate-700">
                 Landlord address{' '}
                 <span className="font-normal text-slate-500">(if known)</span>
               </p>
-              {renderAddressBlock('landlord', landlordAddr, {})}
+              {renderAddressBlock('landlord', landlordAddr, {
+                warnMessage:
+                  warnings.landlordAddress || warnings.landlordZip || warnings.identicalParties,
+              })}
             </div>
           </div>
 
           {/* RENTAL PROPERTY */}
           <div className={cardClass}>
             <h3 className={sectionLabel}>Rental property details</h3>
-            <div>
+            <div id="f-rentalPropertyAddress">
               <p className="mb-3 text-sm font-medium text-slate-700">
                 Address of the rental you moved out of{' '}
                 <span className="text-red-500">*</span>
               </p>
-              {renderAddressBlock('rental', rentalAddr, { required: true, hideCityState: true })}
+              {renderAddressBlock('rental', rentalAddr, {
+                required: true,
+                hideCityState: true,
+                fieldErrors: { street: !!errors.rentalPropertyAddress },
+                warnMessage: warnings.rentalZip,
+              })}
               {errors.rentalPropertyAddress && (
                 <p className="mt-2 text-sm text-red-600">{errors.rentalPropertyAddress}</p>
               )}
@@ -799,34 +1032,40 @@ export default function SecurityDepositForm() {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className={labelClass}>Security deposit amount</label>
+              <div id="f-depositAmount">
+                <label className={labelClass}>
+                  Security deposit amount <span className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-slate-500">$</span>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     value={formData.depositAmount}
                     onChange={(e) => handleInputChange('depositAmount', e.target.value)}
                     placeholder="2400"
-                    min="0"
-                    className={`${inputClass(false)} pl-8`}
+                    className={`${inputClass(!!errors.depositAmount)} pl-8`}
                   />
                 </div>
+                {errors.depositAmount && <p className="mt-1 text-sm text-red-600">{errors.depositAmount}</p>}
+                {warnings.depositAmount && <p className="mt-1 text-sm text-amber-700">{warnings.depositAmount}</p>}
               </div>
-              <div>
+              <div id="f-vacatedDate">
                 <label className={labelClass}>
                   Date you moved out <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   value={formData.vacatedDate}
+                  max={todayISO}
                   onChange={(e) => handleInputChange('vacatedDate', e.target.value)}
                   className={inputClass(!!errors.vacatedDate)}
                 />
                 {errors.vacatedDate && <p className="mt-1 text-sm text-red-600">{errors.vacatedDate}</p>}
+                {warnings.vacatedDate && <p className="mt-1 text-sm text-amber-700">{warnings.vacatedDate}</p>}
               </div>
               {FORWARDING_ADDRESS_STATES.includes(formData.state) && (
-                <div>
+                <div id="f-forwardingAddressDate">
                   <label className={labelClass}>
                     Date you gave your landlord a forwarding address
                   </label>
@@ -836,6 +1075,7 @@ export default function SecurityDepositForm() {
                     onChange={(e) => handleInputChange('forwardingAddressDate', e.target.value)}
                     className={inputClass(false)}
                   />
+                  {warnings.forwardingAddressDate && <p className="mt-1 text-sm text-amber-700">{warnings.forwardingAddressDate}</p>}
                   <p className="mt-1 text-xs text-slate-500">
                     In {formData.state}, the deadline is measured from your forwarding
                     address date. Leave blank if you never provided one or aren&apos;t sure.
@@ -843,7 +1083,7 @@ export default function SecurityDepositForm() {
                 </div>
               )}
               {showUnitCount && (
-                <div>
+                <div id="f-buildingUnitCount">
                   <label className={labelClass}>
                     How many rental units are in the building?
                   </label>
@@ -856,8 +1096,9 @@ export default function SecurityDepositForm() {
                     onChange={(e) => handleInputChange('buildingUnitCount', e.target.value)}
                     disabled={formData.buildingUnitCount === 'unknown'}
                     placeholder="e.g., 8"
-                    className={`${inputClass(false)} disabled:bg-slate-100 disabled:cursor-not-allowed`}
+                    className={`${inputClass(!!errors.buildingUnitCount)} disabled:bg-slate-100 disabled:cursor-not-allowed`}
                   />
+                  {errors.buildingUnitCount && <p className="mt-1 text-sm text-red-600">{errors.buildingUnitCount}</p>}
                   <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
                     <input
                       type="checkbox"
@@ -877,7 +1118,7 @@ export default function SecurityDepositForm() {
                 </div>
               )}
               {showNotice && (
-                <div>
+                <div id="f-gaveWrittenNotice">
                   <label className={labelClass}>
                     Did you give your landlord proper written notice that you were moving out?
                   </label>
@@ -898,6 +1139,7 @@ export default function SecurityDepositForm() {
                       </label>
                     ))}
                   </div>
+                  {errors.gaveWrittenNotice && <p className="mt-1 text-sm text-red-600">{errors.gaveWrittenNotice}</p>}
                   <p className="mt-1 text-xs text-slate-500">
                     In {formData.state}, whether you gave proper notice affects the return
                     deadline that applies.
@@ -905,7 +1147,7 @@ export default function SecurityDepositForm() {
                 </div>
               )}
               {showLeaseType && (
-                <div>
+                <div id="f-leaseType">
                   <label className={labelClass}>
                     What kind of tenancy did you have?
                   </label>
@@ -926,6 +1168,7 @@ export default function SecurityDepositForm() {
                       </label>
                     ))}
                   </div>
+                  {errors.leaseType && <p className="mt-1 text-sm text-red-600">{errors.leaseType}</p>}
                   <p className="mt-1 text-xs text-slate-500">
                     In {formData.state}, a tenancy-at-will has a shorter return deadline
                     than a written lease.
@@ -1017,7 +1260,7 @@ export default function SecurityDepositForm() {
           </div>
 
           {/* DESCRIPTION */}
-          <div className={cardClass}>
+          <div id="f-situation" className={cardClass}>
             <div>
               <label className={`${labelClass} mb-1`}>
                 Describe what happened <span className="text-red-500">*</span>
@@ -1032,13 +1275,43 @@ export default function SecurityDepositForm() {
               onChange={(e) => handleInputChange('situation', e.target.value)}
               placeholder="e.g., I moved out on March 1st after giving 30 days notice. My landlord has not returned my $2,400 deposit and it has now been 45 days. They have not provided any itemized deductions. The apartment was left in excellent condition."
               rows={6}
+              maxLength={4000}
               className={`${inputClass(!!errors.situation)} resize-none`}
             />
             {errors.situation && <p className="mt-1 text-sm text-red-600">{errors.situation}</p>}
             <p className="text-xs text-slate-500">
-              {formData.situation.length} / 50 characters minimum
+              {formData.situation.length} / 50 characters minimum · 4,000 maximum
             </p>
           </div>
+
+          {(() => {
+            const blockCount = Object.keys(errors).filter(k => errors[k]).length;
+            const warnList = Object.keys(warnings).filter(k => warnings[k]);
+            if (blockCount > 0) {
+              return (
+                <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+                  {blockCount === 1
+                    ? '1 field needs your attention'
+                    : `${blockCount} fields need your attention`}{' '}
+                  before we can continue — we&apos;ve highlighted {blockCount === 1 ? 'it' : 'them'} above.
+                </div>
+              );
+            }
+            if (warningsShown && warnList.length > 0) {
+              return (
+                <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
+                  <p className="mb-1 font-medium">Please review before continuing:</p>
+                  <ul className="list-disc space-y-1 pl-5">
+                    {warnList.map(k => (<li key={k}>{warnings[k]}</li>))}
+                  </ul>
+                  <p className="mt-2">
+                    If everything looks right, click &ldquo;Generate My Demand Letter&rdquo; again to proceed.
+                  </p>
+                </div>
+              );
+            }
+            return null;
+          })()}
 
           <button
             type="submit"
