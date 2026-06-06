@@ -210,10 +210,28 @@ export async function POST(request: NextRequest) {
 
     // Structured non-letter responses pass through without being cached as a
     // letter (so the user can fix inputs and retry).
-    if (letterText.startsWith('MISSING_INFORMATION') || letterText.startsWith('SCOPE_LIMITATION')) {
+    //
+    // S10 FIX: the model occasionally wraps these signals in a markdown code
+    // fence (```), which used to defeat a bare startsWith() check and let the
+    // notice fall through, get cached, and render as a downloadable letter/PDF.
+    // We now strip a leading BOM/whitespace and any opening code fence, and
+    // match case-insensitively, before classifying.
+    const normalizedSignal = letterText
+      .replace(/^\uFEFF/, '')        // strip BOM if present
+      .replace(/^\s+/, '')           // leading whitespace/newlines
+      .replace(/^```[a-zA-Z]*\s*/, '') // a leading ```fence (optionally ```text)
+      .toUpperCase();
+
+    if (
+      normalizedSignal.startsWith('MISSING_INFORMATION') ||
+      normalizedSignal.startsWith('SCOPE_LIMITATION')
+    ) {
+      const isMissing = normalizedSignal.startsWith('MISSING_INFORMATION');
+      // Surface a clean message to the user with any stray code fences removed.
+      const cleanMessage = letterText.replace(/```/g, '').trim();
       return NextResponse.json({
-        type: letterText.startsWith('MISSING_INFORMATION') ? 'missing_info' : 'out_of_scope',
-        message: letterText,
+        type: isMissing ? 'missing_info' : 'out_of_scope',
+        message: cleanMessage,
       });
     }
 
