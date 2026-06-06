@@ -95,7 +95,7 @@ export default function DistrictOfColumbiaPage() {
             So a $1,500 deposit withheld in bad faith can support a court judgment of up to <strong>$4,500</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Good to know:</strong> The District requires deposits to be held in an interest-bearing account, with the interest paid to you for deposits held at least 12 months.
+            <strong className="text-slate-900">Good to know:</strong> The District requires deposits to be held in an interest-bearing account, with the interest paid to you for deposits held at least 12 months.
           </p>
         </div>
       </section>

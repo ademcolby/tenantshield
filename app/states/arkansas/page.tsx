@@ -95,7 +95,7 @@ export default function ArkansasPage() {
             So a $1,500 deposit wrongfully withheld can support a court judgment of up to <strong>$3,000 plus fees</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Important scope note:</strong> The Arkansas security deposit statute applies only to landlords who own <strong>6 or more rental units</strong> (or use a management agent for them). If your landlord owns five or fewer, your demand rests on your lease and common-law contract rights instead. Your letter reflects whichever applies to your situation.
+            <strong className="text-slate-900">Important scope note:</strong> The Arkansas security deposit statute applies only to landlords who own <strong>6 or more rental units</strong> (or use a management agent for them). If your landlord owns five or fewer, your demand rests on your lease and common-law contract rights instead. Your letter reflects whichever applies to your situation.
           </p>
         </div>
       </section>

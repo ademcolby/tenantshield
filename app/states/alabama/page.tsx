@@ -95,7 +95,7 @@ export default function AlabamaPage() {
             So a $1,500 deposit wrongfully withheld can support a court judgment of <strong>$3,000</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Good to know:</strong> Alabama caps security deposits at <strong>one month&apos;s rent</strong> (with limited exceptions for pets, undue risk, or tenant alterations).
+            <strong className="text-slate-900">Good to know:</strong> Alabama caps security deposits at <strong>one month&apos;s rent</strong> (with limited exceptions for pets, undue risk, or tenant alterations).
           </p>
         </div>
       </section>

@@ -95,7 +95,7 @@ export default function OklahomaPage() {
             So a landlord who keeps your deposit in bad faith owes it back in full, plus your costs. Most landlords return it quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Good to know:</strong> A landlord who misuses deposit funds &mdash; failing to keep them in a separate Oklahoma escrow account &mdash; can face criminal liability under &sect; 115. Your letter raises this only where actual misappropriation is alleged. The 45-day clock starts only after your written demand, which your letter provides.
+            <strong className="text-slate-900">Good to know:</strong> A landlord who misuses deposit funds &mdash; failing to keep them in a separate Oklahoma escrow account &mdash; can face criminal liability under &sect; 115. Your letter raises this only where actual misappropriation is alleged. The 45-day clock starts only after your written demand, which your letter provides.
           </p>
         </div>
       </section>

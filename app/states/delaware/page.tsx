@@ -94,7 +94,7 @@ export default function DelawarePage() {
             So a $1,500 deposit wrongfully withheld can support a court judgment of <strong>$3,000</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Good to know:</strong> If the landlord failed to disclose the bank or escrow account holding your deposit, that can also forfeit the landlord&apos;s right to keep any of it. There is no deposit cap for leases longer than one year.
+            <strong className="text-slate-900">Good to know:</strong> If the landlord failed to disclose the bank or escrow account holding your deposit, that can also forfeit the landlord&apos;s right to keep any of it. There is no deposit cap for leases longer than one year.
           </p>
         </div>
       </section>

@@ -95,7 +95,7 @@ export default function VermontPage() {
             So a $1,500 deposit willfully withheld can support a court judgment of <strong>$3,000 plus fees</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Even short of willful conduct, missing the 14-day deadline forfeits the landlord&apos;s right to keep any part of your deposit. Some Vermont municipalities add their own ordinances.
+            <strong className="text-slate-900">Note:</strong> Even short of willful conduct, missing the 14-day deadline forfeits the landlord&apos;s right to keep any part of your deposit. Some Vermont municipalities add their own ordinances.
           </p>
         </div>
       </section>

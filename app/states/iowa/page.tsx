@@ -96,7 +96,7 @@ export default function IowaPage() {
             So beyond the return of your deposit, bad-faith withholding exposes the landlord to punitive damages of up to twice your monthly rent, plus fees. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Iowa&apos;s punitive penalty is measured against your <strong>monthly rent</strong>, not the deposit. The 30-day clock starts only once the landlord has your forwarding address &mdash; which your letter provides.
+            <strong className="text-slate-900">Note:</strong> Iowa&apos;s punitive penalty is measured against your <strong>monthly rent</strong>, not the deposit. The 30-day clock starts only once the landlord has your forwarding address &mdash; which your letter provides.
           </p>
         </div>
       </section>

@@ -96,7 +96,7 @@ export default function UtahPage() {
             So a $1,500 deposit wrongfully withheld can support a judgment of <strong>$1,600 plus prepaid rent and costs</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Utah does not use a 2&times; or 3&times; multiplier &mdash; outdated sources sometimes claim treble damages, but the statute provides your deposit back plus a fixed $100 civil penalty. A landlord must give written notice within five days of moving out before deducting for damages.
+            <strong className="text-slate-900">Note:</strong> Utah does not use a 2&times; or 3&times; multiplier &mdash; outdated sources sometimes claim treble damages, but the statute provides your deposit back plus a fixed $100 civil penalty. A landlord must give written notice within five days of moving out before deducting for damages.
           </p>
         </div>
       </section>

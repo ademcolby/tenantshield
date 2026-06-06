@@ -95,7 +95,7 @@ export default function WyomingPage() {
             So a landlord who wrongfully keeps your deposit owes it back in full, plus your costs. Most landlords return it quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Outdated sources sometimes claim a bad-faith multiplier &mdash; Wyoming&apos;s statute provides the return of your full deposit plus court costs, with no 2&times; or 3&times;. Your letter states the remedy accurately.
+            <strong className="text-slate-900">Note:</strong> Outdated sources sometimes claim a bad-faith multiplier &mdash; Wyoming&apos;s statute provides the return of your full deposit plus court costs, with no 2&times; or 3&times;. Your letter states the remedy accurately.
           </p>
         </div>
       </section>

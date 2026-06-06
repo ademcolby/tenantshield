@@ -95,7 +95,7 @@ export default function KentuckyPage() {
             So if your landlord skipped the separate disclosed account, the deductions collapse and you are owed the <strong>entire deposit</strong>. Most landlords return it quickly once they realize the law is on your side.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Two important traps:</strong> (1) Kentucky&apos;s deposit law applies only in cities and counties that have <strong>adopted</strong> the URLTA &mdash; including Louisville/Jefferson County and Lexington-Fayette. Elsewhere, weaker common-law rules apply. (2) If the landlord sends an itemized list and you do not respond within 60 days, the landlord may keep the deposit &mdash; so respond promptly. Your letter is built to be that timely response.
+            <strong className="text-slate-900">Two important traps:</strong> (1) Kentucky&apos;s deposit law applies only in cities and counties that have <strong>adopted</strong> the URLTA &mdash; including Louisville/Jefferson County and Lexington-Fayette. Elsewhere, weaker common-law rules apply. (2) If the landlord sends an itemized list and you do not respond within 60 days, the landlord may keep the deposit &mdash; so respond promptly. Your letter is built to be that timely response.
           </p>
         </div>
       </section>

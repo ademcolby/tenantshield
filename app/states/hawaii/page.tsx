@@ -95,7 +95,7 @@ export default function HawaiiPage() {
             So a $1,500 deposit willfully withheld can support a court judgment of up to <strong>$4,500</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Hawaii&apos;s 3&times; penalty applies specifically to <strong>willful</strong> retention; merely wrongful withholding is recoverable at single damages plus costs. Your letter frames the demand around the facts of your situation.
+            <strong className="text-slate-900">Note:</strong> Hawaii&apos;s 3&times; penalty applies specifically to <strong>willful</strong> retention; merely wrongful withholding is recoverable at single damages plus costs. Your letter frames the demand around the facts of your situation.
           </p>
         </div>
       </section>

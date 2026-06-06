@@ -95,7 +95,7 @@ export default function LouisianaPage() {
             So a $1,500 deposit wrongfully withheld can support a court judgment of <strong>$3,000 plus fees</strong> (the 2&times; figure, since it exceeds $300). Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Good to know:</strong> A 2019 amendment raised this penalty &mdash; outdated sources still cite an old $200 figure. The current floor is $300, or double the amount withheld if that is greater.
+            <strong className="text-slate-900">Good to know:</strong> A 2019 amendment raised this penalty &mdash; outdated sources still cite an old $200 figure. The current floor is $300, or double the amount withheld if that is greater.
           </p>
         </div>
       </section>

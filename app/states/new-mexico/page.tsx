@@ -96,7 +96,7 @@ export default function NewMexicoPage() {
             So a $1,500 deposit wrongfully withheld can support a judgment for the full deposit, plus a <strong>$250 penalty and your fees</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Good to know:</strong> If your deposit was more than one month&apos;s rent, New Mexico requires the landlord to pay you interest on it annually.
+            <strong className="text-slate-900">Good to know:</strong> If your deposit was more than one month&apos;s rent, New Mexico requires the landlord to pay you interest on it annually.
           </p>
         </div>
       </section>

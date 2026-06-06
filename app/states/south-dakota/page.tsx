@@ -95,7 +95,7 @@ export default function SouthDakotaPage() {
             So a $1,500 deposit wrongfully withheld can support a judgment for the deposit plus up to <strong>$200 and costs</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Outdated sources sometimes claim a 2&times; penalty &mdash; the statute provides forfeiture plus a $200 punitive cap, not a multiplier. Your letter states the remedy accurately.
+            <strong className="text-slate-900">Note:</strong> Outdated sources sometimes claim a 2&times; penalty &mdash; the statute provides forfeiture plus a $200 punitive cap, not a multiplier. Your letter states the remedy accurately.
           </p>
         </div>
       </section>

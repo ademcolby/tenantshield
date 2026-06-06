@@ -95,7 +95,7 @@ export default function ConnecticutPage() {
             So a $1,500 deposit wrongfully withheld can support a court judgment of <strong>$3,000 plus interest</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Good to know:</strong> Connecticut caps deposits at <strong>two months&apos; rent</strong> (one month if you are 62 or older), and your deposit must earn interest at a state-set rate. Your letter computes the correct deadline using the later of the two dates above.
+            <strong className="text-slate-900">Good to know:</strong> Connecticut caps deposits at <strong>two months&apos; rent</strong> (one month if you are 62 or older), and your deposit must earn interest at a state-set rate. Your letter computes the correct deadline using the later of the two dates above.
           </p>
         </div>
       </section>

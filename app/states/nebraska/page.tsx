@@ -95,7 +95,7 @@ export default function NebraskaPage() {
             So willful withholding exposes the landlord to liquidated damages plus your fees, on top of returning the deposit. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> The 14-day clock starts only after you demand the deposit and tell the landlord where to send it &mdash; which your letter does.
+            <strong className="text-slate-900">Note:</strong> The 14-day clock starts only after you demand the deposit and tell the landlord where to send it &mdash; which your letter does.
           </p>
         </div>
       </section>

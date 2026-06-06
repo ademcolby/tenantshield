@@ -95,7 +95,7 @@ export default function NevadaPage() {
             So a $1,500 deposit wrongfully withheld can support a court judgment of up to <strong>$3,000</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Nevada&apos;s penalty is double damages &mdash; outdated sources sometimes claim 3&times;, but the statute caps it at the deposit plus an equal additional sum.
+            <strong className="text-slate-900">Note:</strong> Nevada&apos;s penalty is double damages &mdash; outdated sources sometimes claim 3&times;, but the statute caps it at the deposit plus an equal additional sum.
           </p>
         </div>
       </section>

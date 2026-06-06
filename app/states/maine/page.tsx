@@ -95,7 +95,7 @@ export default function MainePage() {
             So a $1,500 deposit wrongfully withheld can support a court judgment of <strong>$3,000 plus fees</strong>. Most landlords settle quickly once they realize you know the law.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Note:</strong> Before suing for double damages, Maine asks you to give the landlord 7 days&apos; notice of your intent &mdash; your demand letter serves that purpose. Deposits are capped at two months&apos; rent.
+            <strong className="text-slate-900">Note:</strong> Before suing for double damages, Maine asks you to give the landlord 7 days&apos; notice of your intent &mdash; your demand letter serves that purpose. Deposits are capped at two months&apos; rent.
           </p>
         </div>
       </section>

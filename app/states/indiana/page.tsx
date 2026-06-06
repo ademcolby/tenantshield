@@ -95,7 +95,7 @@ export default function IndianaPage() {
             So if your landlord misses the 45-day deadline or skips the itemized list, the deductions collapse and you are owed the <strong>entire deposit plus your fees</strong>. Most landlords return it quickly once they realize their right to withhold is gone.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong class="text-slate-900">Important:</strong> You must give your landlord a <strong>written forwarding address</strong> to claim attorney fees &mdash; which your demand letter provides.
+            <strong className="text-slate-900">Important:</strong> You must give your landlord a <strong>written forwarding address</strong> to claim attorney fees &mdash; which your demand letter provides.
           </p>
         </div>
       </section>
