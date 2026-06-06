@@ -3,6 +3,39 @@ import { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://gettenantshield.com'
 
+  const states = [
+    // Batch 1 — original
+    'texas',
+    'california',
+    'florida',
+    'new-york',
+    // Batch 2
+    'illinois',
+    'georgia',
+    'washington',
+    'colorado',
+    'arizona',
+    'north-carolina',
+    'ohio',
+    'pennsylvania',
+    // Batch 3
+    'michigan',
+    'new-jersey',
+    'virginia',
+    'tennessee',
+    'maryland',
+    'massachusetts',
+    'minnesota',
+    'missouri',
+  ]
+
+  const statePages: MetadataRoute.Sitemap = states.map((state) => ({
+    url: `${baseUrl}/states/${state}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
+
   return [
     {
       url: baseUrl,
@@ -16,30 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/states/texas`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/states/california`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/states/florida`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/states/new-york`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
+    ...statePages,
     {
       url: `${baseUrl}/terms`,
       lastModified: new Date(),
