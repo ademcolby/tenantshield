@@ -21,11 +21,14 @@
  */
 
 // Standard statutory return intervals that appear across the 51 jurisdictions.
-const STANDARD_INTERVALS_DAYS = [14, 15, 20, 21, 30, 31, 45, 60];
+// NOTE: 10 days added for Montana's no-deduction branch (§ 70-25-202(2)(b));
+// without it the model falls back to relative-phrasing for that deadline.
+const STANDARD_INTERVALS_DAYS = [10, 14, 15, 20, 21, 30, 31, 45, 60];
 
 // Forwarding-address-based intervals used by conditional "later of" states
-// (e.g., Connecticut/Wyoming use 15 days from forwarding address).
-const FORWARDING_INTERVALS_DAYS = [14, 15, 30];
+// (e.g., Connecticut/Wyoming use 15 days from forwarding address;
+//  Rhode Island's 20-day clock runs from the later of termination/possession/forwarding).
+const FORWARDING_INTERVALS_DAYS = [14, 15, 20, 30];
 
 // Default demand window the tenant gives the landlord to respond.
 export const DEFAULT_RESPONSE_WINDOW_DAYS = 14;
