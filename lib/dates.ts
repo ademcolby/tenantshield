@@ -139,15 +139,15 @@ export function renderComputedDatesBlock(d: ComputedDates): string {
     lines.push(`- Forwarding-address date: ${d.forwardingAddressDateFormatted}`);
   }
   if (d.deadlineFromVacated.length) {
-    lines.push('- Statutory-deadline candidates measured from the MOVE-OUT date (pick the one matching this state\u2019s rule in the system prompt):');
+    lines.push('- Statutory-deadline candidates measured from the MOVE-OUT date (pick the ONE whose day-count EXACTLY equals this state\u2019s statutory interval from the system prompt \u2014 e.g., a 21-day state uses the "21 days" line, NOT the 14- or 15-day line):');
     for (const x of d.deadlineFromVacated) {
-      lines.push(`    \u2022 ${x.days} days after move-out = ${x.date}`);
+      lines.push(`    \u2022 Exactly ${x.days} days after move-out = ${x.date}`);
     }
   }
   if (d.deadlineFromForwarding) {
     lines.push('- Statutory-deadline candidates measured from the FORWARDING-ADDRESS date (for "later of" states, compare against the move-out candidate and use whichever is later):');
     for (const x of d.deadlineFromForwarding) {
-      lines.push(`    \u2022 ${x.days} days after forwarding address = ${x.date}`);
+      lines.push(`    \u2022 Exactly ${x.days} days after forwarding address = ${x.date}`);
     }
   }
   return lines.join('\n');
