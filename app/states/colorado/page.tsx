@@ -1,14 +1,15 @@
+// app/states/colorado/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
 const STATE = 'Colorado';
 const DEADLINE = '30 days';
 const STATUTE = 'CRS § 38-12-103';
-const PENALTY = '3× wrongfully withheld amount + attorney fees (willful)';
+const PENALTY = '3× wrongfully withheld amount + attorney fees';
 
 export const metadata: Metadata = {
   title: 'Security Deposit Demand Letter Colorado | TenantShield',
-  description: 'Get your security deposit back in Colorado. State-specific demand letter citing CRS § 38-12-103, the deposit deadline, and the treble-damages penalty for willful withholding. Ready in minutes for $39.',
+  description: 'Get your security deposit back in Colorado. State-specific demand letter citing CRS § 38-12-103, the 30-day deadline, the treble-damages penalty, and the new 2026 tenant protections (HB25-1249). Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/colorado',
   },
@@ -40,7 +41,7 @@ export default function ColoradoPage() {
           Get your security deposit back in {STATE}.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-700">
-          A professional demand letter citing {STATE}&apos;s security deposit statute (CRS &sect; 38-12-103), the return deadline, and the treble-damages penalty for willful withholding. Ready in minutes.
+          A professional demand letter citing {STATE}&apos;s security deposit statute (CRS &sect; 38-12-103), the 30-day return deadline, the treble-damages penalty &mdash; and the powerful new tenant protections that took effect January 1, 2026. Ready in minutes.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link
@@ -59,12 +60,12 @@ export default function ColoradoPage() {
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Deadline</p>
             <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>{DEADLINE}</p>
-            <p className="mt-1 text-sm text-slate-600">up to 60 if your lease specifies</p>
+            <p className="mt-1 text-sm text-slate-600">up to 60 only if your lease says so</p>
           </div>
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Penalty</p>
             <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>3&times; damages</p>
-            <p className="mt-1 text-sm text-slate-600">for willful withholding under {STATUTE}</p>
+            <p className="mt-1 text-sm text-slate-600">for bad-faith withholding, plus attorney fees</p>
           </div>
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Statute</p>
@@ -81,20 +82,20 @@ export default function ColoradoPage() {
         </h2>
         <div className="mt-8 space-y-6 text-slate-700">
           <p>
-            Under <strong>{STATUTE}</strong>, your landlord has <strong>30 days</strong> from the end of your tenancy to return your security deposit or provide a written, itemized statement of deductions &mdash; or <strong>up to 60 days</strong> if your lease expressly states a longer period.
+            Under <strong>{STATUTE}</strong>, your landlord has <strong>30 days</strong> after your tenancy ends to return your security deposit or provide a written, itemized statement of any deductions (up to 60 days only if your lease specifically says so).
           </p>
           <p>
-            If the landlord <strong>willfully</strong> retains your deposit in violation of the statute, you may recover:
+            If the landlord withholds your deposit in <strong>bad faith</strong>, you may recover:
           </p>
           <ul className="ml-6 list-disc space-y-2">
             <li><strong>Three times</strong> the amount wrongfully withheld</li>
             <li><strong>Reasonable attorney&apos;s fees</strong> and court costs</li>
           </ul>
           <p>
-            So a $1,500 deposit willfully withheld can support a court judgment of <strong>$4,500 plus fees</strong>. Most landlords settle quickly once they realize you know the law.
+            So a $1,500 deposit wrongfully withheld can support a court judgment of <strong>$4,500 plus fees</strong>. {STATE} requires you to give the landlord <strong>7 days&apos; written notice</strong> before filing suit for treble damages &mdash; your demand letter is built to serve as exactly that notice, which starts the clock the day it arrives.
           </p>
           <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
-            <strong className="text-slate-900">Important:</strong> {STATE} requires you to give the landlord <strong>at least 7 days&apos; written notice</strong> of your intent to sue before the treble-damages penalty applies. Your demand letter is built to serve as exactly that notice &mdash; it sets a deadline and puts the landlord on notice in the form the statute requires.
+            <strong className="text-slate-900">New for 2026 (HB25-1249):</strong> For move-outs on or after January 1, 2026, {STATE} tenants gained major new rights &mdash; and your letter uses every one that fits your situation. &ldquo;Normal wear and tear&rdquo; now expressly includes <strong>ordinary uncleanliness</strong>, so routine cleaning charges are off the table. Deductions for <strong>pre-existing damage</strong> are barred. Carpet that wasn&apos;t replaced within the last <strong>10 years</strong> can&apos;t be claimed as destroyed. You can demand <strong>supporting documentation within 14 days</strong> &mdash; and if the landlord doesn&apos;t produce it, that itself is wrongful withholding. And withholding <strong>125% or more</strong> of actual damages can be treated as bad faith. Deposits are also now capped at <strong>one month&apos;s rent</strong>.
           </p>
         </div>
       </section>
@@ -111,12 +112,12 @@ export default function ColoradoPage() {
               <p className="mt-2 text-sm text-slate-600">Properly formatted, addressed to your landlord by name, citing the exact {STATE} statutes that apply to your situation.</p>
             </div>
             <div>
-              <h3 className="font-medium text-slate-900">Specific statute citations</h3>
-              <p className="mt-2 text-sm text-slate-600">CRS &sect; 38-12-103 and any others triggered by your circumstances &mdash; not generic legalese.</p>
+              <h3 className="font-medium text-slate-900">The 7-day statutory notice</h3>
+              <p className="mt-2 text-sm text-slate-600">Your letter explicitly serves as {STATE}&apos;s required 7-day pre-suit notice, so the path to treble damages is preserved from day one.</p>
             </div>
             <div>
-              <h3 className="font-medium text-slate-900">Calculated penalty math</h3>
-              <p className="mt-2 text-sm text-slate-600">The letter states the exact dollar amount you&apos;re entitled to demand &mdash; deposit + 3&times; wrongful withholding + fees &mdash; and serves the required 7-day notice.</p>
+              <h3 className="font-medium text-slate-900">The new 2026 protections</h3>
+              <p className="mt-2 text-sm text-slate-600">Cleaning-charge bars, the pre-existing damage rule, the carpet 10-year rule, the 14-day documentation demand, and the 125% bad-faith marker &mdash; applied wherever your facts support them.</p>
             </div>
             <div>
               <h3 className="font-medium text-slate-900">Ready-to-send PDF</h3>

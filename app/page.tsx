@@ -67,7 +67,7 @@ const STATE_DEADLINES: { state: string; days: string; statute: string }[] = [
   { state: 'Virginia', days: '45 days', statute: 'Va. Code § 55.1-1226' },
   { state: 'Washington', days: '30 days', statute: 'RCW § 59.18.280' },
   { state: 'West Virginia', days: '60 days', statute: 'W. Va. Code § 37-6A-2' },
-  { state: 'Wisconsin', days: '21 days', statute: 'Wis. Stat. § 704.28' },
+  { state: 'Wisconsin', days: '21 days', statute: 'Wis. Admin. Code ATCP 134.06' },
   { state: 'Wyoming', days: '30 days', statute: 'Wyo. Stat. § 1-21-1208' },
 ]
 

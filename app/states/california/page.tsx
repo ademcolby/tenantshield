@@ -1,11 +1,15 @@
+// app/states/california/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
 const STATE = 'California';
+const DEADLINE = '21 days';
+const STATUTE = 'Civil Code § 1950.5';
+const PENALTY = 'up to 2× the deposit + actual damages';
 
 export const metadata: Metadata = {
   title: 'Security Deposit Demand Letter California | TenantShield',
-  description: 'Get your security deposit back in California. State-specific demand letter citing Civil Code § 1950.5, the 21-day deadline, and 2x bad faith penalty. Ready in minutes for $39.',
+  description: 'Get your security deposit back in California. State-specific demand letter citing Civil Code § 1950.5, the 21-day deadline, the bad-faith penalty, and the new photo-evidence requirements (AB 2801). Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/california',
   },
@@ -15,38 +19,53 @@ export default function CaliforniaPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF7]" style={{ fontFamily: 'var(--font-sans)' }}>
 
+      {/* Header */}
       <header className="border-b border-[#E7E5E0] bg-[#FAFAF7]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="text-xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>TenantShield</Link>
-          <Link href="/generate" className="rounded-md bg-[#B45309] px-5 py-2 text-sm font-medium text-white transition hover:bg-[#92400E]">Generate letter</Link>
+          <Link href="/" className="text-xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
+            TenantShield
+          </Link>
+          <Link
+            href="/generate"
+            className="rounded-md bg-[#B45309] px-5 py-2 text-sm font-medium text-white transition hover:bg-[#92400E]"
+          >
+            Generate letter
+          </Link>
         </div>
       </header>
 
+      {/* Hero */}
       <section className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-24">
         <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#B45309]">{STATE} Tenants</p>
         <h1 className="text-4xl font-medium tracking-tight text-slate-900 sm:text-5xl md:text-6xl" style={{ fontFamily: 'var(--font-display)' }}>
           Get your security deposit back in {STATE}.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-700">
-          A professional demand letter citing California Civil Code &sect; 1950.5, the 21-day return deadline, and 2&times; bad-faith damages. Ready in minutes.
+          A professional demand letter citing {STATE}&apos;s security deposit law (Civil Code &sect; 1950.5), the 21-day return deadline, the bad-faith penalty &mdash; and the new photo-evidence rules most landlords are still violating. Ready in minutes.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-4">
-          <Link href="/generate" className="inline-flex items-center rounded-md bg-[#B45309] px-7 py-3.5 text-base font-medium text-white transition hover:bg-[#92400E]">Generate my letter — $39</Link>
+          <Link
+            href="/generate"
+            className="inline-flex items-center rounded-md bg-[#B45309] px-7 py-3.5 text-base font-medium text-white transition hover:bg-[#92400E]"
+          >
+            Generate my letter — $39
+          </Link>
           <span className="text-sm text-slate-500">One-time payment. No subscription.</span>
         </div>
       </section>
 
+      {/* Quick facts */}
       <section className="mx-auto max-w-4xl px-5 pb-16 sm:px-8">
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Deadline</p>
-            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>21 days</p>
+            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>{DEADLINE}</p>
             <p className="mt-1 text-sm text-slate-600">to return your deposit after move-out</p>
           </div>
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Penalty</p>
-            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>2&times; damages</p>
-            <p className="mt-1 text-sm text-slate-600">for bad-faith withholding</p>
+            <p className="mt-2 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>up to 2&times;</p>
+            <p className="mt-1 text-sm text-slate-600">for bad-faith withholding, plus actual damages</p>
           </div>
           <div className="rounded-xl border border-[#E7E5E0] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Statute</p>
@@ -56,45 +75,73 @@ export default function CaliforniaPage() {
         </div>
       </section>
 
+      {/* What the law says */}
       <section className="mx-auto max-w-3xl px-5 py-16 sm:px-8 sm:py-20">
-        <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>What {STATE} law actually says.</h2>
+        <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
+          What {STATE} law actually says.
+        </h2>
         <div className="mt-8 space-y-6 text-slate-700">
           <p>
-            Under <strong>California Civil Code &sect; 1950.5</strong>, your landlord has <strong>21 days</strong> from the date you vacate to either return your security deposit or provide a written, itemized statement of any deductions with supporting documentation.
+            Under <strong>{STATUTE}</strong>, your landlord has <strong>21 days</strong> after you move out to return your security deposit or provide a written, itemized statement of any deductions, with receipts for work over $125.
           </p>
           <p>
-            California is one of the most tenant-protective states in the country. Key protections:
+            If the landlord withholds your deposit in <strong>bad faith</strong>, you may recover:
           </p>
           <ul className="ml-6 list-disc space-y-2">
-            <li>Landlords <strong>cannot</strong> deduct for normal wear and tear (faded paint, worn carpet from foot traffic, minor scuffs)</li>
-            <li>Deductions must be supported by <strong>receipts or invoices</strong> for the actual cost</li>
-            <li>For deductions over $125, the landlord must provide <strong>actual documentation</strong></li>
-            <li>Bad-faith retention can result in <strong>2&times; the deposit</strong> as statutory damages, in addition to actual damages</li>
+            <li>Up to <strong>twice the deposit</strong> as a statutory penalty</li>
+            <li>Your <strong>actual damages</strong> on top of the penalty</li>
           </ul>
           <p>
-            Cities like <strong>San Francisco, Los Angeles, Berkeley, and Santa Monica</strong> add even stronger local protections, such as mandatory annual interest on deposits. TenantShield&apos;s letter automatically applies the right city-specific law if you live in one of these jurisdictions.
+            So a $2,000 deposit wrongfully withheld can support a court judgment of up to <strong>$6,000</strong> (the deposit back, plus up to 2&times; as the penalty). Most landlords settle quickly once they realize you know the law.
+          </p>
+          <p className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
+            <strong className="text-slate-900">New photo-evidence rules (AB 2801):</strong> For move-outs since April 2025, a landlord deducting for repairs or cleaning must <strong>photograph the unit</strong> after you leave (before any work) and again after the work is done &mdash; and deliver those photos <strong>with the itemized statement</strong>. No photos, no deduction. A landlord who in bad faith skips these requirements is <strong>barred from making any claim against your deposit at all</strong>. Since January 2026 (AB 414), you can also request your refund electronically, and items missed at a pre-move-out inspection generally can&apos;t be deducted later. Deposits are capped at <strong>one month&apos;s rent</strong> for most tenancies (AB 12).
           </p>
         </div>
       </section>
 
+      {/* What TenantShield does */}
       <section className="bg-white border-y border-[#E7E5E0]">
         <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-20">
-          <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>What you get for $39.</h2>
+          <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
+            What you get for $39.
+          </h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
-            <div><h3 className="font-medium text-slate-900">A professional demand letter</h3><p className="mt-2 text-sm text-slate-600">Properly formatted, addressed to your landlord by name, citing the exact California statutes that apply.</p></div>
-            <div><h3 className="font-medium text-slate-900">Specific statute citations</h3><p className="mt-2 text-sm text-slate-600">California Civil Code &sect; 1950.5 and any city-specific ordinances triggered by your circumstances.</p></div>
-            <div><h3 className="font-medium text-slate-900">Calculated penalty math</h3><p className="mt-2 text-sm text-slate-600">The letter computes the exact dollar amount you&apos;re entitled to demand including 2&times; bad-faith damages.</p></div>
-            <div><h3 className="font-medium text-slate-900">Ready-to-send PDF</h3><p className="mt-2 text-sm text-slate-600">Download instantly, print, sign, and send via USPS Certified Mail with Return Receipt.</p></div>
+            <div>
+              <h3 className="font-medium text-slate-900">A professional demand letter</h3>
+              <p className="mt-2 text-sm text-slate-600">Properly formatted, addressed to your landlord by name, citing the exact {STATE} statutes that apply to your situation.</p>
+            </div>
+            <div>
+              <h3 className="font-medium text-slate-900">The photo-evidence demand</h3>
+              <p className="mt-2 text-sm text-slate-600">Your letter demands the AB 2801 photographs and itemization &mdash; and invokes the forfeiture rule when the landlord failed to provide them.</p>
+            </div>
+            <div>
+              <h3 className="font-medium text-slate-900">Calculated penalty math</h3>
+              <p className="mt-2 text-sm text-slate-600">The letter states the exact dollar amount you&apos;re entitled to demand &mdash; deposit + up to 2&times; bad-faith penalty + actual damages.</p>
+            </div>
+            <div>
+              <h3 className="font-medium text-slate-900">Ready-to-send PDF</h3>
+              <p className="mt-2 text-sm text-slate-600">Download instantly, print, sign, and send via USPS Certified Mail with Return Receipt.</p>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* CTA */}
       <section className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-24 text-center">
-        <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>Ready to get your deposit back?</h2>
+        <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
+          Ready to get your deposit back?
+        </h2>
         <p className="mt-4 text-slate-700">Most {STATE} landlords return the deposit within days of receiving a properly drafted demand letter.</p>
-        <Link href="/generate" className="mt-8 inline-flex items-center rounded-md bg-[#B45309] px-7 py-3.5 text-base font-medium text-white transition hover:bg-[#92400E]">Generate my letter — $39</Link>
+        <Link
+          href="/generate"
+          className="mt-8 inline-flex items-center rounded-md bg-[#B45309] px-7 py-3.5 text-base font-medium text-white transition hover:bg-[#92400E]"
+        >
+          Generate my letter — $39
+        </Link>
       </section>
 
+      {/* Footer */}
       <footer className="border-t border-[#E7E5E0] bg-[#FAFAF7]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-6 sm:px-8">
           <Link href="/" className="text-base font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>TenantShield</Link>
