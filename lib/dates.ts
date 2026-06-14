@@ -60,6 +60,75 @@ function diffDays(later: Date, earlier: Date): number {
   return Math.round(ms / (1000 * 60 * 60 * 24));
 }
 
+// --- P32: business-day support (Arizona's 14-business-day deadline, ARS § 33-1321) ---
+// Business days exclude Saturdays, Sundays, and U.S. federal holidays (observed).
+// We use the federal holiday set as the standard exclusion list.
+
+function isoYMD(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function nthWeekdayOfMonth(year: number, month: number, weekday: number, n: number): Date {
+  // month 0-indexed; weekday 0=Sun..6=Sat; n = 1..5
+  const first = new Date(Date.UTC(year, month, 1));
+  const firstDow = first.getUTCDay();
+  const day = 1 + ((weekday - firstDow + 7) % 7) + (n - 1) * 7;
+  return new Date(Date.UTC(year, month, day));
+}
+
+function lastWeekdayOfMonth(year: number, month: number, weekday: number): Date {
+  const last = new Date(Date.UTC(year, month + 1, 0));
+  const lastDow = last.getUTCDay();
+  const day = last.getUTCDate() - ((lastDow - weekday + 7) % 7);
+  return new Date(Date.UTC(year, month, day));
+}
+
+function observedFixed(year: number, month: number, day: number): Date {
+  const d = new Date(Date.UTC(year, month, day));
+  const dow = d.getUTCDay();
+  if (dow === 6) return new Date(Date.UTC(year, month, day - 1)); // Sat -> observed Fri
+  if (dow === 0) return new Date(Date.UTC(year, month, day + 1)); // Sun -> observed Mon
+  return d;
+}
+
+function federalHolidaysForYear(year: number): string[] {
+  return [
+    isoYMD(observedFixed(year, 0, 1)),            // New Year's Day
+    isoYMD(nthWeekdayOfMonth(year, 0, 1, 3)),     // MLK Jr. Day (3rd Mon Jan)
+    isoYMD(nthWeekdayOfMonth(year, 1, 1, 3)),     // Washington's Birthday (3rd Mon Feb)
+    isoYMD(lastWeekdayOfMonth(year, 4, 1)),       // Memorial Day (last Mon May)
+    isoYMD(observedFixed(year, 5, 19)),           // Juneteenth
+    isoYMD(observedFixed(year, 6, 4)),            // Independence Day
+    isoYMD(nthWeekdayOfMonth(year, 8, 1, 1)),     // Labor Day (1st Mon Sep)
+    isoYMD(nthWeekdayOfMonth(year, 9, 1, 2)),     // Columbus Day (2nd Mon Oct)
+    isoYMD(observedFixed(year, 10, 11)),          // Veterans Day
+    isoYMD(nthWeekdayOfMonth(year, 10, 4, 4)),    // Thanksgiving (4th Thu Nov)
+    isoYMD(observedFixed(year, 11, 25)),          // Christmas Day
+  ];
+}
+
+function addBusinessDays(base: Date, n: number): Date {
+  // Holidays spanning the base year and the following year cover any realistic span.
+  const holidays = new Set<string>([
+    ...federalHolidaysForYear(base.getUTCFullYear()),
+    ...federalHolidaysForYear(base.getUTCFullYear() + 1),
+  ]);
+  let d = new Date(base);
+  let added = 0;
+  while (added < n) {
+    d = addDays(d, 1);
+    const dow = d.getUTCDay();
+    if (dow === 0 || dow === 6) continue;       // weekend
+    if (holidays.has(isoYMD(d))) continue;       // federal holiday
+    added++;
+  }
+  return d;
+}
+
+// Business-day statutory intervals (Arizona = 14 business days). Kept as an array
+// for symmetry with STANDARD_INTERVALS_DAYS and easy future additions.
+const BUSINESS_DAY_INTERVALS = [14];
+
 export function formatLongDate(d: Date): string {
   return d.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -78,6 +147,8 @@ export interface ComputedDates {
   forwardingAddressDateFormatted: string | null;
   /** "N days after move-out → <calendar date>" for each standard interval. */
   deadlineFromVacated: { days: number; date: string }[];
+  /** Business-day deadline candidates from move-out (e.g., Arizona's 14 business days). */
+  deadlineFromVacatedBusinessDays: { days: number; date: string }[];
   /** "N days after forwarding address → <calendar date>", if a date was given. */
   deadlineFromForwarding: { days: number; date: string }[] | null;
 }
@@ -98,6 +169,13 @@ export function computeDates(
       }))
     : [];
 
+  const deadlineFromVacatedBusinessDays = vacated
+    ? BUSINESS_DAY_INTERVALS.map((days) => ({
+        days,
+        date: formatLongDate(addBusinessDays(vacated, days)),
+      }))
+    : [];
+
   const deadlineFromForwarding = forwarding
     ? FORWARDING_INTERVALS_DAYS.map((days) => ({
         days,
@@ -113,6 +191,7 @@ export function computeDates(
     daysSinceVacated: vacated ? diffDays(today, vacated) : null,
     forwardingAddressDateFormatted: forwarding ? formatLongDate(forwarding) : null,
     deadlineFromVacated,
+    deadlineFromVacatedBusinessDays,
     deadlineFromForwarding,
   };
 }
@@ -142,6 +221,12 @@ export function renderComputedDatesBlock(d: ComputedDates): string {
     lines.push('- Statutory-deadline candidates measured from the MOVE-OUT date (pick the ONE whose day-count EXACTLY equals this state\u2019s statutory interval from the system prompt \u2014 e.g., a 21-day state uses the "21 days" line, NOT the 14- or 15-day line):');
     for (const x of d.deadlineFromVacated) {
       lines.push(`    \u2022 Exactly ${x.days} days after move-out = ${x.date}`);
+    }
+  }
+  if (d.deadlineFromVacatedBusinessDays.length) {
+    lines.push('- BUSINESS-DAY deadline candidates from the MOVE-OUT date (use ONLY for states whose statute is in BUSINESS days, e.g., Arizona = 14 business days; these already exclude weekends and U.S. federal holidays \u2014 do NOT use these for calendar-day states):');
+    for (const x of d.deadlineFromVacatedBusinessDays) {
+      lines.push(`    \u2022 Exactly ${x.days} business days after move-out = ${x.date}`);
     }
   }
   if (d.deadlineFromForwarding) {

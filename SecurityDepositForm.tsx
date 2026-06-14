@@ -260,6 +260,7 @@ export default function SecurityDepositForm() {
     specialCircumstances: [] as string[],
     leaseDesignation: '',
     isRentStabilized: '',
+    leaseStartDate: '',
     buildingUnitCount: '',
     gaveWrittenNotice: '',
     leaseType: '',
@@ -284,6 +285,10 @@ export default function SecurityDepositForm() {
     ['Arizona', 'Washington', 'Oregon'].includes(formData.state) &&
     formData.specialCircumstances.includes('non_refundable_cleaning_fee');
   const showRentStabilized = effectiveCity === 'New York City';
+  // P15: lease/renewal start date only matters for NYC rent-stabilized letters,
+  // where GOL § 7-107's one-month cap applies to leases entered on/after July 1, 1974.
+  // Only surface it once the tenant has confirmed rent-stabilized status.
+  const showLeaseStartDate = showRentStabilized && formData.isRentStabilized === 'yes';
   const showUnitCount = UNIT_COUNT_STATES.includes(formData.state);
   const showNotice = NOTICE_STATES.includes(formData.state);
   const showLeaseType = LEASE_TYPE_STATES.includes(formData.state);
@@ -946,9 +951,25 @@ export default function SecurityDepositForm() {
                 </div>
               </div>
             )}
+            {showLeaseStartDate && (
+              <div className="pt-2" id="f-leaseStartDate">
+                <label className={labelClass}>
+                  When did your current lease or most recent renewal begin?
+                </label>
+                <input
+                  type="date"
+                  max={todayISO}
+                  value={formData.leaseStartDate}
+                  onChange={(e) => handleInputChange('leaseStartDate', e.target.value)}
+                  className={inputClass(!!errors.leaseStartDate)}
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  Optional. This helps us cite the right rent-stabilization deposit protections for your lease.
+                </p>
+                {errors.leaseStartDate && <p className="mt-1 text-sm text-red-600">{errors.leaseStartDate}</p>}
+              </div>
+            )}
           </div>
-
-          {/* YOUR INFORMATION */}
           <div className={cardClass}>
             <h3 className={sectionLabel}>Your information</h3>
             <div id="f-tenantName">

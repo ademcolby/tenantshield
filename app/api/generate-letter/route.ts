@@ -24,6 +24,7 @@ interface FormData {
   specialCircumstances: string[];
   leaseDesignation: string;
   isRentStabilized: string;
+  leaseStartDate: string;         // P15: NY GOL § 7-107 gating (lease/renewal on/after 2025-11-15)
   buildingUnitCount: string;      // P5: scope thresholds (IL 5+, AR 6+, NY 6+, Cook County ≤6)
   gaveWrittenNotice: string;      // P4: Alaska 14-vs-30-day branch
   leaseType: string;              // P4: Maine 21-vs-30-day (tenancy-at-will vs written lease)
@@ -43,6 +44,9 @@ LOCATION:
 
   if (data.isRentStabilized) {
     message += `\n- Rent-stabilized status: ${data.isRentStabilized}`;
+  }
+  if (data.leaseStartDate) {
+    message += `\n- Lease/renewal start date: ${data.leaseStartDate}`;
   }
   if (data.buildingUnitCount) {
     message += `\n- Number of rental units in the building: ${data.buildingUnitCount}`;
