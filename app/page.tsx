@@ -1,7 +1,13 @@
+// app/page.tsx
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Fraunces, DM_Sans } from 'next/font/google'
+import {
+  STATE_DEADLINES,
+  getCityOverlaysForState,
+} from '@/lib/stateDeadlines'
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -16,60 +22,6 @@ const dmSans = DM_Sans({
   display: 'swap',
   weight: ['400', '500', '600', '700'],
 })
-
-const STATE_DEADLINES: { state: string; days: string; statute: string }[] = [
-  { state: 'Alabama', days: '60 days', statute: 'Ala. Code § 35-9A-201' },
-  { state: 'Alaska', days: '14–30 days', statute: 'Alaska Stat. § 34.03.070' },
-  { state: 'Arizona', days: '14 business days', statute: 'A.R.S. § 33-1321' },
-  { state: 'Arkansas', days: '60 days', statute: 'Ark. Code § 18-16-305' },
-  { state: 'California', days: '21 days', statute: 'Cal. Civ. Code § 1950.5' },
-  { state: 'Colorado', days: '30–60 days', statute: 'Colo. Rev. Stat. § 38-12-103' },
-  { state: 'Connecticut', days: '15–30 days', statute: 'Conn. Gen. Stat. § 47a-21' },
-  { state: 'Delaware', days: '20 days', statute: '25 Del. C. § 5514' },
-  { state: 'District of Columbia', days: '45 days', statute: '14 DCMR § 309' },
-  { state: 'Florida', days: '15–30 days', statute: 'Fla. Stat. § 83.49' },
-  { state: 'Georgia', days: '30 days', statute: 'O.C.G.A. § 44-7-34' },
-  { state: 'Hawaii', days: '14 days', statute: 'Haw. Rev. Stat. § 521-44' },
-  { state: 'Idaho', days: '21 days', statute: 'Idaho Code § 6-321' },
-  { state: 'Illinois', days: '30–45 days', statute: '765 ILCS 710' },
-  { state: 'Indiana', days: '45 days', statute: 'Ind. Code § 32-31-3-12' },
-  { state: 'Iowa', days: '30 days', statute: 'Iowa Code § 562A.12' },
-  { state: 'Kansas', days: '30 days', statute: 'Kan. Stat. § 58-2550' },
-  { state: 'Kentucky', days: '30–60 days', statute: 'Ky. Rev. Stat. § 383.580' },
-  { state: 'Louisiana', days: '30 days', statute: 'La. R.S. § 9:3251' },
-  { state: 'Maine', days: '21–30 days', statute: '14 M.R.S. § 6033' },
-  { state: 'Maryland', days: '45 days', statute: 'Md. Real Prop. § 8-203' },
-  { state: 'Massachusetts', days: '30 days', statute: 'Mass. Gen. Laws ch. 186, § 15B' },
-  { state: 'Michigan', days: '30 days', statute: 'Mich. Comp. Laws § 554.609' },
-  { state: 'Minnesota', days: '21 days', statute: 'Minn. Stat. § 504B.178' },
-  { state: 'Mississippi', days: '45 days', statute: 'Miss. Code § 89-8-21' },
-  { state: 'Missouri', days: '30 days', statute: 'Mo. Rev. Stat. § 535.300' },
-  { state: 'Montana', days: '10–30 days', statute: 'Mont. Code § 70-25-202' },
-  { state: 'Nebraska', days: '14 days', statute: 'Neb. Rev. Stat. § 76-1416' },
-  { state: 'Nevada', days: '30 days', statute: 'NRS § 118A.242' },
-  { state: 'New Hampshire', days: '30 days', statute: 'N.H. Rev. Stat. § 540-A:7' },
-  { state: 'New Jersey', days: '30 days', statute: 'N.J. Stat. § 46:8-21.1' },
-  { state: 'New Mexico', days: '30 days', statute: 'N.M. Stat. § 47-8-18' },
-  { state: 'New York', days: '14 days', statute: 'N.Y. Gen. Oblig. Law § 7-108' },
-  { state: 'North Carolina', days: '30 days', statute: 'N.C. Gen. Stat. § 42-52' },
-  { state: 'North Dakota', days: '30 days', statute: 'N.D. Cent. Code § 47-16-07.1' },
-  { state: 'Ohio', days: '30 days', statute: 'Ohio Rev. Code § 5321.16' },
-  { state: 'Oklahoma', days: '45 days', statute: '41 Okla. Stat. § 115' },
-  { state: 'Oregon', days: '31 days', statute: 'ORS § 90.300' },
-  { state: 'Pennsylvania', days: '30 days', statute: '68 Pa. C.S. § 250.512' },
-  { state: 'Rhode Island', days: '20 days', statute: 'R.I. Gen. Laws § 34-18-19' },
-  { state: 'South Carolina', days: '30 days', statute: 'S.C. Code § 27-40-410' },
-  { state: 'South Dakota', days: '14–45 days', statute: 'S.D. Codified Laws § 43-32-24' },
-  { state: 'Tennessee', days: '30 days', statute: 'Tenn. Code § 66-28-301' },
-  { state: 'Texas', days: '30 days', statute: 'Tex. Prop. Code § 92.103' },
-  { state: 'Utah', days: '30 days', statute: 'Utah Code § 57-17-3' },
-  { state: 'Vermont', days: '14 days', statute: '9 V.S.A. § 4461' },
-  { state: 'Virginia', days: '45 days', statute: 'Va. Code § 55.1-1226' },
-  { state: 'Washington', days: '30 days', statute: 'RCW § 59.18.280' },
-  { state: 'West Virginia', days: '60 days', statute: 'W. Va. Code § 37-6A-2' },
-  { state: 'Wisconsin', days: '21 days', statute: 'Wis. Admin. Code ATCP 134.06' },
-  { state: 'Wyoming', days: '30 days', statute: 'Wyo. Stat. § 1-21-1208' },
-]
 
 const Check = ({ className = '' }: { className?: string }) => (
   <svg className={className} viewBox="0 0 20 20" fill="none" aria-hidden>
@@ -91,6 +43,12 @@ const Arrow = ({ className = '' }: { className?: string }) => (
 )
 
 export default function LandingPage() {
+  // Deadline lookup state — visitor picks a state and we render its baseline
+  // deadline plus any city overlays inline. Data comes from lib/stateDeadlines.ts.
+  const [selectedState, setSelectedState] = useState('')
+  const selected = STATE_DEADLINES.find((s) => s.state === selectedState)
+  const cityOverlays = selectedState ? getCityOverlaysForState(selectedState) : []
+
   return (
     <div
       className={`${fraunces.variable} ${dmSans.variable} min-h-screen bg-[#FAFAF7] text-slate-900 antialiased`}
@@ -121,7 +79,7 @@ export default function LandingPage() {
             href="/generate"
             className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
           >
-            Get my letter
+            Generate my letter
             <span className="hidden text-amber-100/80 sm:inline">— $39</span>
           </Link>
         </div>
@@ -184,6 +142,9 @@ export default function LandingPage() {
             <p className="mt-4 text-sm text-slate-500">
               Average security deposit: <span className="font-medium text-slate-700">$1,500–$2,500</span> — spend $39 to recover it.
             </p>
+            <p className="mt-2 text-xs text-slate-400">
+              Not legal advice. Every citation in your letter is a real statute.
+            </p>
           </div>
 
           <div className="relative mx-auto w-full max-w-md lg:max-w-none">
@@ -192,38 +153,35 @@ export default function LandingPage() {
               className="absolute inset-0 translate-x-3 translate-y-3 rotate-2 rounded-md border border-[#E7E5E0] bg-white/70 shadow-[0_25px_50px_-12px_rgba(15,23,42,0.18)]"
             />
             <div className="relative -rotate-[1.5deg] rounded-md border border-[#E7E5E0] bg-white p-7 shadow-[0_30px_70px_-20px_rgba(15,23,42,0.28)] sm:p-9">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                <div className="flex items-center gap-2">
-                  <ShieldMark className="h-4 w-4 text-slate-900" />
-                  <span className="text-sm font-semibold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
-                    TenantShield
-                  </span>
-                </div>
-                <span className="text-[10px] uppercase tracking-widest text-slate-400">Demand letter</span>
-              </div>
-              <div className="mt-5 space-y-3 text-[13px] leading-relaxed text-slate-700" style={{ fontFamily: 'var(--font-display)' }}>
+              <div className="mt-1 space-y-3 text-[13px] leading-relaxed text-slate-700" style={{ fontFamily: 'var(--font-display)' }}>
                 <p className="text-slate-500">May 11, 2026</p>
                 <p><span className="font-medium text-slate-900">RE:</span> Return of security deposit — 1428 Magnolia Ave, Unit 3</p>
                 <p>Dear Mr. Patterson,</p>
-                <p>
-                  Pursuant to <span className="font-semibold text-[#B45309]">Fla. Stat. § 83.49(3)(a)</span>, a
-                  landlord must return a tenant&apos;s security deposit within{' '}
-                  <span className="font-semibold">15 days</span> of lease termination, or
-                  provide written notice of intent to impose a claim within{' '}
-                  <span className="font-semibold">30 days</span>.
-                </p>
-                <p>
-                  As of the date of this letter, <span className="font-semibold">45 days</span>{' '}
-                  have elapsed since I vacated the premises on March 27, 2026, and you have
-                  failed to comply with either obligation…
-                </p>
+                {/* Body paragraphs are intentionally blurred so the preview shows a
+                    real, formatted letter without exposing copyable content. */}
+                <div className="relative select-none" aria-hidden>
+                  <div className="space-y-3 blur-[5px]">
+                    <p>
+                      Pursuant to <span className="font-semibold text-[#B45309]">Fla. Stat. § 83.49(3)(a)</span>, a
+                      landlord must return a tenant&apos;s security deposit within{' '}
+                      <span className="font-semibold">15 days</span> of lease termination, or
+                      provide written notice of intent to impose a claim within{' '}
+                      <span className="font-semibold">30 days</span>.
+                    </p>
+                    <p>
+                      As of the date of this letter, <span className="font-semibold">45 days</span>{' '}
+                      have elapsed since I vacated the premises on March 27, 2026, and you have
+                      failed to comply with either obligation…
+                    </p>
+                  </div>
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0) 35%, rgba(255,255,255,0.85) 100%)' }}
+                  />
+                </div>
                 <div className="!mt-5 flex h-1 w-12 rounded-full bg-slate-200" />
                 <div className="flex h-1 w-2/3 rounded-full bg-slate-200" />
                 <div className="flex h-1 w-1/2 rounded-full bg-slate-200" />
-              </div>
-              <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4 text-[10px] uppercase tracking-widest text-slate-400">
-                <span>Page 1 of 2</span>
-                <span>Generated by TenantShield</span>
               </div>
             </div>
             <div className="absolute -bottom-4 left-6 hidden rounded-full bg-slate-900 px-4 py-2 text-xs font-medium text-white shadow-lg sm:left-10 sm:inline-flex">
@@ -320,7 +278,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ==================== STATE DEADLINE TABLE ==================== */}
+      {/* ==================== STATE DEADLINE LOOKUP ==================== */}
       <section id="deadlines" className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <div className="max-w-2xl">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">Know your deadline</p>
@@ -332,27 +290,74 @@ export default function LandingPage() {
             your landlord missed it, you may be entitled to penalties on top of your deposit.
           </p>
         </div>
-        <div className="mt-10 overflow-hidden rounded-xl border border-[#E7E5E0] bg-white">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-[#E7E5E0] bg-slate-50/70 text-xs uppercase tracking-widest text-slate-500">
-              <tr>
-                <th className="px-5 py-3 font-medium">State</th>
-                <th className="px-5 py-3 font-medium">Deadline</th>
-                <th className="hidden px-5 py-3 font-medium md:table-cell">Statute</th>
-              </tr>
-            </thead>
-            <tbody>
-              {STATE_DEADLINES.map((row, i) => (
-                <tr key={row.state} className={i % 2 === 0 ? 'bg-white' : 'bg-[#FAFAF7]/60'}>
-                  <td className="px-5 py-3 font-medium text-slate-900">{row.state}</td>
-                  <td className="px-5 py-3 text-slate-700">{row.days}</td>
-                  <td className="hidden px-5 py-3 font-mono text-xs text-slate-500 md:table-cell">{row.statute}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        <div className="mt-10 max-w-2xl">
+          <label htmlFor="deadline-state" className="block text-sm font-medium text-slate-700 mb-2">
+            Select your state
+          </label>
+          <select
+            id="deadline-state"
+            value={selectedState}
+            onChange={(e) => setSelectedState(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#B45309]/40 focus:border-[#B45309] transition"
+          >
+            <option value="">Choose a state…</option>
+            {STATE_DEADLINES.map((row) => (
+              <option key={row.state} value={row.state}>{row.state}</option>
+            ))}
+          </select>
+
+          {selected && (
+            <div className="mt-6 overflow-hidden rounded-xl border border-[#E7E5E0] bg-white">
+              <div className="border-b border-[#E7E5E0] bg-slate-50/70 px-6 py-4">
+                <h3 className="text-lg font-semibold text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
+                  {selected.state}
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 gap-4 px-6 py-5 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Return deadline</p>
+                  <p className="mt-1 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
+                    {selected.days}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Statute</p>
+                  <p className="mt-1 font-mono text-sm text-slate-700">{selected.statute}</p>
+                </div>
+              </div>
+
+              {cityOverlays.length > 0 && (
+                <div className="border-t border-[#E7E5E0] bg-[#FAFAF7]/60 px-6 py-5">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[#B45309]">
+                    City-level variations
+                  </p>
+                  <p className="mt-1 mb-4 text-sm text-slate-600">
+                    Some cities in {selected.state} add protections or set different deadlines.
+                    If your rental is in one of these, your letter will apply the local rules too.
+                  </p>
+                  <ul className="space-y-4">
+                    {cityOverlays.map((overlay) => (
+                      <li key={overlay.city} className="rounded-lg border border-[#E7E5E0] bg-white p-4">
+                        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                          <h4 className="font-semibold text-slate-900">{overlay.city}</h4>
+                          <span className="font-mono text-xs text-slate-500">{overlay.ordinance}</span>
+                        </div>
+                        <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{overlay.summary}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-        <p className="mt-4 text-xs text-slate-500">
+
+        <p className="mt-6 max-w-2xl text-sm text-slate-500">
+          Some cities have additional protections or different deadlines — select your state to
+          see city-level variations where they apply.
+        </p>
+        <p className="mt-2 max-w-2xl text-xs text-slate-500">
           Deadlines and citations are general references. Your actual letter will cite the specific subsection that applies to your situation.
         </p>
       </section>
@@ -433,25 +438,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ==================== TRUST SIGNALS ==================== */}
-      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="grid gap-6 sm:grid-cols-3">
-          {[
-            { title: 'Your data is never sold', body: 'We only use your information to generate your letter. Period.' },
-            { title: 'Secure payment via Stripe', body: 'PCI-compliant checkout. We never see or store your card details.' },
-            { title: 'Based on real statutes', body: 'Not legal advice — but every citation in your letter is a real law.' },
-          ].map((item) => (
-            <div key={item.title} className="rounded-xl border border-[#E7E5E0] bg-white p-6">
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">
-                <ShieldMark className="h-5 w-5" />
-              </div>
-              <h3 className="font-semibold text-slate-900">{item.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{item.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ==================== FINAL CTA ==================== */}
       <section className="px-5 pb-20 sm:px-8 sm:pb-28">
         <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl bg-slate-900 px-8 py-16 text-center sm:px-16 sm:py-20">
@@ -475,6 +461,9 @@ export default function LandingPage() {
             </Link>
             <span className="text-sm text-slate-400">One-time payment. No subscription.</span>
           </div>
+          <p className="mt-4 text-xs text-slate-400">
+            Not legal advice. Every citation in your letter is a real statute.
+          </p>
         </div>
       </section>
 
