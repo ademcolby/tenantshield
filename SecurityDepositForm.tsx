@@ -1,3 +1,4 @@
+// SecurityDepositForm.tsx  (repo root)
 'use client';
 
 import { useState } from 'react';
@@ -109,14 +110,7 @@ const CITIES_BY_STATE: { [key: string]: string[] } = {
 const OTHER_CITY = 'Other city';
 
 // States whose statutory return clock is triggered by (or measured from) the
-// date the tenant provided a forwarding/new mailing address. For these states
-// the letter's deadline math needs that date, so the form surfaces an optional
-// forwarding-address-date field when one of them is selected.
-//   - Connecticut: 30 days OR 15 days after forwarding address, whichever is later
-//   - South Dakota: 14-day clock runs from the later of move-out or forwarding address
-//   - Iowa: 30-day clock starts on receipt of the mailing address
-//   - Nebraska: 14-day clock runs after demand and designation of address
-//   - Wyoming: 30 days OR 15 days after receipt of new mailing address, whichever is later
+// date the tenant provided a forwarding/new mailing address.
 const FORWARDING_ADDRESS_STATES = [
   'Connecticut',
   'South Dakota',
@@ -125,47 +119,47 @@ const FORWARDING_ADDRESS_STATES = [
   'Wyoming',
 ];
 
-// States whose statute applies only above a building unit-count threshold (or
-// where unit count changes the rule), so the letter must know the building size:
-//   - Illinois: Security Deposit Return Act applies only to 5+ unit landlords
-//   - Arkansas: deposit statute applies only to 6+ unit / corporate landlords
-//   - New York: 6+ unit buildings trigger the interest-bearing-account rule
+// States whose statute applies only above a building unit-count threshold.
 const UNIT_COUNT_STATES = ['Illinois', 'Arkansas', 'New York'];
-
-// Alaska's return deadline is 14 days if the tenant gave proper written notice
-// of termination (and no damages are deducted) vs 30 days otherwise, so the
-// letter needs to know whether proper notice was given.
-const NOTICE_STATES = ['Alaska'];
 
 // Maine's deadline is 21 days for a tenancy-at-will (no written lease) vs 30
 // days under a written lease, so the letter needs the lease type.
 const LEASE_TYPE_STATES = ['Maine'];
 
-const SUB_TYPES = [
-  { id: 'no_response', label: 'No response / total silence', icon: '📭' },
-  { id: 'partial_no_itemization', label: 'Partial return without itemization', icon: '📄' },
-  { id: 'partial_disputed_items', label: 'Partial return with disputed items', icon: '⚖️' },
-  { id: 'full_withholding_vague', label: 'Full withholding with vague reasons', icon: '❌' },
-  { id: 'late_notice', label: 'Late notice after deadline', icon: '⏰' },
-  { id: 'wear_and_tear', label: 'Charged for normal wear and tear', icon: '🏠' },
-  { id: 'preexisting_damage', label: 'Charged for pre-existing damage', icon: '📸' },
-  { id: 'inflated_charges', label: 'Inflated repair charges', icon: '💰' },
-  { id: 'forwarding_address', label: 'Forwarding address excuse', icon: '📮' },
-  { id: 'escrow_violation', label: 'Deposit not properly held', icon: '🏦' }
+// NOTE (Change 6): Alaska's 14-vs-30-day notice branch is now DERIVED from the
+// Quick Case Check "proper written notice" question (single source of truth),
+// rather than a separate Alaska-only field. See deriveGaveWrittenNotice() and
+// the Alaska required-field check in validateForm.
+
+interface SubTypeItem { id: string; label: string; icon: string; tip: string; }
+interface CircumstanceItem { id: string; label: string; tip: string; }
+
+// Trimmed from 10 -> 8 (removed vague "No response / total silence" and
+// "Forwarding address excuse"). Each item now carries a plain-language tooltip.
+const SUB_TYPES: SubTypeItem[] = [
+  { id: 'partial_no_itemization', label: 'Partial return without itemization', icon: '\uD83D\uDCC4', tip: 'Your landlord returned part of your deposit but didn\u2019t provide a written breakdown of what they kept or why. Example: you got $800 back from a $1,400 deposit with no explanation.' },
+  { id: 'partial_disputed_items', label: 'Partial return with disputed items', icon: '\u2696\uFE0F', tip: 'Your landlord returned part of your deposit but listed deductions you believe are wrong or inflated. Example: they charged $600 for repairs you don\u2019t think were your responsibility.' },
+  { id: 'full_withholding_vague', label: 'Full withholding with vague reasons', icon: '\u274C', tip: 'Your landlord kept the entire deposit but gave only a vague or general reason, with no itemized list. Example: they said \u201Ccleaning and repairs\u201D with no documentation.' },
+  { id: 'late_notice', label: 'Late notice after deadline', icon: '\u23F0', tip: 'Your landlord sent their deduction notice after your state\u2019s legal deadline had already passed. Example: your state requires notice within 30 days and they sent it on day 45.' },
+  { id: 'wear_and_tear', label: 'Charged for normal wear and tear', icon: '\uD83C\uDFE0', tip: 'Your landlord is deducting for things that naturally age or wear with normal use. Example: carpet that faded over 3 years, small wall scuffs, or minor paint wear.' },
+  { id: 'preexisting_damage', label: 'Charged for pre-existing damage', icon: '\uD83D\uDCF8', tip: 'Your landlord is charging for damage that existed before you moved in. Example: a cracked tile or stained ceiling that was already there when you arrived.' },
+  { id: 'inflated_charges', label: 'Inflated repair charges', icon: '\uD83D\uDCB0', tip: 'The amounts your landlord is claiming seem far higher than the repairs would reasonably cost. Example: charging $900 to repaint one bedroom.' },
+  { id: 'escrow_violation', label: 'Deposit not properly held', icon: '\uD83C\uDFE6', tip: 'Your landlord may have failed to hold your deposit in a separate account as required by law. Example: no disclosure of where it was held, or it was mixed with operating funds.' },
 ];
 
-const SPECIAL_CIRCUMSTANCES = [
-  { id: 'multiple_tenants_on_lease', label: 'I had roommates on the lease' },
-  { id: 'property_sold_during_tenancy', label: 'The property was sold during my tenancy' },
-  { id: 'landlord_deceased_or_estate', label: 'The landlord has passed away' },
-  { id: 'tenant_broke_lease_early', label: 'I broke the lease early' },
-  { id: 'deposit_applied_to_last_rent', label: 'Landlord applied my deposit to last month\u2019s rent' },
-  { id: 'non_refundable_cleaning_fee', label: 'I paid a non-refundable cleaning fee' },
-  { id: 'tenant_admits_partial_damage', label: 'Some damage occurred but I dispute the amount' },
-  { id: 'lease_expired_then_month_to_month', label: 'My lease ended and I went month-to-month' }
+// Trimmed from 8 -> 6 (removed "landlord has passed away" and "lease ended /
+// went month-to-month"). Each item now carries a plain-language tooltip.
+const SPECIAL_CIRCUMSTANCES: CircumstanceItem[] = [
+  { id: 'multiple_tenants_on_lease', label: 'I had roommates on the lease', tip: 'Other tenants were also listed on the lease. This affects how the letter is addressed and how the deposit demand is structured.' },
+  { id: 'property_sold_during_tenancy', label: 'The property was sold during my tenancy', tip: 'Your landlord sold the property while you were still living there. The new owner may have inherited the obligation to return your deposit.' },
+  { id: 'tenant_broke_lease_early', label: 'I broke the lease early', tip: 'You moved out before your lease end date. Your letter will reference your landlord\u2019s legal duty to re-rent and mitigate losses rather than simply keep your deposit.' },
+  { id: 'deposit_applied_to_last_rent', label: 'Landlord applied my deposit to last month\u2019s rent', tip: 'Your landlord used your security deposit to cover your final month\u2019s rent without your agreement. Security deposits and rent are legally separate.' },
+  { id: 'non_refundable_cleaning_fee', label: 'I paid a non-refundable cleaning fee', tip: 'You paid a fee at move-in that was labeled non-refundable. Depending on your state, this may still be legally recoverable.' },
+  { id: 'tenant_admits_partial_damage', label: 'Some damage occurred but I dispute the amount', tip: 'You acknowledge some damage happened but believe the landlord\u2019s charges are excessive or undocumented. Example: you broke a towel bar but they\u2019re charging $400 to repaint the whole bathroom.' },
 ];
 
 type ViewState = 'form' | 'loading' | 'result' | 'missing_info' | 'out_of_scope' | 'error';
+type Tier = 'strong' | 'moderate' | 'weak';
 
 interface AddressParts {
   street: string;
@@ -178,8 +172,6 @@ interface AddressParts {
 const emptyAddress: AddressParts = { street: '', unit: '', city: '', state: '', zip: '' };
 
 // Compose 5 sub-fields into a single USPS-style string for the API.
-// Returns '' when nothing meaningful was entered (preserves the
-// "not provided" behavior the API/system prompt already expects).
 function composeAddress(a: AddressParts): string {
   const line1 = [a.street, a.unit].filter(Boolean).join(', ');
   const abbr = a.state ? (STATE_ABBR[a.state] || a.state) : '';
@@ -191,9 +183,6 @@ function composeAddress(a: AddressParts): string {
 
 // --- Validation helpers (pure) ---
 
-// Sanitize then validate a deposit amount. Strips a leading $ and commas, then
-// requires digits with optional cents (no letters, no exponent, no symbols, no
-// 3+ decimals) and a value greater than zero. Returns the parsed number.
 function parseDeposit(raw: string): {
   ok: boolean;
   value: number;
@@ -207,8 +196,14 @@ function parseDeposit(raw: string): {
   return { ok: true, value: num, reason: '' };
 }
 
-// Parse a yyyy-mm-dd string into a LOCAL midnight Date (avoids the UTC
-// off-by-one that new Date('yyyy-mm-dd') introduces).
+// Lenient money parse for the case-check amounts (returns 0 when unparseable).
+function parseMoney(raw: string): number {
+  const cleaned = (raw || '').replace(/[$,\s]/g, '');
+  if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) return 0;
+  const n = parseFloat(cleaned);
+  return n > 0 ? n : 0;
+}
+
 function parseLocalDate(s: string): Date | null {
   if (!s) return null;
   const parts = s.split('-').map(Number);
@@ -228,6 +223,27 @@ function startOfToday(): Date {
 function daysBetween(a: Date, b: Date): number {
   return Math.round((a.getTime() - b.getTime()) / 86400000);
 }
+
+// Small hover/tap tooltip. Uses a non-interactive marker so it can live inside
+// chip <button>s without nesting interactive elements. Shows on hover (desktop)
+// and on focus (keyboard / tap where supported).
+const InfoTip = ({ text }: { text: string }) => (
+  <span className="group/tip relative inline-flex align-middle">
+    <span
+      tabIndex={0}
+      role="img"
+      aria-label={text}
+      className="ml-1 inline-flex h-4 w-4 cursor-help items-center justify-center rounded-full border border-slate-300 text-[10px] font-semibold leading-none text-slate-500 outline-none focus:ring-2 focus:ring-[#B45309]/40"
+    >
+      i
+    </span>
+    <span
+      className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 w-60 -translate-x-1/2 rounded-lg bg-slate-900 px-3 py-2 text-left text-xs font-normal leading-snug text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/tip:opacity-100 group-focus-within/tip:opacity-100"
+    >
+      {text}
+    </span>
+  </span>
+);
 
 export default function SecurityDepositForm() {
   const [viewState, setViewState] = useState<ViewState>('form');
@@ -262,20 +278,30 @@ export default function SecurityDepositForm() {
     isRentStabilized: '',
     leaseStartDate: '',
     buildingUnitCount: '',
-    gaveWrittenNotice: '',
+    gaveWrittenNotice: '', // derived from properNotice on submit (Alaska 14-vs-30-day)
     leaseType: '',
+    // ---- Quick Case Check (Change 6) ----
+    itemizationProvided: '',   // 'yes_documented' | 'yes_disputed' | 'none'
+    unitCondition: '',         // 'good' | 'minor' | 'damage'
+    damageEstimate: '',        // numeric string, shown when unitCondition === 'damage'
+    unpaidRent: '',            // 'no' | 'yes'
+    unpaidRentAmount: '',      // numeric string, shown when unpaidRent === 'yes'
+    properNotice: '',          // 'yes' | 'not_required' | 'no'
+    noticeGiven: '',           // 'partial' | 'none' (secondary; shown when properNotice === 'no')
+    conditionDocumentation: '', // 'yes' | 'partial' | 'no'
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  // Amber, non-blocking notices (warn tier). Unlike errors, these don't stop
-  // submission — but the customer must see them once before we proceed.
   const [warnings, setWarnings] = useState<{ [key: string]: string }>({});
   const [warningsShown, setWarningsShown] = useState(false);
+
+  // Weak-case acknowledgment modal (Change 6).
+  const [showWeakModal, setShowWeakModal] = useState(false);
+  const [weakChecked, setWeakChecked] = useState(false);
+  const [weakAcknowledged, setWeakAcknowledged] = useState(false);
+
   const todayISO = new Date().toISOString().slice(0, 10);
 
-  // Effective city value: the typed value when "Other city" is selected,
-  // otherwise the dropdown selection. This is what feeds the API + the
-  // system prompt's sub-jurisdiction matching.
   const effectiveCity = citySelect === OTHER_CITY ? otherCity.trim() : citySelect;
 
   const baseCities = formData.state ? (CITIES_BY_STATE[formData.state] || []) : [];
@@ -285,13 +311,10 @@ export default function SecurityDepositForm() {
     ['Arizona', 'Washington', 'Oregon'].includes(formData.state) &&
     formData.specialCircumstances.includes('non_refundable_cleaning_fee');
   const showRentStabilized = effectiveCity === 'New York City';
-  // P15: lease/renewal start date only matters for NYC rent-stabilized letters,
-  // where GOL § 7-107's one-month cap applies to leases entered on/after July 1, 1974.
-  // Only surface it once the tenant has confirmed rent-stabilized status.
   const showLeaseStartDate = showRentStabilized && formData.isRentStabilized === 'yes';
   const showUnitCount = UNIT_COUNT_STATES.includes(formData.state);
-  const showNotice = NOTICE_STATES.includes(formData.state);
   const showLeaseType = LEASE_TYPE_STATES.includes(formData.state);
+  const isAlaska = formData.state === 'Alaska';
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -299,8 +322,22 @@ export default function SecurityDepositForm() {
     if (warnings[field]) setWarnings(prev => ({ ...prev, [field]: '' }));
   };
 
+  // Case-check changes can reset dependent follow-ups, and always reset the
+  // weak-case acknowledgment so the customer re-sees the warning if they revise.
+  const handleCaseChange = (field: string, value: string) => {
+    setFormData(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'properNotice' && value !== 'no') next.noticeGiven = '';
+      if (field === 'unpaidRent' && value !== 'yes') next.unpaidRentAmount = '';
+      if (field === 'unitCondition' && value !== 'damage') next.damageEstimate = '';
+      return next;
+    });
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+    setWeakAcknowledged(false);
+    setWeakChecked(false);
+  };
+
   const handleStateChange = (value: string) => {
-    // Reset city when state changes (old city no longer valid).
     setCitySelect('');
     setOtherCity('');
     setFormData(prev => ({ ...prev, state: value, city: '' }));
@@ -366,12 +403,11 @@ export default function SecurityDepositForm() {
 
   // DOM order of fields, used to scroll to the first issue on submit.
   const FIELD_ORDER = [
-    'state', 'city', 'tenantName', 'tenantAddress', 'landlordName', 'landlordAddress',
-    'rentalPropertyAddress', 'depositAmount', 'vacatedDate', 'forwardingAddressDate',
-    'buildingUnitCount', 'gaveWrittenNotice', 'leaseType', 'situation',
+    'state', 'city', 'tenantName', 'rentalPropertyAddress', 'depositAmount', 'vacatedDate',
+    'forwardingAddressDate', 'buildingUnitCount', 'leaseType', 'tenantAddress',
+    'landlordName', 'landlordAddress', 'properNotice', 'situation',
     'tenantZip', 'landlordZip', 'rentalZip', 'identicalParties',
   ];
-  // Warn keys that don't have their own anchor map onto a nearby field's anchor.
   const SCROLL_ALIAS: { [k: string]: string } = {
     tenantZip: 'tenantAddress',
     landlordZip: 'landlordAddress',
@@ -391,8 +427,64 @@ export default function SecurityDepositForm() {
 
   const SITUATION_MAX = 4000;
 
-  // Returns { blocks, warns }. Blocks stop submission; warns are amber and the
-  // customer must acknowledge them once (a second click) before checkout.
+  // Derive the legacy Alaska notice value from the case-check answer.
+  const deriveGaveWrittenNotice = (): string => {
+    if (formData.properNotice === 'yes') return 'yes';
+    if (formData.properNotice) return 'no'; // 'not_required' or 'no' -> not "proper notice given"
+    return '';
+  };
+
+  // Case-strength tier. Returns null until the four material questions are
+  // answered (itemization, condition, unpaid rent, notice).
+  const computeTier = (): Tier | null => {
+    const f = formData;
+    const answered = f.itemizationProvided && f.unitCondition && f.unpaidRent && f.properNotice;
+    if (!answered) return null;
+
+    const depositVal = parseDeposit(f.depositAmount).value;
+    const unpaidVal = parseMoney(f.unpaidRentAmount);
+    const damageVal = parseMoney(f.damageEstimate);
+
+    // Weak: offsets meet or exceed the deposit, or the tenant abandoned.
+    if (f.noticeGiven === 'none') return 'weak';
+    if (f.unpaidRent === 'yes' && depositVal > 0 && unpaidVal >= depositVal) return 'weak';
+    if (f.unitCondition === 'damage' && depositVal > 0 && damageVal >= depositVal) return 'weak';
+
+    // Moderate: some valid offset or weakened standing, but not exceeding deposit.
+    const moderate =
+      f.itemizationProvided === 'yes_disputed' ||
+      f.unitCondition === 'minor' ||
+      f.unitCondition === 'damage' ||
+      f.unpaidRent === 'yes' ||
+      f.properNotice === 'no' ||
+      f.conditionDocumentation === 'no';
+    if (moderate) return 'moderate';
+
+    return 'strong';
+  };
+
+  // Human-readable reasons that pushed a case into the weak tier (for the modal).
+  const weakReasons = (): string[] => {
+    const f = formData;
+    const out: string[] = [];
+    const depositVal = parseDeposit(f.depositAmount).value;
+    const unpaidVal = parseMoney(f.unpaidRentAmount);
+    const damageVal = parseMoney(f.damageEstimate);
+    if (f.noticeGiven === 'none') {
+      out.push('You moved out without giving your landlord any notice, which can expose you to lost-rent claims for the remaining lease term.');
+    }
+    if (f.unpaidRent === 'yes' && depositVal > 0 && unpaidVal >= depositVal) {
+      out.push('The unpaid rent or fees you owe ($' + unpaidVal.toLocaleString() + ') meet or exceed your deposit, which your landlord can legitimately offset.');
+    }
+    if (f.unitCondition === 'damage' && depositVal > 0 && damageVal >= depositVal) {
+      out.push('The damage you estimated ($' + damageVal.toLocaleString() + ') meets or exceeds your deposit, which your landlord may be able to deduct.');
+    }
+    if (out.length === 0) {
+      out.push('Based on your answers, your landlord may have valid offsets that meet or exceed your deposit.');
+    }
+    return out;
+  };
+
   const validateForm = (composed: {
     city: string;
     rentalPropertyAddress: string;
@@ -410,13 +502,13 @@ export default function SecurityDepositForm() {
     if (!rentalAddr.street) b.rentalPropertyAddress = 'Rental property street address is required';
     if (!formData.vacatedDate) b.vacatedDate = 'Move-out date is required';
 
-    // Tenant mailing address (BLOCK) — this is the return address the letter uses.
+    // Tenant mailing address (BLOCK) — the return address the letter uses.
     if (!(tenantAddr.street && tenantAddr.city && tenantAddr.state && tenantAddr.zip)) {
       b.tenantAddress =
         'Enter your full mailing address (street, city, state, ZIP) \u2014 this is the return address the letter tells your landlord to send your deposit to.';
     }
 
-    // Deposit (BLOCK / WARN) — must resolve to a clean positive dollar value.
+    // Deposit (BLOCK / WARN).
     const dep = parseDeposit(formData.depositAmount);
     if (!dep.ok) {
       if (dep.reason === 'blank') b.depositAmount = 'Enter the security deposit amount you paid.';
@@ -458,12 +550,13 @@ export default function SecurityDepositForm() {
     if (showLeaseType && !formData.leaseType) {
       b.leaseType = `Select your tenancy type \u2014 it determines the return deadline in ${formData.state}.`;
     }
-    if (showNotice && !formData.gaveWrittenNotice) {
-      b.gaveWrittenNotice = `Let us know whether you gave written notice \u2014 it changes the deadline in ${formData.state}.`;
+    // Alaska: the notice question (now in the Quick Case Check) drives the
+    // 14-vs-30-day deadline, so it must be answered.
+    if (isAlaska && !formData.properNotice) {
+      b.properNotice = 'Let us know whether you gave proper written notice \u2014 it changes the return deadline in Alaska.';
     }
 
-    // Unit count sanity when shown (BLOCK only if they typed something invalid;
-    // blank or "I'm not sure" is allowed and handled conditionally by the letter).
+    // Unit count sanity when shown (BLOCK only if they typed something invalid).
     if (showUnitCount && formData.buildingUnitCount !== '' && formData.buildingUnitCount !== 'unknown') {
       if (!/^\d+$/.test(formData.buildingUnitCount) || parseInt(formData.buildingUnitCount, 10) < 1) {
         b.buildingUnitCount = 'Enter the number of units as a whole number (1 or more), or check \u201cI\u2019m not sure.\u201d';
@@ -506,18 +599,10 @@ export default function SecurityDepositForm() {
     return { blocks: b, warns: w };
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Compose the split address sections back into the single string keys
-    // the API contract expects. API + systemPrompt are unchanged.
+  const runSubmit = async (opts?: { ackWeak?: boolean }) => {
     const composedTenant = composeAddress(tenantAddr);
     const composedLandlord = composeAddress(landlordAddr);
     const composedCity = effectiveCity;
-    // The rental's city/state are taken from the top "Rental location" section
-    // (the single source of truth that also drives jurisdiction). The rental
-    // card only collects street/unit/zip, so merge them here for the printed
-    // property address.
     const composedRental = composeAddress({
       ...rentalAddr,
       city: composedCity,
@@ -534,22 +619,25 @@ export default function SecurityDepositForm() {
     const blockKeys = Object.keys(blocks).filter(k => blocks[k]);
     const warnKeys = Object.keys(warns).filter(k => warns[k]);
 
-    // Blocks always stop us; fix those first.
     if (blockKeys.length > 0) {
       setWarningsShown(false);
       scrollToFirstIssue(blockKeys);
       return;
     }
 
-    // No blocks, but unseen warnings: show them once and make the customer
-    // click again to confirm — so they never pay before seeing a concern.
     if (warnKeys.length > 0 && !warningsShown) {
       setWarningsShown(true);
       scrollToFirstIssue(warnKeys);
       return;
     }
 
-    // Normalize the deposit to a clean numeric string for the API + letter.
+    // Weak-case gate: show the acknowledgment modal once.
+    const tier = computeTier();
+    if (tier === 'weak' && !weakAcknowledged && !opts?.ackWeak) {
+      setShowWeakModal(true);
+      return;
+    }
+
     const cleanedDeposit = parseDeposit(formData.depositAmount).value.toString();
 
     const payload = {
@@ -559,6 +647,10 @@ export default function SecurityDepositForm() {
       tenantAddress: composedTenant,
       landlordAddress: composedLandlord,
       rentalPropertyAddress: composedRental,
+      // Derive the legacy Alaska notice flag from the case-check answer.
+      gaveWrittenNotice: deriveGaveWrittenNotice(),
+      // Record the assessed tier so the letter can calibrate its tone/demand.
+      caseStrength: tier ?? '',
     };
 
     setViewState('loading');
@@ -579,6 +671,17 @@ export default function SecurityDepositForm() {
       setErrorMessage('Failed to start checkout. Please try again.');
       setViewState('error');
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    runSubmit();
+  };
+
+  const handleProceedAnyway = () => {
+    setWeakAcknowledged(true);
+    setShowWeakModal(false);
+    runSubmit({ ackWeak: true });
   };
 
   const handleCopy = async () => {
@@ -759,15 +862,17 @@ export default function SecurityDepositForm() {
 
   const labelClass = 'block text-sm font-medium text-slate-700 mb-2';
   const cardClass = 'rounded-2xl border border-[#E7E5E0] bg-white p-6 sm:p-7 space-y-6';
-  const sectionLabel =
-    'text-xs font-semibold uppercase tracking-widest text-[#B45309]';
+  const sectionLabel = 'text-xs font-semibold uppercase tracking-widest text-[#B45309]';
+  const radioRow = 'flex items-start gap-2 text-sm text-slate-700';
 
+  // Inline address block — used for the tenant mailing address and the landlord
+  // address. The RENTAL address is rendered inline in Card 1 (city/state come
+  // from the jurisdiction dropdowns), so it does NOT use this helper.
   const renderAddressBlock = (
-    which: 'tenant' | 'landlord' | 'rental',
+    which: 'tenant' | 'landlord',
     addr: AddressParts,
     opts: {
       required?: boolean;
-      hideCityState?: boolean;
       fieldErrors?: Partial<Record<keyof AddressParts, boolean>>;
       message?: string;
       warnMessage?: string;
@@ -798,33 +903,29 @@ export default function SecurityDepositForm() {
             className={inputClass(!!fe.unit)}
           />
         </div>
-        {!opts.hideCityState && (
-          <>
-            <div className="sm:col-span-2">
-              <label className={labelClass}>
-                City {opts.required && <span className="text-red-500">*</span>}
-              </label>
-              <input
-                type="text"
-                value={addr.city}
-                onChange={(e) => updateAddr(which, 'city', e.target.value)}
-                placeholder="Austin"
-                className={inputClass(!!fe.city)}
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className={labelClass}>State</label>
-              <select
-                value={addr.state}
-                onChange={(e) => updateAddr(which, 'state', e.target.value)}
-                className={inputClass(!!fe.state)}
-              >
-                <option value="">Select…</option>
-                {US_STATES.map(s => (<option key={s} value={s}>{s}</option>))}
-              </select>
-            </div>
-          </>
-        )}
+        <div className="sm:col-span-2">
+          <label className={labelClass}>
+            City {opts.required && <span className="text-red-500">*</span>}
+          </label>
+          <input
+            type="text"
+            value={addr.city}
+            onChange={(e) => updateAddr(which, 'city', e.target.value)}
+            placeholder="Austin"
+            className={inputClass(!!fe.city)}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className={labelClass}>State</label>
+          <select
+            value={addr.state}
+            onChange={(e) => updateAddr(which, 'state', e.target.value)}
+            className={inputClass(!!fe.state)}
+          >
+            <option value="">Select…</option>
+            {US_STATES.map(s => (<option key={s} value={s}>{s}</option>))}
+          </select>
+        </div>
         <div className="sm:col-span-2">
           <label className={labelClass}>ZIP code</label>
           <input
@@ -844,6 +945,28 @@ export default function SecurityDepositForm() {
         )}
       </div>
     );
+  };
+
+  const tier = computeTier();
+  const tierStyles: Record<Tier, { box: string; icon: string; title: string; body: string }> = {
+    strong: {
+      box: 'border-[#15803D]/30 bg-[#15803D]/[0.06]',
+      icon: '✅',
+      title: 'Strong case',
+      body: 'Your answers suggest solid legal standing. Your letter will argue firmly for the full return of your deposit.',
+    },
+    moderate: {
+      box: 'border-amber-300 bg-amber-50',
+      icon: '⚠️',
+      title: 'Moderate case',
+      body: 'Some factors may complicate your claim. Your letter will acknowledge them and argue for the legitimate (net) portion of your deposit.',
+    },
+    weak: {
+      box: 'border-red-300 bg-red-50',
+      icon: '🔴',
+      title: 'Weak case',
+      body: 'Based on your answers, your landlord may have valid offsets that meet or exceed your deposit. Your letter will still be generated, but it will be more measured in its demands. You may want to consider whether to proceed.',
+    },
   };
 
   return (
@@ -884,30 +1007,59 @@ export default function SecurityDepositForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* RENTAL LOCATION (single source of truth for jurisdiction) */}
+          {/* ============ CARD 1: RENTAL PROPERTY DETAILS ============ */}
           <div className={cardClass}>
             <div>
-              <h3 className={`${sectionLabel} mb-2`}>Rental location</h3>
+              <h3 className={`${sectionLabel} mb-2`}>Rental Property Details</h3>
               <p className="text-sm text-slate-600">
-                Where was the rental you&apos;re writing about located? This sets which
-                state and local laws your letter cites — enter the rental&apos;s state and
-                city, not your current address.
+                Enter the rental you&apos;re writing about — the city and state set
+                which laws your letter cites, so use the rental&apos;s location, not your
+                current address.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div id="f-state">
-                <label className={labelClass}>State <span className="text-red-500">*</span></label>
-                <select
-                  value={formData.state}
-                  onChange={(e) => handleStateChange(e.target.value)}
-                  className={inputClass(!!errors.state)}
-                >
-                  <option value="">Select state…</option>
-                  {US_STATES.map(state => (<option key={state} value={state}>{state}</option>))}
-                </select>
-                {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state}</p>}
+
+            {/* Tenant name */}
+            <div id="f-tenantName">
+              <label className={labelClass}>Your full name <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={formData.tenantName}
+                onChange={(e) => handleInputChange('tenantName', e.target.value)}
+                placeholder="Jane Smith"
+                className={inputClass(!!errors.tenantName)}
+              />
+              {errors.tenantName && <p className="mt-1 text-sm text-red-600">{errors.tenantName}</p>}
+            </div>
+
+            {/* Rental address: street / unit */}
+            <div id="f-rentalPropertyAddress" className="grid grid-cols-1 gap-4 sm:grid-cols-6">
+              <div className="sm:col-span-4">
+                <label className={labelClass}>
+                  Street address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={rentalAddr.street}
+                  onChange={(e) => updateAddr('rental', 'street', e.target.value)}
+                  placeholder="1428 Magnolia Ave"
+                  className={inputClass(!!errors.rentalPropertyAddress)}
+                />
               </div>
-              <div id="f-city">
+              <div className="sm:col-span-2">
+                <label className={labelClass}>Apt / Suite / Unit</label>
+                <input
+                  type="text"
+                  value={rentalAddr.unit}
+                  onChange={(e) => updateAddr('rental', 'unit', e.target.value)}
+                  placeholder="Unit 3"
+                  className={inputClass(false)}
+                />
+              </div>
+            </div>
+
+            {/* Rental address: city (dropdown) / state (dropdown) / zip */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
+              <div className="sm:col-span-2" id="f-city">
                 <label className={labelClass}>City <span className="text-red-500">*</span></label>
                 <select
                   value={citySelect}
@@ -918,9 +1070,43 @@ export default function SecurityDepositForm() {
                   <option value="">Select city…</option>
                   {cityOptions.map(city => (<option key={city} value={city}>{city}</option>))}
                 </select>
-                {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
               </div>
+              <div className="sm:col-span-2" id="f-state">
+                <label className={labelClass}>State <span className="text-red-500">*</span></label>
+                <select
+                  value={formData.state}
+                  onChange={(e) => handleStateChange(e.target.value)}
+                  className={inputClass(!!errors.state)}
+                >
+                  <option value="">Select…</option>
+                  {US_STATES.map(state => (<option key={state} value={state}>{state}</option>))}
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label className={labelClass}>ZIP code</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={rentalAddr.zip}
+                  onChange={(e) => updateAddr('rental', 'zip', e.target.value)}
+                  placeholder="33701"
+                  className={inputClass(false)}
+                />
+              </div>
+              {(errors.state || errors.city) && (
+                <p className="sm:col-span-6 mt-1 text-sm text-red-600">
+                  {errors.state || errors.city}
+                </p>
+              )}
+              {errors.rentalPropertyAddress && (
+                <p className="sm:col-span-6 mt-1 text-sm text-red-600">{errors.rentalPropertyAddress}</p>
+              )}
+              {warnings.rentalZip && (
+                <p className="sm:col-span-6 mt-1 text-sm text-amber-700">{warnings.rentalZip}</p>
+              )}
             </div>
+
+            {/* Other-city write-in */}
             {citySelect === OTHER_CITY && (
               <div>
                 <label className={labelClass}>
@@ -935,8 +1121,10 @@ export default function SecurityDepositForm() {
                 />
               </div>
             )}
+
+            {/* NYC rent-stabilized */}
             {showRentStabilized && (
-              <div className="pt-2">
+              <div className="pt-1">
                 <label className={labelClass}>Is this a rent-stabilized apartment?</label>
                 <div className="flex flex-wrap gap-4">
                   {[['yes', 'Yes'], ['no', 'No'], ['unknown', 'I don\u2019t know']].map(([v, l]) => (
@@ -952,7 +1140,7 @@ export default function SecurityDepositForm() {
               </div>
             )}
             {showLeaseStartDate && (
-              <div className="pt-2" id="f-leaseStartDate">
+              <div id="f-leaseStartDate">
                 <label className={labelClass}>
                   When did your current lease or most recent renewal begin?
                 </label>
@@ -969,89 +1157,8 @@ export default function SecurityDepositForm() {
                 {errors.leaseStartDate && <p className="mt-1 text-sm text-red-600">{errors.leaseStartDate}</p>}
               </div>
             )}
-          </div>
-          <div className={cardClass}>
-            <h3 className={sectionLabel}>Your information</h3>
-            <div id="f-tenantName">
-              <label className={labelClass}>Your full name <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                value={formData.tenantName}
-                onChange={(e) => handleInputChange('tenantName', e.target.value)}
-                placeholder="Jane Smith"
-                className={inputClass(!!errors.tenantName)}
-              />
-              {errors.tenantName && <p className="mt-1 text-sm text-red-600">{errors.tenantName}</p>}
-            </div>
-            <div id="f-tenantAddress">
-              <p className="mb-3 text-sm font-medium text-slate-700">
-                Your current mailing address{' '}
-                <span className="font-normal text-slate-500">(where the response should be sent)</span>
-              </p>
-              {renderAddressBlock('tenant', tenantAddr, {
-                fieldErrors: errors.tenantAddress
-                  ? {
-                      street: !tenantAddr.street,
-                      city: !tenantAddr.city,
-                      state: !tenantAddr.state,
-                      zip: !tenantAddr.zip,
-                    }
-                  : {},
-                message: errors.tenantAddress,
-                warnMessage: warnings.tenantZip,
-              })}
-            </div>
-          </div>
 
-          {/* LANDLORD INFORMATION */}
-          <div className={cardClass}>
-            <h3 className={sectionLabel}>Landlord information</h3>
-            <div id="f-landlordName">
-              <label className={labelClass}>
-                Landlord / property manager name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.landlordName}
-                onChange={(e) => handleInputChange('landlordName', e.target.value)}
-                placeholder="John Doe or ABC Property Mgmt"
-                className={inputClass(!!errors.landlordName)}
-              />
-              {errors.landlordName && <p className="mt-1 text-sm text-red-600">{errors.landlordName}</p>}
-            </div>
-            <div id="f-landlordAddress">
-              <p className="mb-3 text-sm font-medium text-slate-700">
-                Landlord address{' '}
-                <span className="font-normal text-slate-500">(if known)</span>
-              </p>
-              {renderAddressBlock('landlord', landlordAddr, {
-                warnMessage:
-                  warnings.landlordAddress || warnings.landlordZip || warnings.identicalParties,
-              })}
-            </div>
-          </div>
-
-          {/* RENTAL PROPERTY */}
-          <div className={cardClass}>
-            <h3 className={sectionLabel}>Rental property details</h3>
-            <div id="f-rentalPropertyAddress">
-              <p className="mb-3 text-sm font-medium text-slate-700">
-                Address of the rental you moved out of{' '}
-                <span className="text-red-500">*</span>
-              </p>
-              {renderAddressBlock('rental', rentalAddr, {
-                required: true,
-                hideCityState: true,
-                fieldErrors: { street: !!errors.rentalPropertyAddress },
-                warnMessage: warnings.rentalZip,
-              })}
-              {errors.rentalPropertyAddress && (
-                <p className="mt-2 text-sm text-red-600">{errors.rentalPropertyAddress}</p>
-              )}
-              <p className="mt-2 text-xs text-slate-500">
-                City and state are taken from the rental location at the top of the form.
-              </p>
-            </div>
+            {/* Deposit + move-out */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div id="f-depositAmount">
                 <label className={labelClass}>
@@ -1085,126 +1192,157 @@ export default function SecurityDepositForm() {
                 {errors.vacatedDate && <p className="mt-1 text-sm text-red-600">{errors.vacatedDate}</p>}
                 {warnings.vacatedDate && <p className="mt-1 text-sm text-amber-700">{warnings.vacatedDate}</p>}
               </div>
-              {FORWARDING_ADDRESS_STATES.includes(formData.state) && (
-                <div id="f-forwardingAddressDate">
-                  <label className={labelClass}>
-                    Date you gave your landlord a forwarding address
-                  </label>
+            </div>
+
+            {/* Conditional: forwarding-address date */}
+            {FORWARDING_ADDRESS_STATES.includes(formData.state) && (
+              <div id="f-forwardingAddressDate">
+                <label className={labelClass}>
+                  Date you gave your landlord a forwarding address
+                </label>
+                <input
+                  type="date"
+                  value={formData.forwardingAddressDate}
+                  onChange={(e) => handleInputChange('forwardingAddressDate', e.target.value)}
+                  className={inputClass(false)}
+                />
+                {warnings.forwardingAddressDate && <p className="mt-1 text-sm text-amber-700">{warnings.forwardingAddressDate}</p>}
+                <p className="mt-1 text-xs text-slate-500">
+                  In {formData.state}, the deadline is measured from your forwarding
+                  address date. Leave blank if you never provided one or aren&apos;t sure.
+                </p>
+              </div>
+            )}
+
+            {/* Conditional: unit count */}
+            {showUnitCount && (
+              <div id="f-buildingUnitCount">
+                <label className={labelClass}>
+                  How many rental units are in the building?
+                </label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min="1"
+                  step="1"
+                  value={formData.buildingUnitCount === 'unknown' ? '' : formData.buildingUnitCount}
+                  onChange={(e) => handleInputChange('buildingUnitCount', e.target.value)}
+                  disabled={formData.buildingUnitCount === 'unknown'}
+                  placeholder="e.g., 8"
+                  className={`${inputClass(!!errors.buildingUnitCount)} disabled:bg-slate-100 disabled:cursor-not-allowed`}
+                />
+                {errors.buildingUnitCount && <p className="mt-1 text-sm text-red-600">{errors.buildingUnitCount}</p>}
+                <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
                   <input
-                    type="date"
-                    value={formData.forwardingAddressDate}
-                    onChange={(e) => handleInputChange('forwardingAddressDate', e.target.value)}
-                    className={inputClass(false)}
+                    type="checkbox"
+                    checked={formData.buildingUnitCount === 'unknown'}
+                    onChange={(e) =>
+                      handleInputChange('buildingUnitCount', e.target.checked ? 'unknown' : '')
+                    }
+                    className="w-4 h-4 accent-[#B45309]"
                   />
-                  {warnings.forwardingAddressDate && <p className="mt-1 text-sm text-amber-700">{warnings.forwardingAddressDate}</p>}
-                  <p className="mt-1 text-xs text-slate-500">
-                    In {formData.state}, the deadline is measured from your forwarding
-                    address date. Leave blank if you never provided one or aren&apos;t sure.
-                  </p>
+                  I&apos;m not sure how many units the building has
+                </label>
+                <p className="mt-1 text-xs text-slate-500">
+                  In {formData.state}, the security-deposit statute applies differently
+                  depending on the building&apos;s size, so this affects which law your
+                  letter cites. Enter the exact number of units if you know it.
+                </p>
+              </div>
+            )}
+
+            {/* Conditional: Maine lease type */}
+            {showLeaseType && (
+              <div id="f-leaseType">
+                <label className={labelClass}>
+                  What kind of tenancy did you have?
+                </label>
+                <div className="space-y-2">
+                  {[
+                    ['written_lease', 'A written lease'],
+                    ['tenancy_at_will', 'Tenancy at will / month-to-month (no written lease)'],
+                  ].map(([v, l]) => (
+                    <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
+                      <input
+                        type="radio"
+                        value={v}
+                        checked={formData.leaseType === v}
+                        onChange={(e) => handleInputChange('leaseType', e.target.value)}
+                        className="w-4 h-4 accent-[#B45309]"
+                      />
+                      {l}
+                    </label>
+                  ))}
                 </div>
-              )}
-              {showUnitCount && (
-                <div id="f-buildingUnitCount">
-                  <label className={labelClass}>
-                    How many rental units are in the building?
-                  </label>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    min="1"
-                    step="1"
-                    value={formData.buildingUnitCount === 'unknown' ? '' : formData.buildingUnitCount}
-                    onChange={(e) => handleInputChange('buildingUnitCount', e.target.value)}
-                    disabled={formData.buildingUnitCount === 'unknown'}
-                    placeholder="e.g., 8"
-                    className={`${inputClass(!!errors.buildingUnitCount)} disabled:bg-slate-100 disabled:cursor-not-allowed`}
-                  />
-                  {errors.buildingUnitCount && <p className="mt-1 text-sm text-red-600">{errors.buildingUnitCount}</p>}
-                  <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
-                    <input
-                      type="checkbox"
-                      checked={formData.buildingUnitCount === 'unknown'}
-                      onChange={(e) =>
-                        handleInputChange('buildingUnitCount', e.target.checked ? 'unknown' : '')
-                      }
-                      className="w-4 h-4 accent-[#B45309]"
-                    />
-                    I&apos;m not sure how many units the building has
-                  </label>
-                  <p className="mt-1 text-xs text-slate-500">
-                    In {formData.state}, the security-deposit statute applies differently
-                    depending on the building&apos;s size, so this affects which law your
-                    letter cites. Enter the exact number of units if you know it.
-                  </p>
-                </div>
-              )}
-              {showNotice && (
-                <div id="f-gaveWrittenNotice">
-                  <label className={labelClass}>
-                    Did you give your landlord proper written notice that you were moving out?
-                  </label>
-                  <div className="space-y-2">
-                    {[
-                      ['yes', 'Yes, I gave written notice'],
-                      ['no', 'No / I\u2019m not sure'],
-                    ].map(([v, l]) => (
-                      <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
-                        <input
-                          type="radio"
-                          value={v}
-                          checked={formData.gaveWrittenNotice === v}
-                          onChange={(e) => handleInputChange('gaveWrittenNotice', e.target.value)}
-                          className="w-4 h-4 accent-[#B45309]"
-                        />
-                        {l}
-                      </label>
-                    ))}
-                  </div>
-                  {errors.gaveWrittenNotice && <p className="mt-1 text-sm text-red-600">{errors.gaveWrittenNotice}</p>}
-                  <p className="mt-1 text-xs text-slate-500">
-                    In {formData.state}, whether you gave proper notice affects the return
-                    deadline that applies.
-                  </p>
-                </div>
-              )}
-              {showLeaseType && (
-                <div id="f-leaseType">
-                  <label className={labelClass}>
-                    What kind of tenancy did you have?
-                  </label>
-                  <div className="space-y-2">
-                    {[
-                      ['written_lease', 'A written lease'],
-                      ['tenancy_at_will', 'Tenancy at will / month-to-month (no written lease)'],
-                    ].map(([v, l]) => (
-                      <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
-                        <input
-                          type="radio"
-                          value={v}
-                          checked={formData.leaseType === v}
-                          onChange={(e) => handleInputChange('leaseType', e.target.value)}
-                          className="w-4 h-4 accent-[#B45309]"
-                        />
-                        {l}
-                      </label>
-                    ))}
-                  </div>
-                  {errors.leaseType && <p className="mt-1 text-sm text-red-600">{errors.leaseType}</p>}
-                  <p className="mt-1 text-xs text-slate-500">
-                    In {formData.state}, a tenancy-at-will has a shorter return deadline
-                    than a written lease.
-                  </p>
-                </div>
-              )}
+                {errors.leaseType && <p className="mt-1 text-sm text-red-600">{errors.leaseType}</p>}
+                <p className="mt-1 text-xs text-slate-500">
+                  In {formData.state}, a tenancy-at-will has a shorter return deadline
+                  than a written lease.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* ============ CARD 2: YOUR MAILING ADDRESS ============ */}
+          <div className={cardClass}>
+            <div>
+              <h3 className={`${sectionLabel} mb-2`}>Your current mailing address</h3>
+              <p className="text-sm text-slate-600">
+                Where the landlord&apos;s response and your deposit should be sent.
+              </p>
+            </div>
+            <div id="f-tenantAddress">
+              {renderAddressBlock('tenant', tenantAddr, {
+                required: true,
+                fieldErrors: errors.tenantAddress
+                  ? {
+                      street: !tenantAddr.street,
+                      city: !tenantAddr.city,
+                      state: !tenantAddr.state,
+                      zip: !tenantAddr.zip,
+                    }
+                  : {},
+                message: errors.tenantAddress,
+                warnMessage: warnings.tenantZip,
+              })}
             </div>
           </div>
 
-          {/* YOUR SITUATION */}
+          {/* ============ CARD 3: LANDLORD INFORMATION ============ */}
+          <div className={cardClass}>
+            <h3 className={sectionLabel}>Landlord information</h3>
+            <div id="f-landlordName">
+              <label className={labelClass}>
+                Landlord / property manager name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.landlordName}
+                onChange={(e) => handleInputChange('landlordName', e.target.value)}
+                placeholder="John Doe or ABC Property Mgmt"
+                className={inputClass(!!errors.landlordName)}
+              />
+              {errors.landlordName && <p className="mt-1 text-sm text-red-600">{errors.landlordName}</p>}
+            </div>
+            <div id="f-landlordAddress">
+              <p className="mb-3 text-sm font-medium text-slate-700">
+                Landlord address{' '}
+                <span className="font-normal text-slate-500">(if known)</span>
+              </p>
+              {renderAddressBlock('landlord', landlordAddr, {
+                warnMessage:
+                  warnings.landlordAddress || warnings.landlordZip || warnings.identicalParties,
+              })}
+            </div>
+          </div>
+
+          {/* ============ CARD 4: YOUR SITUATION ============ */}
           <div className={cardClass}>
             <div>
               <h3 className={`${sectionLabel} mb-2`}>Your situation</h3>
               <p className="text-sm text-slate-600">
-                Select all that apply (optional — or just describe below)
+                Select all that apply (optional). Hover the <span className="font-medium">i</span> on any
+                option for a quick explanation.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -1223,7 +1361,10 @@ export default function SecurityDepositForm() {
                   >
                     <div className="flex items-start gap-3">
                       <span className="text-2xl">{subtype.icon}</span>
-                      <span className="text-sm font-medium text-slate-700">{subtype.label}</span>
+                      <span className="text-sm font-medium text-slate-700">
+                        {subtype.label}
+                        <InfoTip text={subtype.tip} />
+                      </span>
                     </div>
                   </button>
                 );
@@ -1231,7 +1372,7 @@ export default function SecurityDepositForm() {
             </div>
           </div>
 
-          {/* SPECIAL CIRCUMSTANCES */}
+          {/* ============ CARD 5: SPECIAL CIRCUMSTANCES ============ */}
           <div className={cardClass}>
             <div>
               <h3 className={`${sectionLabel} mb-2`}>Special circumstances</h3>
@@ -1249,7 +1390,10 @@ export default function SecurityDepositForm() {
                     onChange={() => toggleSpecialCircumstance(circumstance.id)}
                     className="w-4 h-4 accent-[#B45309]"
                   />
-                  <span className="text-sm text-slate-700">{circumstance.label}</span>
+                  <span className="text-sm text-slate-700">
+                    {circumstance.label}
+                    <InfoTip text={circumstance.tip} />
+                  </span>
                 </label>
               ))}
             </div>
@@ -1280,7 +1424,204 @@ export default function SecurityDepositForm() {
             )}
           </div>
 
-          {/* DESCRIPTION */}
+          {/* ============ CARD 6: QUICK CASE CHECK ============ */}
+          <div className={cardClass}>
+            <div>
+              <h3 className={`${sectionLabel} mb-2`}>Quick case check</h3>
+              <p className="text-sm text-slate-600">
+                Answer a few questions so we can tailor your letter — and flag anything
+                that might affect your case before you pay. Your deposit is your money by
+                default; these only matter if your landlord has a valid reason to keep part of it.
+              </p>
+            </div>
+
+            {/* Q1 — itemization */}
+            <div>
+              <label className={labelClass}>
+                Did your landlord provide any written itemization of deductions?
+              </label>
+              <div className="space-y-2">
+                {[
+                  ['yes_documented', 'Yes, with supporting documentation'],
+                  ['yes_disputed', 'Yes, but I dispute the items listed'],
+                  ['none', 'No \u2014 no itemization was provided'],
+                ].map(([v, l]) => (
+                  <label key={v} className={radioRow}>
+                    <input type="radio" value={v}
+                      checked={formData.itemizationProvided === v}
+                      onChange={(e) => handleCaseChange('itemizationProvided', e.target.value)}
+                      className="mt-0.5 w-4 h-4 accent-[#B45309]" />
+                    {l}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Q2 — condition */}
+            <div>
+              <label className={labelClass}>
+                Did you leave the unit in the same or better condition than when you moved
+                in (accounting for normal wear and tear)?
+              </label>
+              <div className="space-y-2">
+                {[
+                  ['good', 'Yes, I left it in good condition'],
+                  ['minor', 'Mostly \u2014 minor issues but nothing major'],
+                  ['damage', 'No \u2014 some damage occurred'],
+                ].map(([v, l]) => (
+                  <label key={v} className={radioRow}>
+                    <input type="radio" value={v}
+                      checked={formData.unitCondition === v}
+                      onChange={(e) => handleCaseChange('unitCondition', e.target.value)}
+                      className="mt-0.5 w-4 h-4 accent-[#B45309]" />
+                    {l}
+                  </label>
+                ))}
+              </div>
+              {formData.unitCondition === 'damage' && (
+                <div className="mt-3">
+                  <label className={labelClass}>
+                    Estimated repair cost, if you know it (optional)
+                  </label>
+                  <div className="relative max-w-xs">
+                    <span className="absolute left-4 top-2.5 text-slate-500">$</span>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={formData.damageEstimate}
+                      onChange={(e) => handleCaseChange('damageEstimate', e.target.value)}
+                      placeholder="e.g., 150"
+                      className={`${inputClass(false)} pl-8`}
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">
+                    You can also describe the damage in the &ldquo;Describe what happened&rdquo; box below.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Q3 — unpaid rent */}
+            <div>
+              <label className={labelClass}>
+                Do you have any outstanding unpaid rent or fees owed to your landlord?
+              </label>
+              <div className="space-y-2">
+                {[
+                  ['no', 'No'],
+                  ['yes', 'Yes'],
+                ].map(([v, l]) => (
+                  <label key={v} className={radioRow}>
+                    <input type="radio" value={v}
+                      checked={formData.unpaidRent === v}
+                      onChange={(e) => handleCaseChange('unpaidRent', e.target.value)}
+                      className="mt-0.5 w-4 h-4 accent-[#B45309]" />
+                    {l}
+                  </label>
+                ))}
+              </div>
+              {formData.unpaidRent === 'yes' && (
+                <div className="mt-3">
+                  <label className={labelClass}>Approximately how much?</label>
+                  <div className="relative max-w-xs">
+                    <span className="absolute left-4 top-2.5 text-slate-500">$</span>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={formData.unpaidRentAmount}
+                      onChange={(e) => handleCaseChange('unpaidRentAmount', e.target.value)}
+                      placeholder="e.g., 500"
+                      className={`${inputClass(false)} pl-8`}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Q4 — proper notice (drives Alaska deadline; required there) */}
+            <div id="f-properNotice">
+              <label className={labelClass}>
+                Did you give your landlord proper written notice before moving out (per your lease)?
+                {isAlaska && <span className="text-red-500"> *</span>}
+              </label>
+              <div className="space-y-2">
+                {[
+                  ['yes', 'Yes'],
+                  ['not_required', 'My lease didn\u2019t require notice'],
+                  ['no', 'No, I didn\u2019t give the required notice'],
+                ].map(([v, l]) => (
+                  <label key={v} className={radioRow}>
+                    <input type="radio" value={v}
+                      checked={formData.properNotice === v}
+                      onChange={(e) => handleCaseChange('properNotice', e.target.value)}
+                      className="mt-0.5 w-4 h-4 accent-[#B45309]" />
+                    {l}
+                  </label>
+                ))}
+              </div>
+              {formData.properNotice === 'no' && (
+                <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+                  <label className={labelClass}>Did you give any notice at all?</label>
+                  <div className="space-y-2">
+                    {[
+                      ['partial', 'Yes, but less than required (e.g., 2 weeks when 30 days was required)'],
+                      ['none', 'No notice \u2014 I moved out without telling them'],
+                    ].map(([v, l]) => (
+                      <label key={v} className={radioRow}>
+                        <input type="radio" value={v}
+                          checked={formData.noticeGiven === v}
+                          onChange={(e) => handleCaseChange('noticeGiven', e.target.value)}
+                          className="mt-0.5 w-4 h-4 accent-[#B45309]" />
+                        {l}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {errors.properNotice && <p className="mt-1 text-sm text-red-600">{errors.properNotice}</p>}
+              {isAlaska && (
+                <p className="mt-1 text-xs text-slate-500">
+                  In Alaska, whether you gave proper written notice changes the return deadline.
+                </p>
+              )}
+            </div>
+
+            {/* Q5 — documentation */}
+            <div>
+              <label className={labelClass}>
+                Did you document the unit&apos;s condition at move-in or move-out (photos,
+                checklist, inspection report)?
+              </label>
+              <div className="space-y-2">
+                {[
+                  ['yes', 'Yes \u2014 I have photos and/or a checklist'],
+                  ['partial', 'Partially \u2014 I have some documentation'],
+                  ['no', 'No documentation'],
+                ].map(([v, l]) => (
+                  <label key={v} className={radioRow}>
+                    <input type="radio" value={v}
+                      checked={formData.conditionDocumentation === v}
+                      onChange={(e) => handleCaseChange('conditionDocumentation', e.target.value)}
+                      className="mt-0.5 w-4 h-4 accent-[#B45309]" />
+                    {l}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Inline assessment result */}
+            {tier && (
+              <div className={`rounded-xl border p-4 flex items-start gap-3 ${tierStyles[tier].box}`}>
+                <div className="text-xl leading-none">{tierStyles[tier].icon}</div>
+                <div>
+                  <h4 className="font-semibold text-slate-900">{tierStyles[tier].title}</h4>
+                  <p className="mt-1 text-sm text-slate-700">{tierStyles[tier].body}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ============ CARD 7: DESCRIPTION ============ */}
           <div id="f-situation" className={cardClass}>
             <div>
               <label className={`${labelClass} mb-1`}>
@@ -1345,6 +1686,57 @@ export default function SecurityDepositForm() {
           </p>
         </form>
       </div>
+
+      {/* ============ WEAK-CASE ACKNOWLEDGMENT MODAL ============ */}
+      {showWeakModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="weak-modal-title"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-[#E7E5E0] bg-white p-7 shadow-xl">
+            <div className="text-2xl">🔴</div>
+            <h2 id="weak-modal-title" className="mt-3 text-xl font-semibold text-slate-900" style={display}>
+              Before you continue
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
+              Based on your case-check answers, your landlord may have valid offsets that
+              meet or exceed your deposit. A demand letter can still be sent, but it may
+              not result in a refund.
+            </p>
+            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
+              {weakReasons().map((r, i) => (<li key={i}>{r}</li>))}
+            </ul>
+            <label className="mt-5 flex items-start gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={weakChecked}
+                onChange={(e) => setWeakChecked(e.target.checked)}
+                className="mt-0.5 w-4 h-4 accent-[#B45309]"
+              />
+              I understand my case may be weak and want to generate the letter anyway.
+            </label>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row-reverse">
+              <button
+                type="button"
+                disabled={!weakChecked}
+                onClick={handleProceedAnyway}
+                className="flex-1 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+              >
+                Proceed anyway — $39
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowWeakModal(false)}
+                className="flex-1 rounded-full border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              >
+                Go back
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

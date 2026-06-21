@@ -1,3 +1,4 @@
+// app/components/SiteChrome.tsx
 'use client'
 
 import Link from 'next/link'
@@ -89,7 +90,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             href="/generate"
             className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
           >
-            Get my letter
+            Generate my letter
             <span className="hidden text-amber-100/80 sm:inline">— $39</span>
           </Link>
         </div>
