@@ -1,3 +1,4 @@
+// app/privacy/page.tsx
 import Link from 'next/link'
 import { Fraunces, DM_Sans } from 'next/font/google'
 import type { Metadata } from 'next'
@@ -6,6 +7,9 @@ export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
     'How TenantShield collects, uses, and protects your information. We only use your data to generate your letter — we never sell or share it.',
+  alternates: {
+    canonical: '/privacy',
+  },
 }
 
 const fraunces = Fraunces({

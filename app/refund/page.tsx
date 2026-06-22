@@ -1,3 +1,4 @@
+// app/refund/page.tsx
 import Link from 'next/link'
 import { Fraunces, DM_Sans } from 'next/font/google'
 import type { Metadata } from 'next'
@@ -6,6 +7,9 @@ export const metadata: Metadata = {
   title: 'Refund Policy',
   description:
     'TenantShield refund policy. Full refunds for technical failures or duplicate charges. Letters are non-refundable once successfully generated and delivered.',
+  alternates: {
+    canonical: '/refund',
+  },
 }
 
 const fraunces = Fraunces({
