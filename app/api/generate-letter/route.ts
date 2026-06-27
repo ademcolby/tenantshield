@@ -1,8 +1,10 @@
+// app/api/generate-letter/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { SYSTEM_PROMPT } from '../../../lib/systemPrompt';
 import { redis, formKey, letterKey, LETTER_TTL_SECONDS } from '../../../lib/redis';
 import { computeDates, renderComputedDatesBlock } from '../../../lib/dates';
+import { sendLetterEmail } from '../../../lib/email';
 
 export const maxDuration = 60;
 
@@ -12,6 +14,7 @@ interface FormData {
   state: string;
   city: string;
   tenantName: string;
+  email: string;                  // Project B: recipient for the receipt email
   tenantAddress: string;
   landlordName: string;
   landlordAddress: string;
@@ -241,6 +244,36 @@ export async function POST(request: NextRequest) {
 
     // Cache the successful letter against the paid session for retry-safety.
     await redis.set(letterKey(sessionId), letterText, { ex: LETTER_TTL_SECONDS });
+
+    // Project B: email the finished letter to the customer as a PDF attachment.
+    // - Runs ONLY on this fresh-generation path (the cached-return branch above
+    //   short-circuits, so a success-page reload never re-sends).
+    // - Idempotent: an email_sent flag guards against a double-send if two fresh
+    //   requests ever race before the flag is set.
+    // - Best-effort: wrapped so a missing key / Resend outage / bad address can
+    //   never fail letter delivery. The customer always gets the on-screen copy.
+    try {
+      const emailSentKey = `email_sent:${sessionId}`;
+      const alreadySent = await redis.get(emailSentKey);
+      if (!alreadySent) {
+        const recipient =
+          (formData.email && formData.email.trim()) ||
+          session.customer_details?.email ||
+          '';
+        if (recipient) {
+          const sent = await sendLetterEmail({
+            to: recipient,
+            tenantName: formData.tenantName,
+            letterText,
+          });
+          if (sent) {
+            await redis.set(emailSentKey, '1', { ex: LETTER_TTL_SECONDS });
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Receipt email step failed (non-fatal):', e);
+    }
 
     return NextResponse.json({
       type: 'letter',

@@ -18,6 +18,10 @@ const dmSans = DM_Sans({
   weight: ['400', '500', '600', '700'],
 });
 
+// Basic email format check. Kept byte-for-byte identical to the server mirror
+// in app/api/create-checkout-session/route.ts so client and server never drift.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
   'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois',
@@ -264,6 +268,7 @@ export default function SecurityDepositForm() {
     state: '',
     city: '',
     tenantName: '',
+    email: '',
     tenantAddress: '',
     landlordName: '',
     landlordAddress: '',
@@ -403,7 +408,7 @@ export default function SecurityDepositForm() {
 
   // DOM order of fields, used to scroll to the first issue on submit.
   const FIELD_ORDER = [
-    'state', 'city', 'tenantName', 'rentalPropertyAddress', 'depositAmount', 'vacatedDate',
+    'state', 'city', 'tenantName', 'email', 'rentalPropertyAddress', 'depositAmount', 'vacatedDate',
     'forwardingAddressDate', 'buildingUnitCount', 'leaseType', 'tenantAddress',
     'landlordName', 'landlordAddress', 'properNotice', 'situation',
     'tenantZip', 'landlordZip', 'rentalZip', 'identicalParties',
@@ -498,6 +503,16 @@ export default function SecurityDepositForm() {
     if (!formData.state) b.state = 'State is required';
     if (!composed.city) b.city = 'City is required';
     if (!formData.tenantName) b.tenantName = 'Your name is required';
+
+    // Email (BLOCK) — required + basic format. This is the address we email the
+    // finished letter to. EMAIL_RE is mirrored byte-for-byte server-side in
+    // create-checkout-session/route.ts so the two layers can't drift.
+    if (!formData.email.trim()) {
+      b.email = 'Your email address is required \u2014 we send your letter here.';
+    } else if (!EMAIL_RE.test(formData.email.trim())) {
+      b.email = 'Enter a valid email address (for example, you@example.com).';
+    }
+
     if (!formData.landlordName) b.landlordName = 'Landlord name is required';
     if (!rentalAddr.street) b.rentalPropertyAddress = 'Rental property street address is required';
     if (!formData.vacatedDate) b.vacatedDate = 'Move-out date is required';
@@ -1029,6 +1044,27 @@ export default function SecurityDepositForm() {
                 className={inputClass(!!errors.tenantName)}
               />
               {errors.tenantName && <p className="mt-1 text-sm text-red-600">{errors.tenantName}</p>}
+            </div>
+
+            {/* Email */}
+            <div id="f-email">
+              <label className={labelClass}>Your email address <span className="text-red-500">*</span></label>
+              <input
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="you@example.com"
+                className={inputClass(!!errors.email)}
+              />
+              {errors.email ? (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              ) : (
+                <p className="mt-1 text-sm text-slate-500">
+                  We&apos;ll email your finished letter here as a downloadable PDF — use an address you can access.
+                </p>
+              )}
             </div>
 
             {/* Rental address: street / unit */}

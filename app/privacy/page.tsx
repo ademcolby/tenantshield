@@ -30,7 +30,7 @@ const dmSans = DM_Sans({
 //  EDIT THESE TWO LINES WHEN YOUR LLC IS APPROVED / ON REVISION
 // ============================================================
 const ENTITY = 'TenantShield LLC'
-const LAST_UPDATED = 'May 27, 2026'
+const LAST_UPDATED = 'June 23, 2026'
 // ============================================================
 
 const ShieldMark = ({ className = '' }: { className?: string }) => (
@@ -140,6 +140,14 @@ export default function PrivacyPage() {
             description of your dispute.
           </p>
           <p>
+            <strong className="font-semibold text-slate-900">
+              Your email address.
+            </strong>{' '}
+            We collect the email address you provide at checkout so we can email
+            you your completed letter as a PDF and a confirmation of your order,
+            and so we can help you with support requests.
+          </p>
+          <p>
             <strong className="font-semibold text-slate-900">Payment information.</strong>{' '}
             Payment is processed by Stripe, Inc. Stripe collects and processes your card
             details directly under its own privacy policy. We receive only limited
@@ -166,9 +174,11 @@ export default function PrivacyPage() {
         <Section n="3." title="How we use your information">
           <p>
             We use the information you provide solely to generate your demand letter,
-            process your payment, deliver the result to you, respond to support requests,
-            maintain the security and reliability of the Service, and comply with legal
-            obligations. We do not use your dispute details for advertising.
+            process your payment, deliver the result to you — including emailing your
+            completed letter and an order confirmation to the address you provide —
+            respond to support requests, maintain the security and reliability of the
+            Service, and comply with legal obligations. We do not use your dispute
+            details for advertising.
           </p>
         </Section>
 
@@ -198,6 +208,10 @@ export default function PrivacyPage() {
             <li>
               <strong className="font-semibold text-slate-900">Vercel</strong> — website
               hosting and infrastructure.
+            </li>
+            <li>
+              <strong className="font-semibold text-slate-900">Resend</strong> — email
+              delivery (sending your completed letter and order confirmation to you).
             </li>
           </ul>
           <p>

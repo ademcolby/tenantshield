@@ -1,3 +1,4 @@
+// app/api/create-checkout-session/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { randomUUID } from 'crypto';
@@ -62,6 +63,16 @@ function validatePayload(p: Record<string, unknown>): { field: string; message: 
   if (!state) errs.push({ field: 'state', message: 'State is required.' });
   if (!str(p.city)) errs.push({ field: 'city', message: 'City is required.' });
   if (!str(p.tenantName)) errs.push({ field: 'tenantName', message: 'Your name is required.' });
+
+  // --- Email required + valid format (BLOCK) — mirrors the client EMAIL_RE
+  // rule byte-for-byte. This is the address we email the finished letter to. ---
+  const email = str(p.email).trim();
+  if (!email) {
+    errs.push({ field: 'email', message: 'Your email address is required — we send your letter here.' });
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errs.push({ field: 'email', message: 'Enter a valid email address (for example, you@example.com).' });
+  }
+
   if (!str(p.landlordName)) errs.push({ field: 'landlordName', message: 'Landlord name is required.' });
   if (!str(p.rentalPropertyAddress)) {
     errs.push({ field: 'rentalPropertyAddress', message: 'Rental property address is required.' });
@@ -181,6 +192,10 @@ export async function POST(request: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      // Pre-fills Stripe's email field and records the address on
+      // session.customer_details.email. Already validated above, so it's a
+      // clean, present, well-formed address.
+      customer_email: String((payload as Record<string, unknown>).email).trim(),
       line_items: [
         {
           price_data: {

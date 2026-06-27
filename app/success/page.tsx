@@ -1,8 +1,9 @@
+// app/success/page.tsx
 'use client';
 
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import jsPDF from 'jspdf';
+import { buildLetterPdfDoc, LETTER_PDF_FILENAME } from '../../lib/letterPdf';
 
 type Status = 'loading' | 'letter' | 'notice' | 'error';
 
@@ -68,56 +69,12 @@ function SuccessContent() {
     generateLetter();
   }, [generateLetter]);
 
+  // The PDF layout lives in lib/letterPdf.ts so this on-screen download and the
+  // PDF attached to the receipt email are produced by the exact same code and
+  // can never drift apart. The letter carries no TenantShield branding — it is
+  // the customer's own correspondence.
   const downloadPDF = () => {
-    const pdf = new jsPDF({ unit: 'pt', format: 'letter' });
-
-    const pageWidth = 612;
-    const pageHeight = 792;
-    const marginX = 40;
-    const contentTop = 80;
-    const bottomMargin = 56; // unchanged, so pagination matches prior behavior
-    const lineHeight = 14;
-    const maxY = pageHeight - bottomMargin;
-
-    // The generated letter is the customer's OWN correspondence, so no
-    // TenantShield branding is printed on it: no header, no footer disclaimer.
-    // The "not legal advice" / informational notices live in the app UI, the
-    // Terms/Refund/Privacy pages, and the receipt — places only the customer
-    // sees, never the landlord. Branding on the deliverable would signal a
-    // templated tool and broadcast the tenant's weakest point to the other side.
-    pdf.setFontSize(11);
-    pdf.setTextColor(0, 0, 0);
-
-    const lines = pdf.splitTextToSize(letter, pageWidth - marginX * 2);
-    let y = contentTop;
-
-    lines.forEach((line: string) => {
-      if (y > maxY) {
-        pdf.addPage();
-        pdf.setFontSize(11);
-        pdf.setTextColor(0, 0, 0);
-        y = contentTop;
-      }
-      pdf.text(line, marginX, y);
-      y += lineHeight;
-    });
-
-    // Neutral page numbers, added ONLY when the letter runs to more than one
-    // page (a single-page letter needs no footer at all). Stamped per page at a
-    // fixed, valid y, which also resolves the old P11 footer-placement bug.
-    const pageCount = pdf.getNumberOfPages();
-    if (pageCount > 1) {
-      pdf.setFontSize(9);
-      pdf.setTextColor(120, 120, 120);
-      for (let i = 1; i <= pageCount; i++) {
-        pdf.setPage(i);
-        const label = `Page ${i} of ${pageCount}`;
-        const labelWidth = pdf.getTextWidth(label);
-        pdf.text(label, pageWidth - marginX - labelWidth, pageHeight - 36);
-      }
-    }
-
-    pdf.save('Security_Deposit_Demand_Letter.pdf');
+    buildLetterPdfDoc(letter).save(LETTER_PDF_FILENAME);
   };
 
   if (status === 'loading') {
