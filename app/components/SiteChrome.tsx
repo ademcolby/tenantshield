@@ -1,9 +1,11 @@
 // app/components/SiteChrome.tsx
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Fraunces, DM_Sans } from 'next/font/google'
+import { getSupabaseBrowserClient } from '../../lib/auth'
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -42,6 +44,29 @@ const ShieldMark = ({ className = '' }: { className?: string }) => (
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isHome = pathname === '/'
+
+  // Project E: session-aware nav. null = still checking (render nothing to avoid
+  // a flash); true/false swaps "Sign in" <-> "My account". Subscribes to auth
+  // changes so the label updates immediately after login/logout.
+  const [authed, setAuthed] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient()
+    let active = true
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (active) setAuthed(!!data.session)
+    })
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (active) setAuthed(!!session)
+    })
+
+    return () => {
+      active = false
+      sub.subscription.unsubscribe()
+    }
+  }, [])
 
   const handleLogoClick = (e: React.MouseEvent) => {
     if (isHome) {
@@ -86,13 +111,24 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
               FAQ
             </a>
           </nav>
-          <Link
-            href="/generate"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
-          >
-            Generate my letter
-            <span className="hidden text-amber-100/80 sm:inline">— $39</span>
-          </Link>
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Project E: swaps with auth state. Hidden while unknown. */}
+            {authed !== null && (
+              <Link
+                href={authed ? '/dashboard' : '/auth'}
+                className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+              >
+                {authed ? 'My account' : 'Sign in'}
+              </Link>
+            )}
+            <Link
+              href="/generate"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
+            >
+              Generate my letter
+              <span className="hidden text-amber-100/80 sm:inline">— $39</span>
+            </Link>
+          </div>
         </div>
       </header>
 

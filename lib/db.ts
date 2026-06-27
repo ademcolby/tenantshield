@@ -196,3 +196,28 @@ export async function getOrdersByEmail(email: string): Promise<Order[]> {
   }
   return (data as OrderRow[]).map(rowToOrder);
 }
+
+/**
+ * Project E — retroactive linking. When a customer creates/confirms an account,
+ * attach their user_id to every past order placed with that same email (the
+ * orders created before the account existed). Idempotent: only updates rows
+ * whose user_id is still NULL, so re-running on every dashboard load is cheap
+ * and safe. The dashboard reads by email regardless, so this is bookkeeping for
+ * the eventual admin dashboard (Project D) — not required for the read path.
+ *
+ * Best-effort: a failure here never blocks the dashboard from rendering.
+ */
+export async function linkOrdersToUser(email: string, userId: string): Promise<void> {
+  const client = getClient();
+  if (!client) return;
+
+  const { error } = await client
+    .from('orders')
+    .update({ user_id: userId })
+    .eq('email', email)
+    .is('user_id', null);
+
+  if (error) {
+    console.error('linkOrdersToUser error:', error);
+  }
+}

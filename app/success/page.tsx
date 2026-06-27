@@ -4,6 +4,7 @@
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { buildLetterPdfDoc, LETTER_PDF_FILENAME } from '../../lib/letterPdf';
+import { getSession } from '../../lib/auth';
 
 type Status = 'loading' | 'letter' | 'notice' | 'error';
 
@@ -16,6 +17,22 @@ function SuccessContent() {
   const [refNumber, setRefNumber] = useState('');   // Project C: TS-YYYYMMDD-XXXX
   const [notice, setNotice] = useState('');     // missing_info / out_of_scope message
   const [error, setError] = useState('');
+  // Project E: drives the account prompt — null = unknown (still checking).
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    getSession()
+      .then((session) => {
+        if (active) setLoggedIn(!!session);
+      })
+      .catch(() => {
+        if (active) setLoggedIn(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const generateLetter = useCallback(async () => {
     if (!sessionId) {
@@ -198,6 +215,42 @@ function SuccessContent() {
             {letter}
           </pre>
         </div>
+
+        {/* Project E: account prompt. Hidden until we know the auth state to
+            avoid a flash. Logged in -> dashboard link; logged out -> sign-up. */}
+        {loggedIn === true && (
+          <div className="mb-6 flex flex-col gap-3 rounded-xl border border-slate-700 bg-slate-800 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold text-white">Saved to your account</p>
+              <p className="text-sm text-slate-400">
+                This letter is in your dashboard — re-download it anytime.
+              </p>
+            </div>
+            <a
+              href="/dashboard"
+              className="inline-flex shrink-0 items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            >
+              View in dashboard →
+            </a>
+          </div>
+        )}
+        {loggedIn === false && (
+          <div className="mb-6 flex flex-col gap-3 rounded-xl border border-amber-700/40 bg-amber-950/30 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold text-white">Save your letters</p>
+              <p className="text-sm text-slate-400">
+                Create a free account to re-download this letter (and any future
+                ones) anytime — no more lost PDFs.
+              </p>
+            </div>
+            <a
+              href="/auth?next=/dashboard"
+              className="inline-flex shrink-0 items-center justify-center rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+            >
+              Create free account
+            </a>
+          </div>
+        )}
 
         <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
           <h3 className="font-semibold text-white mb-4">Next Steps</h3>
