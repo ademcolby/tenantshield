@@ -15,7 +15,7 @@ import type { Session } from '@supabase/supabase-js';
 
 let _client: ReturnType<typeof createBrowserClient> | null = null;
 
-export function getSupabaseBrowserClient() {
+export function getSupabaseBrowserClient(): ReturnType<typeof createBrowserClient> {
   if (_client) return _client;
   _client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Fraunces, DM_Sans } from 'next/font/google'
+import type { Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '../../lib/auth'
 
 const fraunces = Fraunces({
@@ -54,13 +55,17 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     const supabase = getSupabaseBrowserClient()
     let active = true
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (active) setAuthed(!!data.session)
-    })
+    supabase.auth
+      .getSession()
+      .then(({ data }: { data: { session: Session | null } }) => {
+        if (active) setAuthed(!!data.session)
+      })
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (active) setAuthed(!!session)
-    })
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event: string, session: Session | null) => {
+        if (active) setAuthed(!!session)
+      },
+    )
 
     return () => {
       active = false
