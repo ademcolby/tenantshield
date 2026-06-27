@@ -439,11 +439,19 @@ export default function SecurityDepositForm() {
     return '';
   };
 
-  // Case-strength tier. Returns null until the four material questions are
-  // answered (itemization, condition, unpaid rent, notice).
+  // Case-strength tier. Returns null until ALL FIVE case-check questions are
+  // answered (itemization, condition, unpaid rent, notice, documentation).
+  // conditionDocumentation must be in this gate: it feeds the moderate branch
+  // below, so computing the tier before it is answered would show a result that
+  // ignores the final question.
   const computeTier = (): Tier | null => {
     const f = formData;
-    const answered = f.itemizationProvided && f.unitCondition && f.unpaidRent && f.properNotice;
+    const answered =
+      f.itemizationProvided &&
+      f.unitCondition &&
+      f.unpaidRent &&
+      f.properNotice &&
+      f.conditionDocumentation;
     if (!answered) return null;
 
     const depositVal = parseDeposit(f.depositAmount).value;
