@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { randomUUID } from 'crypto';
 import { redis, formKey, FORM_TTL_SECONDS } from '../../../lib/redis';
+import { generateRefNumber } from '../../../lib/refNumber';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -154,6 +155,13 @@ function validatePayload(p: Record<string, unknown>): { field: string; message: 
  * therefore never depends on browser localStorage surviving the Stripe
  * redirect (which fails in many mobile in-app browsers), and generation only
  * happens for a genuinely paid session.
+ *
+ * PROJECT C: we also generate the customer-facing reference number here, at
+ * checkout, and store it in the session metadata alongside formId. Putting it in
+ * metadata means it survives the Redis TTL and is available to BOTH the success
+ * page and the Stripe webhook when they persist the order and email the receipt.
+ * No DB write happens yet at this point — payment isn't confirmed, so we keep
+ * the orders table clean until generation runs post-payment.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -190,6 +198,11 @@ export async function POST(request: NextRequest) {
       ex: FORM_TTL_SECONDS,
     });
 
+    // Project C: generate the order reference number now and carry it in the
+    // session metadata so it survives the Redis TTL and is identical across the
+    // success page and the webhook.
+    const refNumber = generateRefNumber();
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       // Pre-fills Stripe's email field and records the address on
@@ -210,9 +223,9 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
-      // formId travels with the session; it's a UUID, well within Stripe's
-      // metadata size limits. The actual payload stays in Redis.
-      metadata: { formId },
+      // formId + refNumber travel with the session; both are short strings well
+      // within Stripe's metadata size limits. The actual payload stays in Redis.
+      metadata: { formId, refNumber },
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}`,
     });

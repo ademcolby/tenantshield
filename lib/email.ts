@@ -16,6 +16,10 @@ export interface LetterEmailInput {
   to: string;
   tenantName: string;
   letterText: string;
+  // Project C: the TS-YYYYMMDD-XXXX order reference. Optional so older callers
+  // (and any path that hasn't got one) still work; when present it is shown in
+  // the receipt so the customer can quote it to support.
+  refNumber?: string;
 }
 
 function escapeHtml(s: string): string {
@@ -27,8 +31,12 @@ function escapeHtml(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
-function buildHtml(tenantName: string): string {
+function buildHtml(tenantName: string, refNumber?: string): string {
   const name = escapeHtml((tenantName || '').trim()) || 'there';
+  const ref = (refNumber || '').trim();
+  const refBlock = ref
+    ? `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#374151;">Your reference number is <strong style="color:#0f172a;">${escapeHtml(ref)}</strong>. Keep it handy if you ever need to contact support about this order.</p>`
+    : '';
   return `<!DOCTYPE html>
 <html>
   <body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#1f2937;">
@@ -37,6 +45,7 @@ function buildHtml(tenantName: string): string {
       <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:28px 24px;">
         <h1 style="margin:0 0 14px;font-size:20px;color:#0f172a;">Your demand letter is ready</h1>
         <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Hi ${name}, your security deposit demand letter is attached to this email as a PDF. Keep this email — you can download the letter again from the attachment anytime.</p>
+        ${refBlock}
         <p style="margin:0 0 8px;font-size:15px;font-weight:600;color:#0f172a;">What to do next</p>
         <ol style="margin:0 0 18px;padding-left:20px;font-size:14px;line-height:1.7;color:#374151;">
           <li>Print the attached PDF and sign it in blue or black ink.</li>
@@ -53,12 +62,18 @@ function buildHtml(tenantName: string): string {
 </html>`;
 }
 
-function buildText(tenantName: string): string {
+function buildText(tenantName: string, refNumber?: string): string {
   const name = (tenantName || '').trim() || 'there';
-  return [
+  const ref = (refNumber || '').trim();
+  const lines = [
     `Hi ${name},`,
     '',
     'Your security deposit demand letter is attached to this email as a PDF. Keep this email — you can download the letter again from the attachment anytime.',
+  ];
+  if (ref) {
+    lines.push('', `Your reference number is ${ref}. Keep it handy if you ever need to contact support about this order.`);
+  }
+  lines.push(
     '',
     'What to do next:',
     '1. Print the attached PDF and sign it in blue or black ink.',
@@ -70,7 +85,8 @@ function buildText(tenantName: string): string {
     `Questions? Reply to this email or reach us at ${SUPPORT}.`,
     '',
     'TenantShield generates demand letters for informational purposes. This is not legal advice. Consult an attorney for guidance specific to your situation.',
-  ].join('\n');
+  );
+  return lines.join('\n');
 }
 
 /**
@@ -100,8 +116,8 @@ export async function sendLetterEmail(input: LetterEmailInput): Promise<boolean>
       to,
       replyTo: SUPPORT,
       subject: SUBJECT,
-      html: buildHtml(input.tenantName),
-      text: buildText(input.tenantName),
+      html: buildHtml(input.tenantName, input.refNumber),
+      text: buildText(input.tenantName, input.refNumber),
       attachments: [
         {
           filename: LETTER_PDF_FILENAME,

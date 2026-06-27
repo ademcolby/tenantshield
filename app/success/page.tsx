@@ -13,6 +13,7 @@ function SuccessContent() {
 
   const [status, setStatus] = useState<Status>('loading');
   const [letter, setLetter] = useState('');
+  const [refNumber, setRefNumber] = useState('');   // Project C: TS-YYYYMMDD-XXXX
   const [notice, setNotice] = useState('');     // missing_info / out_of_scope message
   const [error, setError] = useState('');
 
@@ -49,6 +50,8 @@ function SuccessContent() {
 
       if (data.type === 'letter') {
         setLetter(data.letter);
+        // Project C: surface the reference number when present.
+        setRefNumber(typeof data.refNumber === 'string' ? data.refNumber : '');
         setStatus('letter');
       } else if (data.type === 'missing_info' || data.type === 'out_of_scope') {
         setNotice(data.message || '');
@@ -172,6 +175,12 @@ function SuccessContent() {
           <div>
             <h1 className="text-2xl font-bold text-white">Your Demand Letter</h1>
             <p className="text-slate-400 text-sm mt-1">Payment confirmed · TenantShield</p>
+            {/* Project C: order reference number — informational, muted, NOT on the PDF. */}
+            {refNumber && (
+              <p className="text-slate-500 text-xs mt-1">
+                Reference: {refNumber} — save this for your records.
+              </p>
+            )}
           </div>
           <button
             onClick={downloadPDF}

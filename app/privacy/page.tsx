@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    'How TenantShield collects, uses, and protects your information. We only use your data to generate your letter — we never sell or share it.',
+    'How TenantShield collects, uses, and protects your information. We only use your data to generate and deliver your letter — we never sell or share it.',
   alternates: {
     canonical: '/privacy',
   },
@@ -30,7 +30,7 @@ const dmSans = DM_Sans({
 //  EDIT THESE TWO LINES WHEN YOUR LLC IS APPROVED / ON REVISION
 // ============================================================
 const ENTITY = 'TenantShield LLC'
-const LAST_UPDATED = 'June 23, 2026'
+const LAST_UPDATED = 'June 27, 2026'
 // ============================================================
 
 const ShieldMark = ({ className = '' }: { className?: string }) => (
@@ -115,10 +115,11 @@ export default function PrivacyPage() {
 
         <div className="mt-8 rounded-xl border border-[#E7E5E0] bg-white p-5 text-sm leading-relaxed text-slate-700">
           <strong className="font-semibold text-slate-900">The short version.</strong> We
-          collect only what we need to generate your letter and process your payment. We
-          do not sell or rent your personal information. Your form data is sent to our
-          letter-generation provider solely to produce your letter. Payment is handled by
-          Stripe — we never see your full card number.
+          collect only what we need to generate your letter, process your payment, and
+          deliver and support your order. We store your order details — including your
+          letter — so we can email it to you, let you access it again, and help you if you
+          contact support. We do not sell or rent your personal information. Payment is
+          handled by Stripe — we never see your full card number.
         </div>
 
         <Section n="1." title="Who we are">
@@ -141,11 +142,22 @@ export default function PrivacyPage() {
           </p>
           <p>
             <strong className="font-semibold text-slate-900">
+              Your order record, including your letter.
+            </strong>{' '}
+            When your letter is generated, we store your order details — the form data you
+            submitted, the generated letter text, your email address, and an order
+            reference number — in our database. We keep this so we can email your letter to
+            you, allow you to access or re-download it later, and assist you with support or
+            dispute-resolution requests. We regenerate the PDF from the stored letter text
+            when you need another copy; we do not store the PDF file itself.
+          </p>
+          <p>
+            <strong className="font-semibold text-slate-900">
               Your email address.
             </strong>{' '}
-            We collect the email address you provide at checkout so we can email
-            you your completed letter as a PDF and a confirmation of your order,
-            and so we can help you with support requests.
+            We collect the email address you provide so we can email you your completed
+            letter as a PDF and a confirmation of your order, and so we can help you with
+            support requests.
           </p>
           <p>
             <strong className="font-semibold text-slate-900">Payment information.</strong>{' '}
@@ -173,12 +185,13 @@ export default function PrivacyPage() {
 
         <Section n="3." title="How we use your information">
           <p>
-            We use the information you provide solely to generate your demand letter,
-            process your payment, deliver the result to you — including emailing your
-            completed letter and an order confirmation to the address you provide —
-            respond to support requests, maintain the security and reliability of the
-            Service, and comply with legal obligations. We do not use your dispute
-            details for advertising.
+            We use the information you provide to generate your demand letter, process your
+            payment, and deliver the result to you — including emailing your completed
+            letter and an order confirmation to the address you provide. We also store your
+            order so we can give you ongoing access to your letter, respond to support
+            requests, resolve billing or service disputes, prevent abuse, maintain the
+            security and reliability of the Service, and comply with legal and accounting
+            obligations. We do not use your dispute details for advertising.
           </p>
         </Section>
 
@@ -206,6 +219,10 @@ export default function PrivacyPage() {
               AI generation of your letter text.
             </li>
             <li>
+              <strong className="font-semibold text-slate-900">Supabase</strong> — database
+              and infrastructure used to securely store your order details and letter.
+            </li>
+            <li>
               <strong className="font-semibold text-slate-900">Vercel</strong> — website
               hosting and infrastructure.
             </li>
@@ -226,18 +243,29 @@ export default function PrivacyPage() {
             While you fill out the intake form, your entries are held in your
             browser&apos;s working memory for the duration of your visit so you can review
             and edit them before submitting. When you submit the form, your information is
-            transmitted to our servers to generate your letter. We do not persist your
-            form entries in local storage, cookies, or any other long-term browser
-            storage, and we do not use third-party advertising or tracking cookies.
+            transmitted to our servers to generate and store your letter (see Section 2).
+            We do not keep your form entries in local storage, cookies, or any other
+            long-term browser storage, and we do not use third-party advertising or
+            tracking cookies.
           </p>
         </Section>
 
         <Section n="7." title="Data retention">
           <p>
-            We keep personal information only as long as reasonably necessary to provide
-            the Service, resolve disputes, prevent abuse, and meet legal and accounting
-            obligations. Payment records are retained by Stripe under its own policies and
-            as required for tax and financial recordkeeping.
+            We retain your order data — including your form details, generated letter text,
+            email address, and reference number — for as long as needed to provide the
+            Service, give you continued access to your letter, resolve disputes, prevent
+            abuse, and meet our legal, tax, and accounting obligations. You may request
+            deletion of your order data at any time by emailing{' '}
+            <a
+              href="mailto:support@gettenantshield.com"
+              className="font-medium text-[#B45309] underline"
+            >
+              support@gettenantshield.com
+            </a>
+            , and we will delete it unless we are required to retain certain records for
+            legal, tax, or fraud-prevention reasons. Payment records are retained by Stripe
+            under its own policies and as required for financial recordkeeping.
           </p>
         </Section>
 
@@ -259,8 +287,8 @@ export default function PrivacyPage() {
         <Section n="9." title="Security">
           <p>
             We use reasonable administrative and technical measures, and rely on
-            established providers (Stripe, Vercel, Anthropic) that maintain their own
-            security programs, to protect your information. No method of transmission or
+            established providers (Stripe, Vercel, Anthropic, Supabase) that maintain their
+            own security programs, to protect your information. No method of transmission or
             storage is completely secure, and we cannot guarantee absolute security.
           </p>
         </Section>
