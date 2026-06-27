@@ -1,9 +1,11 @@
 // app/HomeClient.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Fraunces, DM_Sans } from 'next/font/google'
+import type { Session } from '@supabase/supabase-js'
+import { getSupabaseBrowserClient } from '@/lib/auth'
 import {
   STATE_DEADLINES,
   getCityOverlaysForState,
@@ -49,6 +51,32 @@ export default function HomeClient() {
   const selected = STATE_DEADLINES.find((s) => s.state === selectedState)
   const cityOverlays = selectedState ? getCityOverlaysForState(selectedState) : []
 
+  // Project E: session-aware nav. null = still checking (render nothing to avoid
+  // a flash); true/false swaps "Sign in" <-> "My account". Mirrors SiteChrome.
+  const [authed, setAuthed] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient()
+    let active = true
+
+    supabase.auth
+      .getSession()
+      .then(({ data }: { data: { session: Session | null } }) => {
+        if (active) setAuthed(!!data.session)
+      })
+
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event: string, session: Session | null) => {
+        if (active) setAuthed(!!session)
+      },
+    )
+
+    return () => {
+      active = false
+      sub.subscription.unsubscribe()
+    }
+  }, [])
+
   return (
     <div
       className={`${fraunces.variable} ${dmSans.variable} min-h-screen bg-[#FAFAF7] text-slate-900 antialiased`}
@@ -75,13 +103,24 @@ export default function HomeClient() {
             <a href="#deadlines" className="transition hover:text-slate-900">State deadlines</a>
             <a href="#faq" className="transition hover:text-slate-900">FAQ</a>
           </nav>
-          <Link
-            href="/generate"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
-          >
-            Generate my letter
-            <span className="hidden text-amber-100/80 sm:inline">— $39</span>
-          </Link>
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Project E: swaps with auth state. Hidden while unknown. */}
+            {authed !== null && (
+              <Link
+                href={authed ? '/dashboard' : '/auth'}
+                className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+              >
+                {authed ? 'My account' : 'Sign in'}
+              </Link>
+            )}
+            <Link
+              href="/generate"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
+            >
+              Generate my letter
+              <span className="hidden text-amber-100/80 sm:inline">— $39</span>
+            </Link>
+          </div>
         </div>
       </header>
 
