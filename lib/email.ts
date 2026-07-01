@@ -5,6 +5,7 @@ import { buildLetterPdfDoc, LETTER_PDF_FILENAME } from './letterPdf';
 const FROM = 'TenantShield <support@gettenantshield.com>';
 const SUPPORT = 'support@gettenantshield.com';
 const SUBJECT = 'Your security deposit demand letter — TenantShield';
+const SITE_URL = 'https://gettenantshield.com';
 
 // Instantiate guarded so a missing key NEVER throws at import/build time. Until
 // RESEND_API_KEY is set in the environment, sendLetterEmail() simply no-ops and
@@ -45,6 +46,7 @@ function buildHtml(tenantName: string, refNumber?: string): string {
       <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:28px 24px;">
         <h1 style="margin:0 0 14px;font-size:20px;color:#0f172a;">Your demand letter is ready</h1>
         <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Hi ${name}, your security deposit demand letter is attached to this email as a PDF. Keep this email — you can download the letter again from the attachment anytime.</p>
+        <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#374151;">Want to access your letter anytime? Visit <a href="${SITE_URL}" style="color:#b45309;font-weight:600;">gettenantshield.com</a> to create a free account or sign in — every letter you've purchased is available in your dashboard, no expiry.</p>
         ${refBlock}
         <p style="margin:0 0 8px;font-size:15px;font-weight:600;color:#0f172a;">What to do next</p>
         <ol style="margin:0 0 18px;padding-left:20px;font-size:14px;line-height:1.7;color:#374151;">
@@ -69,6 +71,8 @@ function buildText(tenantName: string, refNumber?: string): string {
     `Hi ${name},`,
     '',
     'Your security deposit demand letter is attached to this email as a PDF. Keep this email — you can download the letter again from the attachment anytime.',
+    '',
+    `Want to access your letter anytime? Visit ${SITE_URL} to create a free account or sign in — every letter you've purchased is available in your dashboard, no expiry.`,
   ];
   if (ref) {
     lines.push('', `Your reference number is ${ref}. Keep it handy if you ever need to contact support about this order.`);
