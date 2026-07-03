@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { Fraunces, DM_Sans } from 'next/font/google'
 import type { Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '../../lib/auth'
+import { isAdminEmail } from '../../lib/adminEmail'
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -50,6 +51,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   // a flash); true/false swaps "Sign in" <-> "My account". Subscribes to auth
   // changes so the label updates immediately after login/logout.
   const [authed, setAuthed] = useState<boolean | null>(null)
+  // Project D: the signed-in email, used ONLY to decide whether to render the
+  // Admin nav link. Cosmetic — the real gate is requireAdmin() on the server.
+  const [userEmail, setUserEmail] = useState<string | null>(null)
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient()
@@ -58,12 +62,18 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     supabase.auth
       .getSession()
       .then(({ data }: { data: { session: Session | null } }) => {
-        if (active) setAuthed(!!data.session)
+        if (active) {
+          setAuthed(!!data.session)
+          setUserEmail(data.session?.user?.email ?? null)
+        }
       })
 
     const { data: sub } = supabase.auth.onAuthStateChange(
       (_event: string, session: Session | null) => {
-        if (active) setAuthed(!!session)
+        if (active) {
+          setAuthed(!!session)
+          setUserEmail(session?.user?.email ?? null)
+        }
       },
     )
 
@@ -117,6 +127,16 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             </a>
           </nav>
           <div className="flex items-center gap-3 sm:gap-4">
+            {/* Project D: admin-only nav link. Rendering is cosmetic; the
+                server-side requireAdmin() gate is what actually protects /admin. */}
+            {isAdminEmail(userEmail) && (
+              <Link
+                href="/admin"
+                className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+              >
+                Admin
+              </Link>
+            )}
             {/* Project E: swaps with auth state. Hidden while unknown. */}
             {authed !== null && (
               <Link

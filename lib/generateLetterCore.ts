@@ -259,6 +259,11 @@ async function persistOrderIfNeeded(
       formPayload: formData as unknown as Record<string, unknown>,
       letterText,
       caseStrength: deriveCaseStrength(formData),
+      // Project D: actual amount paid, in cents, straight off the verified-paid
+      // Checkout Session. Null only in exotic cases (e.g. 100%-off promo codes
+      // may report 0, which is stored as 0, not null); metrics fall back to the
+      // flat $39 for rows persisted before this column existed.
+      amountPaidCents: session.amount_total ?? undefined,
     });
   } catch (e) {
     // saveOrder already swallows/loggs internally and returns null, but guard

@@ -26,12 +26,21 @@ export interface NewOrder {
   formPayload: Record<string, unknown>;
   letterText: string;
   caseStrength?: string;
+  // Project D: actual amount the customer paid, in cents, from the Stripe
+  // Checkout Session (session.amount_total). Optional/best-effort: older
+  // callers and historical rows won't have it; metrics fall back to the flat
+  // $39 price for those rows.
+  amountPaidCents?: number;
 }
 
 export interface Order extends NewOrder {
   id: string;
   createdAt: string;
   userId: string | null;
+  // Project D admin fields.
+  adminNote: string | null;
+  isTest: boolean;
+  amountPaidCents?: number; // narrowed to number | undefined after mapping
 }
 
 // Shape of a row as stored in Postgres (snake_case columns).
@@ -50,6 +59,32 @@ interface OrderRow {
   case_strength: string | null;
   created_at: string;
   user_id: string | null;
+  // Project D columns (added July 2026). Nullable in old rows; is_test was
+  // backfilled to false by the ADD COLUMN ... DEFAULT false migration, but we
+  // still treat null defensively.
+  admin_note: string | null;
+  is_test: boolean | null;
+  amount_paid_cents: number | null;
+}
+
+// Project D — aggregate metrics for the /admin dashboard. All figures EXCLUDE
+// test orders (is_test = true); testOrdersExcluded reports how many were
+// skipped so the dashboard can disclose it.
+export interface OrderMetrics {
+  totalAllTime: number;
+  totalLast30Days: number;
+  totalLast7Days: number;
+  revenueCentsAllTime: number;
+  revenueCentsLast30Days: number;
+  revenueCentsLast7Days: number;
+  // Rows counted in revenue that pre-date amount_paid_cents and were assumed
+  // to be the flat $39. Shown as a footnote when > 0.
+  estimatedRevenueRows: number;
+  byState: { state: string; count: number }[];
+  // case_strength values plus a 'not answered' bucket for null (customers can
+  // currently skip the Quick Case Check entirely — see Project I).
+  byCaseStrength: { strength: string; count: number }[];
+  testOrdersExcluded: number;
 }
 
 // --- Client (lazy singleton) --------------------------------------------
@@ -95,6 +130,9 @@ function rowToOrder(row: OrderRow): Order {
     caseStrength: row.case_strength ?? undefined,
     createdAt: row.created_at,
     userId: row.user_id,
+    adminNote: row.admin_note ?? null,
+    isTest: row.is_test ?? false,
+    amountPaidCents: row.amount_paid_cents ?? undefined,
   };
 }
 
@@ -123,6 +161,7 @@ export async function saveOrder(order: NewOrder): Promise<Order | null> {
     form_payload: order.formPayload,
     letter_text: order.letterText,
     case_strength: order.caseStrength ?? null,
+    amount_paid_cents: order.amountPaidCents ?? null,
   };
 
   const { data, error } = await client
@@ -220,4 +259,180 @@ export async function linkOrdersToUser(email: string, userId: string): Promise<v
   if (error) {
     console.error('linkOrdersToUser error:', error);
   }
+}
+
+// --- Project D: admin dashboard ------------------------------------------
+
+/**
+ * Admin order list. Newest first. With no search term returns the most recent
+ * `limit` orders (the default /admin/orders view); with a search term, matches
+ * case-insensitively across ref number, email, tenant name, state, and Stripe
+ * session id.
+ *
+ * Test orders ARE included (they are visible and badged in the admin UI; only
+ * the aggregate metrics exclude them).
+ */
+export async function getAllOrders(options?: {
+  search?: string;
+  limit?: number;
+}): Promise<Order[]> {
+  const client = getClient();
+  if (!client) return [];
+
+  const limit = options?.limit ?? 50;
+  // PostgREST .or() uses commas/parens as syntax; strip them (and %) from the
+  // user-supplied term so a search string can't break the filter expression.
+  const search = (options?.search ?? '').trim().replace(/[,()%]/g, '');
+
+  let query = client
+    .from('orders')
+    .select()
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (search) {
+    const s = `%${search}%`;
+    query = query.or(
+      `ref_number.ilike.${s},email.ilike.${s},tenant_name.ilike.${s},state.ilike.${s},stripe_session_id.ilike.${s}`,
+    );
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('getAllOrders error:', error);
+    return [];
+  }
+  return (data as OrderRow[]).map(rowToOrder);
+}
+
+/**
+ * Aggregate metrics for the /admin dashboard. Excludes test orders from every
+ * figure and reports how many were excluded.
+ *
+ * Implementation note: fetches the minimal columns for ALL orders and
+ * aggregates in JS. At TenantShield's current scale (well under Supabase's
+ * 1,000-row default response cap) this is simpler and just as fast as SQL
+ * aggregates. Revisit (RPC / SQL views) if order volume approaches ~1,000 rows.
+ *
+ * Revenue: sums amount_paid_cents; rows that pre-date that column (null) are
+ * assumed to be the flat $39 (3900¢) and counted in estimatedRevenueRows so
+ * the dashboard can disclose the assumption.
+ */
+export async function getOrderMetrics(): Promise<OrderMetrics | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from('orders')
+    .select('created_at,state,case_strength,amount_paid_cents,is_test');
+
+  if (error) {
+    console.error('getOrderMetrics error:', error);
+    return null;
+  }
+
+  const rows = data as Pick<
+    OrderRow,
+    'created_at' | 'state' | 'case_strength' | 'amount_paid_cents' | 'is_test'
+  >[];
+
+  const FLAT_PRICE_CENTS = 3900; // fallback for rows that pre-date amount_paid_cents
+  const now = Date.now();
+  const cutoff7 = now - 7 * 24 * 60 * 60 * 1000;
+  const cutoff30 = now - 30 * 24 * 60 * 60 * 1000;
+
+  const metrics: OrderMetrics = {
+    totalAllTime: 0,
+    totalLast30Days: 0,
+    totalLast7Days: 0,
+    revenueCentsAllTime: 0,
+    revenueCentsLast30Days: 0,
+    revenueCentsLast7Days: 0,
+    estimatedRevenueRows: 0,
+    byState: [],
+    byCaseStrength: [],
+    testOrdersExcluded: 0,
+  };
+
+  const stateCounts = new Map<string, number>();
+  const strengthCounts = new Map<string, number>();
+
+  for (const row of rows) {
+    if (row.is_test === true) {
+      metrics.testOrdersExcluded += 1;
+      continue;
+    }
+
+    const created = new Date(row.created_at).getTime();
+    let cents = row.amount_paid_cents;
+    if (cents === null || cents === undefined) {
+      cents = FLAT_PRICE_CENTS;
+      metrics.estimatedRevenueRows += 1;
+    }
+
+    metrics.totalAllTime += 1;
+    metrics.revenueCentsAllTime += cents;
+    if (created >= cutoff30) {
+      metrics.totalLast30Days += 1;
+      metrics.revenueCentsLast30Days += cents;
+    }
+    if (created >= cutoff7) {
+      metrics.totalLast7Days += 1;
+      metrics.revenueCentsLast7Days += cents;
+    }
+
+    const state = row.state || 'Unknown';
+    stateCounts.set(state, (stateCounts.get(state) ?? 0) + 1);
+
+    const strength = row.case_strength ?? 'not answered';
+    strengthCounts.set(strength, (strengthCounts.get(strength) ?? 0) + 1);
+  }
+
+  metrics.byState = [...stateCounts.entries()]
+    .map(([state, count]) => ({ state, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // Fixed display order; 'not answered' last. Unknown values (future tiers)
+  // append after the known ones.
+  const strengthOrder = ['strong', 'moderate', 'weak', 'not answered'];
+  metrics.byCaseStrength = [...strengthCounts.entries()]
+    .map(([strength, count]) => ({ strength, count }))
+    .sort((a, b) => {
+      const ai = strengthOrder.indexOf(a.strength);
+      const bi = strengthOrder.indexOf(b.strength);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+
+  return metrics;
+}
+
+/**
+ * Project D — save the admin's note and/or test flag on an order. Only these
+ * two columns are writable from the admin UI; order data itself stays
+ * read-only by design (use the Supabase Table Editor as the escape hatch for
+ * genuine data fixes).
+ */
+export async function updateOrderAdminFields(
+  refNumber: string,
+  fields: { adminNote?: string | null; isTest?: boolean },
+): Promise<boolean> {
+  const client = getClient();
+  if (!client) return false;
+
+  const update: { admin_note?: string | null; is_test?: boolean } = {};
+  if ('adminNote' in fields) update.admin_note = fields.adminNote ?? null;
+  if (typeof fields.isTest === 'boolean') update.is_test = fields.isTest;
+  if (Object.keys(update).length === 0) return true;
+
+  const { error } = await client
+    .from('orders')
+    .update(update)
+    .eq('ref_number', refNumber);
+
+  if (error) {
+    console.error('updateOrderAdminFields error:', error);
+    return false;
+  }
+  return true;
 }
