@@ -87,6 +87,16 @@ export interface OrderMetrics {
   testOrdersExcluded: number;
 }
 
+// Project D v2 — metrics for an arbitrary date range (the second section on
+// the /admin metrics page). Same exclusion rules as OrderMetrics.
+export interface RangeMetrics {
+  orderCount: number;
+  revenueCents: number;
+  estimatedRevenueRows: number;
+  testOrdersExcluded: number;
+  byState: { state: string; count: number }[];
+}
+
 // --- Client (lazy singleton) --------------------------------------------
 
 // Instantiate lazily and guarded so a missing env var never throws at
@@ -432,6 +442,135 @@ export async function updateOrderAdminFields(
 
   if (error) {
     console.error('updateOrderAdminFields error:', error);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Project D v2 — metrics for an arbitrary date range. startIso/endIso are ISO
+ * timestamps; either may be null (open-ended). start is inclusive, end is
+ * EXCLUSIVE (callers pass "day after the last day" for inclusive-day ranges).
+ * Same aggregation approach and test-order exclusion as getOrderMetrics.
+ */
+export async function getMetricsForRange(
+  startIso: string | null,
+  endIso: string | null,
+): Promise<RangeMetrics | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from('orders')
+    .select('created_at,state,amount_paid_cents,is_test');
+
+  if (error) {
+    console.error('getMetricsForRange error:', error);
+    return null;
+  }
+
+  const rows = data as Pick<
+    OrderRow,
+    'created_at' | 'state' | 'amount_paid_cents' | 'is_test'
+  >[];
+
+  const FLAT_PRICE_CENTS = 3900;
+  const startMs = startIso ? new Date(startIso).getTime() : null;
+  const endMs = endIso ? new Date(endIso).getTime() : null;
+
+  const metrics: RangeMetrics = {
+    orderCount: 0,
+    revenueCents: 0,
+    estimatedRevenueRows: 0,
+    testOrdersExcluded: 0,
+    byState: [],
+  };
+  const stateCounts = new Map<string, number>();
+
+  for (const row of rows) {
+    const created = new Date(row.created_at).getTime();
+    if (startMs !== null && created < startMs) continue;
+    if (endMs !== null && created >= endMs) continue;
+
+    if (row.is_test === true) {
+      metrics.testOrdersExcluded += 1;
+      continue;
+    }
+
+    let cents = row.amount_paid_cents;
+    if (cents === null || cents === undefined) {
+      cents = FLAT_PRICE_CENTS;
+      metrics.estimatedRevenueRows += 1;
+    }
+
+    metrics.orderCount += 1;
+    metrics.revenueCents += cents;
+
+    const state = row.state || 'Unknown';
+    stateCounts.set(state, (stateCounts.get(state) ?? 0) + 1);
+  }
+
+  metrics.byState = [...stateCounts.entries()]
+    .map(([state, count]) => ({ state, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return metrics;
+}
+
+/**
+ * Project D v2 — the CSV export query. ALL orders, newest first, including
+ * test orders (is_test is an explicit CSV column so Adem can filter in
+ * Excel). Explicit .range() because Supabase caps un-ranged responses at
+ * 1,000 rows; revisit with pagination if volume ever approaches 10k.
+ */
+export async function getAllOrdersForExport(): Promise<Order[]> {
+  const client = getClient();
+  if (!client) return [];
+
+  const { data, error } = await client
+    .from('orders')
+    .select()
+    .order('created_at', { ascending: false })
+    .range(0, 9999);
+
+  if (error) {
+    console.error('getAllOrdersForExport error:', error);
+    return [];
+  }
+  return (data as OrderRow[]).map(rowToOrder);
+}
+
+/**
+ * Project D v2 — admin regeneration write. Overwrites letter_text and appends
+ * the regeneration note line to admin_note in a single update. The caller is
+ * responsible for ONLY calling this with a real letter (never a
+ * missing_info/out_of_scope signal — those must not overwrite anything).
+ */
+export async function regenerateOrderLetter(
+  refNumber: string,
+  newLetterText: string,
+  noteLine: string,
+): Promise<boolean> {
+  const client = getClient();
+  if (!client) return false;
+
+  const existing = await getOrderByRef(refNumber);
+  if (!existing) {
+    console.error('regenerateOrderLetter: no order for ref', refNumber);
+    return false;
+  }
+
+  const combinedNote = existing.adminNote
+    ? `${existing.adminNote}\n${noteLine}`
+    : noteLine;
+
+  const { error } = await client
+    .from('orders')
+    .update({ letter_text: newLetterText, admin_note: combinedNote })
+    .eq('ref_number', refNumber);
+
+  if (error) {
+    console.error('regenerateOrderLetter error:', error);
     return false;
   }
   return true;

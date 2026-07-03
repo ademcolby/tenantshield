@@ -12,9 +12,46 @@ import { requireAdmin } from '../../../../lib/adminAuth';
 import { getOrderByRef } from '../../../../lib/db';
 import CopyButton from '../../CopyButton';
 import DownloadPdfButton from '../../DownloadPdfButton';
-import { saveAdminFields } from './actions';
+import ConfirmButton from '../../ConfirmButton';
+import { saveAdminFields, resendReceiptEmail, regenerateLetter } from './actions';
 
 export const dynamic = 'force-dynamic';
+// Regeneration calls Anthropic and can take most of a minute.
+export const maxDuration = 60;
+
+// Status banners (v2): every admin action redirects back with ?status=... so
+// the result is visible instead of a silent re-render.
+const STATUS_BANNERS: Record<string, { tone: 'ok' | 'warn' | 'error'; text: string }> = {
+  saved: { tone: 'ok', text: 'Admin fields saved.' },
+  save_failed: { tone: 'error', text: 'Save failed — check server logs.' },
+  resent: { tone: 'ok', text: 'Receipt email re-sent (with PDF) to the order email address.' },
+  resend_failed: {
+    tone: 'error',
+    text: 'Re-send failed — check server logs and the Resend dashboard.',
+  },
+  regenerated: {
+    tone: 'ok',
+    text: 'Letter regenerated and saved. The previous version was overwritten, and a note was added below.',
+  },
+  regen_missing_info: {
+    tone: 'warn',
+    text: 'Regeneration did NOT overwrite the letter: the model returned a MISSING_INFORMATION signal for this form data. The original letter is unchanged.',
+  },
+  regen_out_of_scope: {
+    tone: 'warn',
+    text: 'Regeneration did NOT overwrite the letter: the model returned a SCOPE_LIMITATION signal for this form data. The original letter is unchanged.',
+  },
+  regen_error: {
+    tone: 'error',
+    text: 'Regeneration failed — the original letter is unchanged. Check server logs.',
+  },
+};
+
+const BANNER_STYLES: Record<'ok' | 'warn' | 'error', string> = {
+  ok: 'border-green-200 bg-green-50 text-green-800',
+  warn: 'border-amber-200 bg-amber-50 text-amber-800',
+  error: 'border-red-200 bg-red-50 text-red-800',
+};
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
@@ -45,12 +82,16 @@ function stripeSearchUrl(sessionId: string): string {
 
 export default async function AdminOrderDetailPage({
   params,
+  searchParams,
 }: {
-  // Next.js 15: params is async.
+  // Next.js 15: params and searchParams are async.
   params: Promise<{ ref: string }>;
+  searchParams: Promise<{ status?: string }>;
 }) {
   await requireAdmin();
   const { ref } = await params;
+  const { status } = await searchParams;
+  const banner = status ? STATUS_BANNERS[status] : undefined;
   const refNumber = decodeURIComponent(ref);
   const order = await getOrderByRef(refNumber);
 
@@ -70,6 +111,13 @@ export default async function AdminOrderDetailPage({
           </div>
         ) : (
           <>
+            {banner && (
+              <div
+                className={`mt-4 rounded-xl border px-4 py-3 text-sm ${BANNER_STYLES[banner.tone]}`}
+              >
+                {banner.text}
+              </div>
+            )}
             <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h1
@@ -87,7 +135,30 @@ export default async function AdminOrderDetailPage({
                   Generated {formatDateTime(order.createdAt)}
                 </p>
               </div>
-              <DownloadPdfButton letterText={order.letterText} />
+              <div className="flex flex-wrap items-center gap-3">
+                <DownloadPdfButton letterText={order.letterText} />
+                {/* v2: manual re-send — always attempts (bypasses the pipeline's
+                    idempotency flag by calling sendLetterEmail directly). */}
+                <form action={resendReceiptEmail}>
+                  <input type="hidden" name="ref" value={order.refNumber} />
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#E7E5E0] bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:text-slate-900"
+                  >
+                    Re-send email
+                  </button>
+                </form>
+                {/* v2: regenerate — confirm dialog, then overwrite-on-success. */}
+                <form action={regenerateLetter}>
+                  <input type="hidden" name="ref" value={order.refNumber} />
+                  <ConfirmButton
+                    message={`Regenerate this letter?\n\nThis calls the AI again on the stored form data and OVERWRITES the current letter text (no undo). The customer is NOT emailed automatically — use Re-send email after, if needed.`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-900 shadow-sm transition hover:bg-amber-100"
+                  >
+                    Regenerate letter
+                  </ConfirmButton>
+                </form>
+              </div>
             </div>
 
             {/* ---------- Order fields ---------- */}

@@ -54,12 +54,21 @@ export default async function AdminOrdersPage({
                 : 'Most recent 50 orders, newest first'}
             </p>
           </div>
-          <Link
-            href="/admin"
-            className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
-          >
-            ← Back to metrics
-          </Link>
+          <div className="flex items-center gap-5">
+            {/* Project D v2: full CSV export (all orders incl. test, flagged column). */}
+            <a
+              href="/admin/orders/export"
+              className="text-sm font-medium text-[#B45309] transition hover:text-[#92400E]"
+            >
+              Export CSV
+            </a>
+            <Link
+              href="/admin"
+              className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+            >
+              ← Back to metrics
+            </Link>
+          </div>
         </div>
 
         {/* Plain GET form — server-rendered search, no client JS needed. */}

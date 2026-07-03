@@ -62,6 +62,14 @@ export type GenerateResult =
   | { kind: 'out_of_scope'; message: string }
   | { kind: 'error'; status: number; message: string };
 
+// Project D v2 — result shape for admin-triggered regeneration (no session,
+// no caching, no persistence side effects; the caller decides what to do).
+export type RegenerateResult =
+  | { kind: 'letter'; letter: string }
+  | { kind: 'missing_info'; message: string }
+  | { kind: 'out_of_scope'; message: string }
+  | { kind: 'error'; message: string };
+
 // --- Case-strength derivation (server mirror of the form's computeTier) -----
 //
 // Stored on the order purely for admin/analytics (Project D dashboards). It is
@@ -174,6 +182,33 @@ ${renderComputedDatesBlock(computed)}
 Generate the complete demand letter following all the rules in the system prompt. Use the pre-calculated dates above for every date in the letter. Output only the letter itself.`;
 
   return message;
+}
+
+// Classifies structured non-letter signals from the model (strips BOM /
+// leading whitespace / a leading markdown code fence before matching).
+// Returns null when the output is an actual letter. Shared by the paid
+// pipeline and the admin regeneration path so the rules can't drift.
+function classifyModelOutput(
+  letterText: string,
+): { kind: 'missing_info' | 'out_of_scope'; message: string } | null {
+  const normalizedSignal = letterText
+    .replace(/^\uFEFF/, '')
+    .replace(/^\s+/, '')
+    .replace(/^```[a-zA-Z]*\s*/, '')
+    .toUpperCase();
+
+  if (
+    normalizedSignal.startsWith('MISSING_INFORMATION') ||
+    normalizedSignal.startsWith('SCOPE_LIMITATION')
+  ) {
+    const isMissing = normalizedSignal.startsWith('MISSING_INFORMATION');
+    const cleanMessage = letterText.replace(/```/g, '').trim();
+    return {
+      kind: isMissing ? 'missing_info' : 'out_of_scope',
+      message: cleanMessage,
+    };
+  }
+  return null;
 }
 
 async function callAnthropic(apiKey: string, userMessage: string): Promise<string | null> {
@@ -333,24 +368,10 @@ export async function generateLetterForSession(
     return { kind: 'error', status: 500, message: 'Failed to generate letter. Please try again.' };
   }
 
-  // Classify structured non-letter signals (strip BOM / leading whitespace /
-  // a leading markdown code fence before matching).
-  const normalizedSignal = letterText
-    .replace(/^\uFEFF/, '')
-    .replace(/^\s+/, '')
-    .replace(/^```[a-zA-Z]*\s*/, '')
-    .toUpperCase();
-
-  if (
-    normalizedSignal.startsWith('MISSING_INFORMATION') ||
-    normalizedSignal.startsWith('SCOPE_LIMITATION')
-  ) {
-    const isMissing = normalizedSignal.startsWith('MISSING_INFORMATION');
-    const cleanMessage = letterText.replace(/```/g, '').trim();
-    return {
-      kind: isMissing ? 'missing_info' : 'out_of_scope',
-      message: cleanMessage,
-    };
+  // Classify structured non-letter signals via the shared helper.
+  const signal = classifyModelOutput(letterText);
+  if (signal) {
+    return signal;
   }
 
   // Cache the successful letter against the paid session for retry-safety.
@@ -363,4 +384,31 @@ export async function generateLetterForSession(
   await sendReceiptIfNeeded(sessionId, formData, session, letterText, refNumber);
 
   return { kind: 'letter', letter: letterText, refNumber, cached: false };
+}
+
+/**
+ * Project D v2 — admin-triggered regeneration.
+ *
+ * Re-runs ONLY the prompt-build + Anthropic call + classification on an
+ * order's stored form payload. Deliberately has NONE of the paid-pipeline
+ * side effects: no payment check (the order was already paid), no Redis
+ * caching, no DB persistence, no receipt email. The admin action that calls
+ * this decides whether/how to store the result — and on a non-letter signal
+ * (missing_info / out_of_scope / error) it must NOT overwrite anything.
+ */
+export async function regenerateLetterFromForm(
+  formData: FormData,
+  apiKey: string,
+): Promise<RegenerateResult> {
+  const userMessage = buildUserMessage(formData);
+  const letterText = await callAnthropic(apiKey, userMessage);
+
+  if (!letterText) {
+    return { kind: 'error', message: 'Anthropic call failed — see server logs.' };
+  }
+
+  const signal = classifyModelOutput(letterText);
+  if (signal) return signal;
+
+  return { kind: 'letter', letter: letterText };
 }
