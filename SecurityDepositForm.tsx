@@ -1021,28 +1021,28 @@ export default function SecurityDepositForm() {
       <div className={`${fontVars} bg-[#FAFAF7] flex items-center justify-center px-4 py-24`}
         style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}>
         <div className="max-w-lg w-full rounded-2xl border border-[#E7E5E0] bg-white p-8 shadow-sm">
-          <div className="text-[#B45309] text-3xl mb-4">\u2696\uFE0F</div>
+          <div className="text-[#B45309] text-3xl mb-4">⚖️</div>
           <h2 className="text-2xl font-medium tracking-tight text-slate-900 mb-3" style={display}>
             A demand letter can&apos;t help with this one
           </h2>
           <p className="text-slate-700 text-sm leading-relaxed mb-4">
             Based on your own answers, the damage you estimated and the unpaid rent or fees you owe
             add up to <strong>as much as or more than your deposit</strong>. Your landlord can lawfully
-            offset those amounts \u2014 which means there&apos;s nothing left for a demand letter to recover.
+            offset those amounts — which means there&apos;s nothing left for a demand letter to recover.
             We haven&apos;t charged you anything.
           </p>
           <div className="rounded-xl border border-[#E7E5E0] bg-slate-50/70 p-4 mb-6">
             <h3 className="text-sm font-semibold text-slate-900 mb-2">What you can do instead</h3>
             <ul className="space-y-2 text-sm text-slate-700">
-              <li className="flex gap-2"><span className="text-[#B45309]">\u2022</span>
+              <li className="flex gap-2"><span className="text-[#B45309]">•</span>
                 <span><strong>Double-check your numbers.</strong> If the repair estimate or unpaid amount
-                you entered was too high, go back and correct it \u2014 if your real offsets are below your
+                you entered was too high, go back and correct it — if your real offsets are below your
                 deposit, a letter can still demand the difference.</span></li>
-              <li className="flex gap-2"><span className="text-[#B45309]">\u2022</span>
+              <li className="flex gap-2"><span className="text-[#B45309]">•</span>
                 <span><strong>Ask for an itemized accounting.</strong> Even when nothing is owed back to
                 you, most states still require your landlord to provide a written itemization of what
                 they kept and why.</span></li>
-              <li className="flex gap-2"><span className="text-[#B45309]">\u2022</span>
+              <li className="flex gap-2"><span className="text-[#B45309]">•</span>
                 <span><strong>If your landlord demands even more</strong> than the deposit covered, consider
                 negotiating or contacting your local legal aid office or tenant union before agreeing to
                 pay anything further.</span></li>
@@ -1284,6 +1284,9 @@ export default function SecurityDepositForm() {
                   placeholder="1428 Magnolia Ave"
                   className={inputClass(!!errors.rentalPropertyAddress)}
                 />
+                <p className="mt-1 text-sm text-slate-500">
+                  This is the rental property&apos;s address — not your current mailing address.
+                </p>
               </div>
               <div className="sm:col-span-2">
                 <label className={labelClass}>Apt / Suite / Unit</label>

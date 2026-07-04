@@ -46,6 +46,11 @@ const ShieldMark = ({ className = '' }: { className?: string }) => (
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isHome = pathname === '/'
+  // Project F (nav bug fix): the header's "Generate my letter" CTA just links
+  // to /generate. When already on that page it does nothing useful — the
+  // real submit button lives at the bottom of the form — so we hide it there
+  // rather than have it sit as a dead, confusing duplicate control.
+  const isGeneratePage = pathname === '/generate'
 
   // Project E: session-aware nav. null = still checking (render nothing to avoid
   // a flash); true/false swaps "Sign in" <-> "My account". Subscribes to auth
@@ -115,7 +120,12 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
               TenantShield
             </span>
           </Link>
-          <nav className="hidden items-center gap-7 text-sm font-medium text-slate-700 md:flex">
+          {/* Project F (nav bug fix): raised from md:flex to lg:flex. At md
+              (768px) there wasn't enough width for logo + 3 links + auth link
+              + CTA button in one row, so the links wrapped awkwardly onto a
+              second line. Hidden until lg (1024px) instead, where there's
+              genuinely enough room for everything on a single line. */}
+          <nav className="hidden items-center gap-7 text-sm font-medium text-slate-700 lg:flex">
             <a href={sectionLink('#how-it-works')} className="transition hover:text-slate-900">
               How it works
             </a>
@@ -146,13 +156,18 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
                 {authed ? 'My account' : 'Sign in'}
               </Link>
             )}
-            <Link
-              href="/generate"
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
-            >
-              Generate my letter
-              <span className="hidden text-amber-100/80 sm:inline">— $39</span>
-            </Link>
+            {/* Project F (nav bug fix): hidden on /generate itself — it's just
+                a link to this same page, so it's a dead, confusing duplicate
+                of the real submit button at the bottom of the form. */}
+            {!isGeneratePage && (
+              <Link
+                href="/generate"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
+              >
+                Generate my letter
+                <span className="hidden text-amber-100/80 sm:inline">— $39</span>
+              </Link>
+            )}
           </div>
         </div>
       </header>
