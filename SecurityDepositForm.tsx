@@ -1949,7 +1949,7 @@ export default function SecurityDepositForm() {
             <textarea
               value={formData.situation}
               onChange={(e) => handleInputChange('situation', e.target.value)}
-              placeholder="e.g., When I asked about my deposit on April 2nd, my landlord texted back \u201Cyou\u2019ll get it when you get it.\u201D I have the text saved. I\u2019m also an active-duty service member."
+              placeholder={`e.g., When I asked about my deposit on April 2nd, my landlord texted back \u201Cyou\u2019ll get it when you get it.\u201D I have the text saved. I\u2019m also an active-duty service member.`}
               rows={5}
               maxLength={4000}
               className={`${inputClass(!!errors.situation)} resize-none`}
