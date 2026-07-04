@@ -18,7 +18,7 @@
 import type Stripe from 'stripe';
 import { SYSTEM_PROMPT } from './systemPrompt';
 import { redis, formKey, letterKey, LETTER_TTL_SECONDS } from './redis';
-import { computeDates, renderComputedDatesBlock } from './dates';
+import { computeDates, renderComputedDatesBlock, formatLongDate } from './dates';
 import { sendLetterEmail } from './email';
 import { saveOrder } from './db';
 import { generateRefNumber } from './refNumber';
@@ -36,7 +36,6 @@ export interface FormData {
   vacatedDate: string;
   forwardingAddressDate: string;
   situation: string;
-  subtypes: string[];
   specialCircumstances: string[];
   leaseDesignation: string;
   isRentStabilized: string;
@@ -44,15 +43,26 @@ export interface FormData {
   buildingUnitCount: string;
   gaveWrittenNotice: string;
   leaseType: string;
-  // ---- Quick Case Check fields (used to derive case_strength for the DB) ----
+  // ---- Project I: authoritative scenario + dispute grounds ----
+  // Exactly one scenario (single-select in the form); disputes are the
+  // multi-select "why the deductions are wrong / procedural violations" axis.
+  scenario?: string;
+  disputes?: string[];
+  // Present (and required by the form) for partial-return scenarios.
+  amountReturned?: string;
+  // Optional: the date the deposit was originally paid.
+  depositPaidDate?: string;
+  // ---- Case facts (Project I: required in the form; also drive case_strength) ----
+  unitCondition?: string;        // 'good' | 'minor' | 'damage'
+  damageEstimate?: string;       // required by the form when unitCondition === 'damage'
+  unpaidRent?: string;           // 'no' | 'yes'
+  unpaidRentAmount?: string;     // required by the form when unpaidRent === 'yes'
+  properNotice?: string;         // 'yes' | 'not_required' | 'no'
+  noticeGiven?: string;          // 'partial' | 'none' (required when properNotice === 'no')
+  conditionDocumentation?: string; // 'yes' | 'partial' | 'no'
+  // ---- LEGACY fields (pre-overhaul orders; admin regeneration only) ----
+  subtypes?: string[];
   itemizationProvided?: string;
-  unitCondition?: string;
-  damageEstimate?: string;
-  unpaidRent?: string;
-  unpaidRentAmount?: string;
-  properNotice?: string;
-  noticeGiven?: string;
-  conditionDocumentation?: string;
 }
 
 // The shape returned to callers. Mirrors what the routes hand back as JSON.
@@ -83,9 +93,19 @@ function parseMoney(raw: string | undefined): number {
   return n > 0 ? n : 0;
 }
 
+// Scenarios in which the landlord provided an itemized list the tenant
+// disputes — the successor to the old itemizationProvided === 'yes_disputed'
+// moderate trigger (the itemization question was absorbed into the scenario).
+const ITEMIZED_DISPUTE_SCENARIOS = ['full_withholding_itemized', 'partial_return_itemized'];
+
 function deriveCaseStrength(f: FormData): string | undefined {
+  // Legacy payloads (pre-overhaul) carry itemizationProvided instead of a
+  // scenario. The old tier logic is preserved for them so a re-persisted or
+  // late-completing old order classifies exactly as it would have.
+  const isLegacy = !f.scenario && !!f.itemizationProvided;
+
   const answered =
-    f.itemizationProvided &&
+    (isLegacy ? f.itemizationProvided : f.scenario) &&
     f.unitCondition &&
     f.unpaidRent &&
     f.properNotice &&
@@ -97,12 +117,18 @@ function deriveCaseStrength(f: FormData): string | undefined {
   const damageVal = parseMoney(f.damageEstimate);
 
   // Weak: offsets meet or exceed the deposit, or the tenant abandoned.
+  // (The form now blocks combined-offsets >= deposit before payment; these
+  // remain as classification for anything that reaches persistence anyway.)
   if (f.noticeGiven === 'none') return 'weak';
   if (f.unpaidRent === 'yes' && depositVal > 0 && unpaidVal >= depositVal) return 'weak';
   if (f.unitCondition === 'damage' && depositVal > 0 && damageVal >= depositVal) return 'weak';
 
+  const itemizedDispute = isLegacy
+    ? f.itemizationProvided === 'yes_disputed'
+    : ITEMIZED_DISPUTE_SCENARIOS.includes(f.scenario || '');
+
   const moderate =
-    f.itemizationProvided === 'yes_disputed' ||
+    itemizedDispute ||
     f.unitCondition === 'minor' ||
     f.unitCondition === 'damage' ||
     f.unpaidRent === 'yes' ||
@@ -113,7 +139,84 @@ function deriveCaseStrength(f: FormData): string | undefined {
   return 'strong';
 }
 
-// --- Prompt assembly (unchanged from the original route) --------------------
+// --- Prompt assembly (Project I: scenario + case facts injection) -----------
+
+// Human-readable labels sent alongside the scenario id so the model never has
+// to guess what an id means. Must stay in sync with the form's SCENARIOS list.
+const SCENARIO_LABELS: Record<string, string> = {
+  no_response:
+    'The landlord has returned nothing and made no claim at all (total silence past the deadline)',
+  full_withholding_no_itemization:
+    'The landlord kept the entire deposit with only a vague reason or no written itemization',
+  full_withholding_itemized:
+    'The landlord kept the entire deposit with an itemized list the tenant disputes',
+  partial_return_no_itemization:
+    'The landlord returned part of the deposit with no written breakdown of what was kept or why',
+  partial_return_itemized:
+    'The landlord returned part of the deposit with an itemized list the tenant disputes',
+  deposit_applied_to_rent:
+    'The landlord applied the deposit to the final month\u2019s rent without the tenant\u2019s agreement',
+};
+
+// Parse a yyyy-mm-dd input to a UTC date for formatting (mirrors dates.ts's
+// internal parser; kept tiny and local since dates.ts doesn't export it).
+function parseYmdUTC(value: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((value || '').trim());
+  if (!m) return null;
+  return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+}
+
+function caseFactLines(data: FormData): string[] {
+  const lines: string[] = [];
+
+  if (data.unitCondition) {
+    const map: Record<string, string> = {
+      good: 'Tenant left the unit in good condition (normal wear and tear only)',
+      minor: 'Tenant left the unit with minor issues, nothing major',
+      damage: 'Tenant admits some damage occurred',
+    };
+    lines.push(`- Condition at move-out: ${map[data.unitCondition] || data.unitCondition}`);
+    if (data.unitCondition === 'damage' && data.damageEstimate) {
+      lines.push(`- Tenant's estimated repair cost for the admitted damage: $${data.damageEstimate}`);
+    }
+  }
+
+  if (data.unpaidRent === 'no') {
+    lines.push('- Unpaid rent or fees owed to the landlord: none');
+  } else if (data.unpaidRent === 'yes') {
+    lines.push(
+      `- Unpaid rent or fees the tenant admits owing: ${
+        data.unpaidRentAmount ? '$' + data.unpaidRentAmount : 'yes (amount not stated)'
+      }`,
+    );
+  }
+
+  if (data.properNotice === 'yes') {
+    lines.push('- Move-out notice: tenant gave proper written notice per the lease');
+  } else if (data.properNotice === 'not_required') {
+    lines.push('- Move-out notice: the lease did not require notice');
+  } else if (data.properNotice === 'no') {
+    lines.push(
+      data.noticeGiven === 'partial'
+        ? '- Move-out notice: tenant gave some notice, but less than the lease required'
+        : data.noticeGiven === 'none'
+        ? '- Move-out notice: tenant moved out without giving any notice'
+        : '- Move-out notice: tenant did not give the required notice',
+    );
+  }
+
+  if (data.conditionDocumentation) {
+    const map: Record<string, string> = {
+      yes: 'Tenant has photos and/or a checklist documenting the unit\u2019s condition',
+      partial: 'Tenant has some (partial) documentation of the unit\u2019s condition',
+      no: 'Tenant has no documentation of the unit\u2019s condition',
+    };
+    lines.push(`- Condition documentation: ${map[data.conditionDocumentation] || data.conditionDocumentation}`);
+  }
+
+  return lines;
+}
+
 function buildUserMessage(data: FormData): string {
   const computed = computeDates(data.vacatedDate, data.forwardingAddressDate);
 
@@ -148,6 +251,15 @@ RENTAL PROPERTY:
 - Security deposit amount: ${data.depositAmount ? '$' + data.depositAmount : 'not provided'}
 - Date tenant vacated: ${computed.vacatedDateFormatted || 'not provided'}`;
 
+  // Optional: the date the deposit was originally paid (Project I). Formatted
+  // through the same UTC-safe formatter as every other date in the letter.
+  if (data.depositPaidDate) {
+    const paid = parseYmdUTC(data.depositPaidDate);
+    if (paid) {
+      message += `\n- Date deposit paid: ${formatLongDate(paid)}`;
+    }
+  }
+
   if (data.forwardingAddressDate) {
     message += `\n- Date tenant provided forwarding address: ${computed.forwardingAddressDateFormatted}`;
   }
@@ -160,8 +272,25 @@ RENTAL PROPERTY:
 
   message += `\n\nDISPUTE TYPE: Security Deposit`;
 
-  if (data.subtypes && data.subtypes.length > 0) {
+  // --- Authoritative scenario (Project I) — exactly one; controls the letter type.
+  if (data.scenario) {
+    const label = SCENARIO_LABELS[data.scenario] || data.scenario;
+    message += `\n\nWHAT THE LANDLORD DID (authoritative scenario \u2014 controls the letter type; if the description below conflicts, THIS wins):\n- ${data.scenario} \u2014 ${label}`;
+    if (
+      (data.scenario === 'partial_return_no_itemization' ||
+        data.scenario === 'partial_return_itemized') &&
+      data.amountReturned
+    ) {
+      message += `\n- Amount returned so far: $${data.amountReturned} (the withheld portion is the deposit minus this figure \u2014 demand that withheld portion)`;
+    }
+  } else if (data.subtypes && data.subtypes.length > 0) {
+    // LEGACY (pre-overhaul orders regenerated from admin): old multi-select ids.
     message += `\n\nSUB-TYPES SELECTED: ${data.subtypes.join(', ')}`;
+  }
+
+  // --- Disputed deduction grounds + landlord procedural violations (Project I).
+  if (data.disputes && data.disputes.length > 0) {
+    message += `\n\nDISPUTED DEDUCTION GROUNDS (confirmed facts \u2014 weave each matching argument in): ${data.disputes.join(', ')}`;
   }
 
   if (data.specialCircumstances && data.specialCircumstances.length > 0) {
@@ -172,10 +301,26 @@ RENTAL PROPERTY:
     message += `\n\nlease_designation (non-refundable fee designation): ${data.leaseDesignation}`;
   }
 
-  message += `
+  // --- Case facts (Project I) — authoritative; drive tone calibration.
+  const facts = caseFactLines(data);
+  if (facts.length > 0) {
+    message += `\n\nTENANT'S CASE FACTS (authoritative \u2014 the tenant's own answers; calibrate the letter to these per the CASE FACTS AND TONE CALIBRATION rules; if the description below conflicts, THESE win):\n${facts.join('\n')}`;
+  }
 
-TENANT'S DESCRIPTION OF WHAT HAPPENED:
-${data.situation}
+  // --- Free-text description (Project I: optional, supporting detail only).
+  const situation = (data.situation || '').trim();
+  if (situation) {
+    message += `
+
+ADDITIONAL CONTEXT FROM TENANT (supporting detail ONLY \u2014 use for specifics, names, dates, and TIER-2 circumstance detection; it can ADD arguments but NEVER overrides the scenario, case facts, or any structured field above):
+${situation}`;
+  } else {
+    message += `
+
+ADDITIONAL CONTEXT FROM TENANT: none provided. The structured inputs above are the complete factual record \u2014 do NOT treat the absence of a description as missing information.`;
+  }
+
+  message += `
 
 ${renderComputedDatesBlock(computed)}
 

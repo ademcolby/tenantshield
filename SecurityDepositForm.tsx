@@ -135,34 +135,63 @@ const LEASE_TYPE_STATES = ['Maine'];
 // rather than a separate Alaska-only field. See deriveGaveWrittenNotice() and
 // the Alaska required-field check in validateForm.
 
-interface SubTypeItem { id: string; label: string; icon: string; tip: string; }
+interface ScenarioItem { id: string; label: string; icon: string; tip: string; }
 interface CircumstanceItem { id: string; label: string; tip: string; }
 
-// Trimmed from 10 -> 8 (removed vague "No response / total silence" and
-// "Forwarding address excuse"). Each item now carries a plain-language tooltip.
-const SUB_TYPES: SubTypeItem[] = [
-  { id: 'partial_no_itemization', label: 'Partial return without itemization', icon: '\uD83D\uDCC4', tip: 'Your landlord returned part of your deposit but didn\u2019t provide a written breakdown of what they kept or why. Example: you got $800 back from a $1,400 deposit with no explanation.' },
-  { id: 'partial_disputed_items', label: 'Partial return with disputed items', icon: '\u2696\uFE0F', tip: 'Your landlord returned part of your deposit but listed deductions you believe are wrong or inflated. Example: they charged $600 for repairs you don\u2019t think were your responsibility.' },
-  { id: 'full_withholding_vague', label: 'Full withholding with vague reasons', icon: '\u274C', tip: 'Your landlord kept the entire deposit but gave only a vague or general reason, with no itemized list. Example: they said \u201Ccleaning and repairs\u201D with no documentation.' },
-  { id: 'late_notice', label: 'Late notice after deadline', icon: '\u23F0', tip: 'Your landlord sent their deduction notice after your state\u2019s legal deadline had already passed. Example: your state requires notice within 30 days and they sent it on day 45.' },
-  { id: 'wear_and_tear', label: 'Charged for normal wear and tear', icon: '\uD83C\uDFE0', tip: 'Your landlord is deducting for things that naturally age or wear with normal use. Example: carpet that faded over 3 years, small wall scuffs, or minor paint wear.' },
-  { id: 'preexisting_damage', label: 'Charged for pre-existing damage', icon: '\uD83D\uDCF8', tip: 'Your landlord is charging for damage that existed before you moved in. Example: a cracked tile or stained ceiling that was already there when you arrived.' },
-  { id: 'inflated_charges', label: 'Inflated repair charges', icon: '\uD83D\uDCB0', tip: 'The amounts your landlord is claiming seem far higher than the repairs would reasonably cost. Example: charging $900 to repaint one bedroom.' },
-  { id: 'escrow_violation', label: 'Deposit not properly held', icon: '\uD83C\uDFE6', tip: 'Your landlord may have failed to hold your deposit in a separate account as required by law. Example: no disclosure of where it was held, or it was mixed with operating funds.' },
+// Project I — the AUTHORITATIVE single-select scenario ("what the landlord
+// did with your deposit"). Exactly one may be selected; it is the letter-type
+// decision and the single source of truth the letter is built around.
+// IDs are matched verbatim by lib/systemPrompt.ts and mirrored in
+// app/api/create-checkout-session/route.ts (SCENARIO_IDS) — keep in sync.
+const SCENARIOS: ScenarioItem[] = [
+  { id: 'no_response', label: 'No response at all \u2014 my landlord has gone silent', icon: '\uD83D\uDD07', tip: 'You\u2019ve received nothing back and your landlord hasn\u2019t responded or made any claim on your deposit. Total silence past the deadline is one of the strongest positions \u2014 in many states it forfeits their right to keep anything.' },
+  { id: 'full_withholding_no_itemization', label: 'Kept everything \u2014 vague reason or no itemization', icon: '\u274C', tip: 'Your landlord kept the entire deposit but gave only a vague or general reason, with no written itemized breakdown. Example: they said \u201Ccleaning and repairs\u201D with no documentation.' },
+  { id: 'full_withholding_itemized', label: 'Kept everything \u2014 with an itemized list I dispute', icon: '\uD83D\uDCCB', tip: 'Your landlord kept the entire deposit and provided an itemized list of deductions, but you believe the items are wrong, inflated, or not your responsibility.' },
+  { id: 'partial_return_no_itemization', label: 'Returned part \u2014 no written breakdown', icon: '\uD83D\uDCC4', tip: 'Your landlord returned part of your deposit but didn\u2019t provide a written breakdown of what they kept or why. Example: you got $800 back from a $1,400 deposit with no explanation.' },
+  { id: 'partial_return_itemized', label: 'Returned part \u2014 with an itemized list I dispute', icon: '\u2696\uFE0F', tip: 'Your landlord returned part of your deposit and listed deductions for the rest, but you believe the items are wrong or inflated. Example: they charged $600 for repairs you don\u2019t think were your responsibility.' },
+  { id: 'deposit_applied_to_rent', label: 'Applied my deposit to last month\u2019s rent', icon: '\uD83C\uDFE0', tip: 'Your landlord used your security deposit to cover your final month\u2019s rent without your agreement. Security deposits and rent are legally separate.' },
 ];
 
-// Trimmed from 8 -> 6 (removed "landlord has passed away" and "lease ended /
-// went month-to-month"). Each item now carries a plain-language tooltip.
+// Project I — the second axis: WHY the deductions are wrong, plus landlord
+// procedural violations. Multi-select, optional. The deduction-specific
+// grounds only render for scenarios where deductions were actually claimed;
+// the procedural violations render for every scenario (see DISPUTE gating in
+// the card below), so a contradictory combination can never be submitted.
+const DEDUCTION_DISPUTE_GROUNDS: CircumstanceItem[] = [
+  { id: 'wear_and_tear', label: 'Charged for normal wear and tear', tip: 'Your landlord is deducting for things that naturally age or wear with normal use. Example: carpet that faded over 3 years, small wall scuffs, or minor paint wear.' },
+  { id: 'preexisting_damage', label: 'Charged for pre-existing damage', tip: 'Your landlord is charging for damage that existed before you moved in. Example: a cracked tile or stained ceiling that was already there when you arrived.' },
+  { id: 'inflated_charges', label: 'Inflated repair charges', tip: 'The amounts your landlord is claiming seem far higher than the repairs would reasonably cost. Example: charging $900 to repaint one bedroom.' },
+  { id: 'late_notice', label: 'Their notice came after the legal deadline', tip: 'Your landlord sent their deduction notice after your state\u2019s legal deadline had already passed. Example: your state requires notice within 30 days and they sent it on day 45.' },
+];
+const PROCEDURAL_DISPUTE_GROUNDS: CircumstanceItem[] = [
+  { id: 'escrow_violation', label: 'Deposit not properly held', tip: 'Your landlord may have failed to hold your deposit in a separate account as required by law. Example: no disclosure of where it was held, or it was mixed with operating funds.' },
+  { id: 'no_receipt', label: 'Never got a deposit receipt', tip: 'Your landlord never gave you a written receipt for your security deposit. Some states require one \u2014 where they do, the failure is its own violation your letter can cite.' },
+  { id: 'no_checklist', label: 'Never got a move-in checklist', tip: 'Your landlord never provided a move-in inventory or condition checklist. Some states and cities require one \u2014 and without it, your landlord has no baseline to justify condition-based deductions.' },
+];
+
+// Scenarios in which the landlord claimed deductions (deduction-specific
+// dispute grounds only make sense for these).
+const DEDUCTION_SCENARIOS = [
+  'full_withholding_no_itemization',
+  'full_withholding_itemized',
+  'partial_return_no_itemization',
+  'partial_return_itemized',
+];
+// Scenarios where part of the deposit came back (the amount-returned
+// follow-up is required for these).
+const PARTIAL_SCENARIOS = ['partial_return_no_itemization', 'partial_return_itemized'];
+
+// Trimmed for Project I: "deposit applied to last month's rent" moved into the
+// scenario picker, and "some damage occurred but I dispute the amount" is now
+// captured by the condition question + the inflated-charges dispute ground.
 const SPECIAL_CIRCUMSTANCES: CircumstanceItem[] = [
   { id: 'multiple_tenants_on_lease', label: 'I had roommates on the lease', tip: 'Other tenants were also listed on the lease. This affects how the letter is addressed and how the deposit demand is structured.' },
   { id: 'property_sold_during_tenancy', label: 'The property was sold during my tenancy', tip: 'Your landlord sold the property while you were still living there. The new owner may have inherited the obligation to return your deposit.' },
   { id: 'tenant_broke_lease_early', label: 'I broke the lease early', tip: 'You moved out before your lease end date. Your letter will reference your landlord\u2019s legal duty to re-rent and mitigate losses rather than simply keep your deposit.' },
-  { id: 'deposit_applied_to_last_rent', label: 'Landlord applied my deposit to last month\u2019s rent', tip: 'Your landlord used your security deposit to cover your final month\u2019s rent without your agreement. Security deposits and rent are legally separate.' },
   { id: 'non_refundable_cleaning_fee', label: 'I paid a non-refundable cleaning fee', tip: 'You paid a fee at move-in that was labeled non-refundable. Depending on your state, this may still be legally recoverable.' },
-  { id: 'tenant_admits_partial_damage', label: 'Some damage occurred but I dispute the amount', tip: 'You acknowledge some damage happened but believe the landlord\u2019s charges are excessive or undocumented. Example: you broke a towel bar but they\u2019re charging $400 to repaint the whole bathroom.' },
 ];
 
-type ViewState = 'form' | 'loading' | 'result' | 'missing_info' | 'out_of_scope' | 'error';
+type ViewState = 'form' | 'loading' | 'result' | 'missing_info' | 'out_of_scope' | 'error' | 'blocked';
 type Tier = 'strong' | 'moderate' | 'weak';
 
 interface AddressParts {
@@ -277,7 +306,11 @@ export default function SecurityDepositForm() {
     vacatedDate: '',
     forwardingAddressDate: '',
     situation: '',
-    subtypes: [] as string[],
+    // ---- Project I: authoritative scenario + dispute grounds ----
+    scenario: '',              // single-select; SCENARIOS ids
+    disputes: [] as string[],  // multi-select; dispute-ground ids
+    amountReturned: '',        // numeric string; required for PARTIAL_SCENARIOS
+    depositPaidDate: '',       // optional yyyy-mm-dd
     specialCircumstances: [] as string[],
     leaseDesignation: '',
     isRentStabilized: '',
@@ -285,14 +318,13 @@ export default function SecurityDepositForm() {
     buildingUnitCount: '',
     gaveWrittenNotice: '', // derived from properNotice on submit (Alaska 14-vs-30-day)
     leaseType: '',
-    // ---- Quick Case Check (Change 6) ----
-    itemizationProvided: '',   // 'yes_documented' | 'yes_disputed' | 'none'
+    // ---- Case facts (Project I: ALL required; reach both the tier AND the letter) ----
     unitCondition: '',         // 'good' | 'minor' | 'damage'
-    damageEstimate: '',        // numeric string, shown when unitCondition === 'damage'
+    damageEstimate: '',        // numeric string, REQUIRED when unitCondition === 'damage'
     unpaidRent: '',            // 'no' | 'yes'
-    unpaidRentAmount: '',      // numeric string, shown when unpaidRent === 'yes'
+    unpaidRentAmount: '',      // numeric string, REQUIRED when unpaidRent === 'yes'
     properNotice: '',          // 'yes' | 'not_required' | 'no'
-    noticeGiven: '',           // 'partial' | 'none' (secondary; shown when properNotice === 'no')
+    noticeGiven: '',           // 'partial' | 'none' (REQUIRED when properNotice === 'no')
     conditionDocumentation: '', // 'yes' | 'partial' | 'no'
   });
 
@@ -300,10 +332,11 @@ export default function SecurityDepositForm() {
   const [warnings, setWarnings] = useState<{ [key: string]: string }>({});
   const [warningsShown, setWarningsShown] = useState(false);
 
-  // Weak-case acknowledgment modal (Change 6).
-  const [showWeakModal, setShowWeakModal] = useState(false);
+  // Case-strength confirmation modal (Project I). Fires at submit for EVERY
+  // tier; the weak tier additionally requires the acknowledgment checkbox.
+  const [showStrengthModal, setShowStrengthModal] = useState(false);
   const [weakChecked, setWeakChecked] = useState(false);
-  const [weakAcknowledged, setWeakAcknowledged] = useState(false);
+  const [strengthAcknowledged, setStrengthAcknowledged] = useState(false);
 
   const todayISO = new Date().toISOString().slice(0, 10);
 
@@ -327,8 +360,8 @@ export default function SecurityDepositForm() {
     if (warnings[field]) setWarnings(prev => ({ ...prev, [field]: '' }));
   };
 
-  // Case-check changes can reset dependent follow-ups, and always reset the
-  // weak-case acknowledgment so the customer re-sees the warning if they revise.
+  // Case-fact changes can reset dependent follow-ups, and always reset the
+  // strength acknowledgment so the customer re-sees the modal if they revise.
   const handleCaseChange = (field: string, value: string) => {
     setFormData(prev => {
       const next = { ...prev, [field]: value };
@@ -338,8 +371,38 @@ export default function SecurityDepositForm() {
       return next;
     });
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
-    setWeakAcknowledged(false);
+    setStrengthAcknowledged(false);
     setWeakChecked(false);
+  };
+
+  // Scenario is single-select and feeds the tier (itemized-dispute scenarios
+  // are a moderate trigger), so changing it also resets the acknowledgment.
+  // Leaving a partial-return scenario clears the amount-returned follow-up,
+  // and deduction-specific dispute grounds are pruned when the new scenario
+  // claims no deductions (procedural grounds always survive).
+  const handleScenarioChange = (id: string) => {
+    setFormData(prev => {
+      const next = { ...prev, scenario: id };
+      if (!PARTIAL_SCENARIOS.includes(id)) next.amountReturned = '';
+      if (!DEDUCTION_SCENARIOS.includes(id)) {
+        const deductionIds = DEDUCTION_DISPUTE_GROUNDS.map(g => g.id);
+        next.disputes = prev.disputes.filter(d => !deductionIds.includes(d));
+      }
+      return next;
+    });
+    if (errors.scenario) setErrors(prev => ({ ...prev, scenario: '' }));
+    if (errors.amountReturned) setErrors(prev => ({ ...prev, amountReturned: '' }));
+    setStrengthAcknowledged(false);
+    setWeakChecked(false);
+  };
+
+  const toggleDispute = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      disputes: prev.disputes.includes(id)
+        ? prev.disputes.filter(d => d !== id)
+        : [...prev.disputes, id],
+    }));
   };
 
   const handleStateChange = (value: string) => {
@@ -388,15 +451,6 @@ export default function SecurityDepositForm() {
     }
   };
 
-  const toggleSubtype = (id: string) => {
-    setFormData(prev => ({
-      ...prev,
-      subtypes: prev.subtypes.includes(id)
-        ? prev.subtypes.filter(s => s !== id)
-        : [...prev.subtypes, id]
-    }));
-  };
-
   const toggleSpecialCircumstance = (id: string) => {
     setFormData(prev => ({
       ...prev,
@@ -409,8 +463,10 @@ export default function SecurityDepositForm() {
   // DOM order of fields, used to scroll to the first issue on submit.
   const FIELD_ORDER = [
     'state', 'city', 'tenantName', 'email', 'rentalPropertyAddress', 'depositAmount', 'vacatedDate',
-    'forwardingAddressDate', 'buildingUnitCount', 'leaseType', 'tenantAddress',
-    'landlordName', 'landlordAddress', 'properNotice', 'situation',
+    'depositPaidDate', 'forwardingAddressDate', 'buildingUnitCount', 'leaseType', 'tenantAddress',
+    'landlordName', 'landlordAddress', 'scenario', 'amountReturned',
+    'unitCondition', 'damageEstimate', 'unpaidRent', 'unpaidRentAmount',
+    'properNotice', 'noticeGiven', 'conditionDocumentation', 'situation',
     'tenantZip', 'landlordZip', 'rentalZip', 'identicalParties',
   ];
   const SCROLL_ALIAS: { [k: string]: string } = {
@@ -418,6 +474,10 @@ export default function SecurityDepositForm() {
     landlordZip: 'landlordAddress',
     rentalZip: 'rentalPropertyAddress',
     identicalParties: 'landlordAddress',
+    damageEstimate: 'unitCondition',
+    unpaidRentAmount: 'unpaidRent',
+    noticeGiven: 'properNotice',
+    amountReturned: 'scenario',
   };
 
   const scrollToFirstIssue = (keys: string[]) => {
@@ -439,18 +499,21 @@ export default function SecurityDepositForm() {
     return '';
   };
 
-  // Case-strength tier. Returns null until ALL FIVE case-check questions are
-  // answered (itemization, condition, unpaid rent, notice, documentation).
-  // conditionDocumentation must be in this gate: it feeds the moderate branch
-  // below, so computing the tier before it is answered would show a result that
-  // ignores the final question.
+  // Case-strength tier (Project I). Computed from the SAME inputs the letter
+  // reads — the scenario plus the four required case facts — so the assessment
+  // and the letter can never tell two different stories. Returns null until
+  // everything it reads is answered. Must stay consistent with
+  // deriveCaseStrength() in lib/generateLetterCore.ts.
+  const ITEMIZED_DISPUTE_SCENARIOS = ['full_withholding_itemized', 'partial_return_itemized'];
+
   const computeTier = (): Tier | null => {
     const f = formData;
     const answered =
-      f.itemizationProvided &&
+      f.scenario &&
       f.unitCondition &&
       f.unpaidRent &&
       f.properNotice &&
+      (f.properNotice !== 'no' || f.noticeGiven) &&
       f.conditionDocumentation;
     if (!answered) return null;
 
@@ -459,13 +522,15 @@ export default function SecurityDepositForm() {
     const damageVal = parseMoney(f.damageEstimate);
 
     // Weak: offsets meet or exceed the deposit, or the tenant abandoned.
+    // (Combined offsets >= deposit are BLOCKED before payment in runSubmit;
+    // these branches remain for classification consistency with the server.)
     if (f.noticeGiven === 'none') return 'weak';
     if (f.unpaidRent === 'yes' && depositVal > 0 && unpaidVal >= depositVal) return 'weak';
     if (f.unitCondition === 'damage' && depositVal > 0 && damageVal >= depositVal) return 'weak';
 
     // Moderate: some valid offset or weakened standing, but not exceeding deposit.
     const moderate =
-      f.itemizationProvided === 'yes_disputed' ||
+      ITEMIZED_DISPUTE_SCENARIOS.includes(f.scenario) ||
       f.unitCondition === 'minor' ||
       f.unitCondition === 'damage' ||
       f.unpaidRent === 'yes' ||
@@ -573,10 +638,57 @@ export default function SecurityDepositForm() {
     if (showLeaseType && !formData.leaseType) {
       b.leaseType = `Select your tenancy type \u2014 it determines the return deadline in ${formData.state}.`;
     }
-    // Alaska: the notice question (now in the Quick Case Check) drives the
-    // 14-vs-30-day deadline, so it must be answered.
-    if (isAlaska && !formData.properNotice) {
-      b.properNotice = 'Let us know whether you gave proper written notice \u2014 it changes the return deadline in Alaska.';
+
+    // --- Project I: authoritative scenario (BLOCK) ---
+    if (!formData.scenario) {
+      b.scenario = 'Select what your landlord did with your deposit \u2014 it determines the kind of letter we write.';
+    }
+    // Partial-return scenarios must state the amount returned, and it must be
+    // below the deposit (otherwise nothing was withheld to demand).
+    if (PARTIAL_SCENARIOS.includes(formData.scenario)) {
+      const returned = parseMoney(formData.amountReturned);
+      if (returned <= 0) {
+        b.amountReturned = 'Enter how much of your deposit was returned \u2014 your letter demands the exact withheld remainder.';
+      } else if (dep.ok && returned >= dep.value) {
+        b.amountReturned = 'The amount returned must be less than your deposit \u2014 otherwise nothing was withheld. Double-check both amounts.';
+      }
+    }
+
+    // --- Project I: case facts (ALL required — they shape your letter) ---
+    if (!formData.unitCondition) {
+      b.unitCondition = 'Select the condition you left the unit in \u2014 your letter is calibrated to this.';
+    }
+    if (formData.unitCondition === 'damage' && parseMoney(formData.damageEstimate) <= 0) {
+      b.damageEstimate = 'Enter your best estimate of the repair cost \u2014 your letter concedes this amount and demands the rest, which makes it far more credible.';
+    }
+    if (!formData.unpaidRent) {
+      b.unpaidRent = 'Let us know whether you owe any unpaid rent or fees.';
+    }
+    if (formData.unpaidRent === 'yes' && parseMoney(formData.unpaidRentAmount) <= 0) {
+      b.unpaidRentAmount = 'Enter approximately how much you owe \u2014 your letter accounts for it so your landlord can\u2019t use it to dismiss your demand.';
+    }
+    if (!formData.properNotice) {
+      b.properNotice = isAlaska
+        ? 'Let us know whether you gave proper written notice \u2014 it changes the return deadline in Alaska.'
+        : 'Let us know whether you gave proper written notice before moving out.';
+    }
+    if (formData.properNotice === 'no' && !formData.noticeGiven) {
+      b.noticeGiven = 'Let us know whether you gave some notice or none at all.';
+    }
+    if (!formData.conditionDocumentation) {
+      b.conditionDocumentation = 'Let us know what documentation you have \u2014 it changes which arguments your letter leans on.';
+    }
+
+    // Deposit-paid date (WARN only) — optional field; sanity-check if provided.
+    if (formData.depositPaidDate) {
+      const paid = parseLocalDate(formData.depositPaidDate);
+      if (paid) {
+        if (paid.getTime() > today.getTime()) {
+          w.depositPaidDate = 'The date you paid your deposit is in the future \u2014 please double-check it.';
+        } else if (vac && paid.getTime() > vac.getTime()) {
+          w.depositPaidDate = 'The date you paid your deposit is after your move-out date \u2014 please double-check both dates.';
+        }
+      }
     }
 
     // Unit count sanity when shown (BLOCK only if they typed something invalid).
@@ -586,10 +698,10 @@ export default function SecurityDepositForm() {
       }
     }
 
-    // Situation length (BLOCK).
-    if (!formData.situation || formData.situation.length < 50) {
-      b.situation = 'Please provide at least 50 characters describing your situation';
-    } else if (formData.situation.length > SITUATION_MAX) {
+    // Situation length (BLOCK) — Project I: the description is now OPTIONAL
+    // supporting detail (the scenario + case facts are the authoritative
+    // record), so there is no minimum; only the ceiling remains.
+    if (formData.situation && formData.situation.length > SITUATION_MAX) {
       b.situation = `Please shorten your description to ${SITUATION_MAX.toLocaleString()} characters or fewer.`;
     }
 
@@ -622,7 +734,7 @@ export default function SecurityDepositForm() {
     return { blocks: b, warns: w };
   };
 
-  const runSubmit = async (opts?: { ackWeak?: boolean }) => {
+  const runSubmit = async (opts?: { ackStrength?: boolean }) => {
     const composedTenant = composeAddress(tenantAddr);
     const composedLandlord = composeAddress(landlordAddr);
     const composedCity = effectiveCity;
@@ -648,16 +760,36 @@ export default function SecurityDepositForm() {
       return;
     }
 
+    // --- Project I: pre-payment scope block. If the tenant's own admitted
+    // offsets (damage estimate + unpaid rent/fees) meet or exceed the deposit,
+    // there is nothing viable to demand — a paid letter would only come back
+    // as SCOPE_LIMITATION. Soft-redirect BEFORE payment instead of charging.
+    // Mirrored server-side in create-checkout-session so a bypassed client
+    // can never pay for it. Runs after blocks so the amounts are valid.
+    {
+      const depositVal = parseDeposit(formData.depositAmount).value;
+      const offsets =
+        (formData.unitCondition === 'damage' ? parseMoney(formData.damageEstimate) : 0) +
+        (formData.unpaidRent === 'yes' ? parseMoney(formData.unpaidRentAmount) : 0);
+      if (depositVal > 0 && offsets >= depositVal) {
+        setViewState('blocked');
+        return;
+      }
+    }
+
     if (warnKeys.length > 0 && !warningsShown) {
       setWarningsShown(true);
       scrollToFirstIssue(warnKeys);
       return;
     }
 
-    // Weak-case gate: show the acknowledgment modal once.
+    // --- Project I: case-strength confirmation modal. Fires once for EVERY
+    // tier — it explains what the assessed strength means and what to expect
+    // from the letter. The weak tier additionally requires the checkbox.
     const tier = computeTier();
-    if (tier === 'weak' && !weakAcknowledged && !opts?.ackWeak) {
-      setShowWeakModal(true);
+    if (!strengthAcknowledged && !opts?.ackStrength) {
+      setWeakChecked(false);
+      setShowStrengthModal(true);
       return;
     }
 
@@ -666,13 +798,17 @@ export default function SecurityDepositForm() {
     const payload = {
       ...formData,
       depositAmount: cleanedDeposit,
+      amountReturned: PARTIAL_SCENARIOS.includes(formData.scenario)
+        ? parseMoney(formData.amountReturned).toString()
+        : '',
       city: composedCity,
       tenantAddress: composedTenant,
       landlordAddress: composedLandlord,
       rentalPropertyAddress: composedRental,
-      // Derive the legacy Alaska notice flag from the case-check answer.
+      // Derive the legacy Alaska notice flag from the case-fact answer.
       gaveWrittenNotice: deriveGaveWrittenNotice(),
-      // Record the assessed tier so the letter can calibrate its tone/demand.
+      // Record the assessed tier (admin/analytics; the letter calibrates from
+      // the raw case facts themselves, not this label).
       caseStrength: tier ?? '',
     };
 
@@ -701,10 +837,12 @@ export default function SecurityDepositForm() {
     runSubmit();
   };
 
-  const handleProceedAnyway = () => {
-    setWeakAcknowledged(true);
-    setShowWeakModal(false);
-    runSubmit({ ackWeak: true });
+  // Continue from the case-strength modal (weak tier requires the checkbox,
+  // enforced by the button's disabled state in the modal itself).
+  const handleProceedFromModal = () => {
+    setStrengthAcknowledged(true);
+    setShowStrengthModal(false);
+    runSubmit({ ackStrength: true });
   };
 
   const handleCopy = async () => {
@@ -877,6 +1015,48 @@ export default function SecurityDepositForm() {
     );
   }
 
+  // ---------- Blocked (Project I: admitted offsets >= deposit — no charge) ----------
+  if (viewState === 'blocked') {
+    return (
+      <div className={`${fontVars} bg-[#FAFAF7] flex items-center justify-center px-4 py-24`}
+        style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}>
+        <div className="max-w-lg w-full rounded-2xl border border-[#E7E5E0] bg-white p-8 shadow-sm">
+          <div className="text-[#B45309] text-3xl mb-4">\u2696\uFE0F</div>
+          <h2 className="text-2xl font-medium tracking-tight text-slate-900 mb-3" style={display}>
+            A demand letter can&apos;t help with this one
+          </h2>
+          <p className="text-slate-700 text-sm leading-relaxed mb-4">
+            Based on your own answers, the damage you estimated and the unpaid rent or fees you owe
+            add up to <strong>as much as or more than your deposit</strong>. Your landlord can lawfully
+            offset those amounts \u2014 which means there&apos;s nothing left for a demand letter to recover.
+            We haven&apos;t charged you anything.
+          </p>
+          <div className="rounded-xl border border-[#E7E5E0] bg-slate-50/70 p-4 mb-6">
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">What you can do instead</h3>
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li className="flex gap-2"><span className="text-[#B45309]">\u2022</span>
+                <span><strong>Double-check your numbers.</strong> If the repair estimate or unpaid amount
+                you entered was too high, go back and correct it \u2014 if your real offsets are below your
+                deposit, a letter can still demand the difference.</span></li>
+              <li className="flex gap-2"><span className="text-[#B45309]">\u2022</span>
+                <span><strong>Ask for an itemized accounting.</strong> Even when nothing is owed back to
+                you, most states still require your landlord to provide a written itemization of what
+                they kept and why.</span></li>
+              <li className="flex gap-2"><span className="text-[#B45309]">\u2022</span>
+                <span><strong>If your landlord demands even more</strong> than the deposit covered, consider
+                negotiating or contacting your local legal aid office or tenant union before agreeing to
+                pay anything further.</span></li>
+            </ul>
+          </div>
+          <button onClick={handleStartOver}
+            className="w-full rounded-full bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800">
+            Go back to the form
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ---------- Form ----------
   const inputClass = (hasError?: boolean) =>
     `w-full rounded-lg border px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#B45309]/40 focus:border-[#B45309] transition ${
@@ -971,24 +1151,40 @@ export default function SecurityDepositForm() {
   };
 
   const tier = computeTier();
-  const tierStyles: Record<Tier, { box: string; icon: string; title: string; body: string }> = {
+
+  // Case-strength modal content (Project I). Replaces the old inline result
+  // box AND the old weak-only modal — one confirmation modal, every tier.
+  // The copy is honest about what the letter will actually do: the pipeline
+  // now calibrates the letter from these same case facts.
+  const tierModalContent: Record<Tier, {
+    badge: string; icon: string; title: string; meaning: string; expect: string;
+  }> = {
     strong: {
-      box: 'border-[#15803D]/30 bg-[#15803D]/[0.06]',
-      icon: '✅',
-      title: 'Strong case',
-      body: 'Your answers suggest solid legal standing. Your letter will argue firmly for the full return of your deposit.',
+      badge: 'border-[#15803D]/30 bg-[#15803D]/[0.06] text-[#15803D]',
+      icon: '\u2705',
+      title: 'Your case looks strong',
+      meaning:
+        'Your answers point to solid legal standing: no admitted offsets and proper notice. Cases like this are exactly what deposit statutes protect.',
+      expect:
+        'Your letter will argue at full firmness \u2014 demanding the complete deposit, citing your state\u2019s statute and deadline, and referencing every penalty multiplier that applies.',
     },
     moderate: {
-      box: 'border-amber-300 bg-amber-50',
-      icon: '⚠️',
-      title: 'Moderate case',
-      body: 'Some factors may complicate your claim. Your letter will acknowledge them and argue for the legitimate (net) portion of your deposit.',
+      badge: 'border-amber-300 bg-amber-50 text-amber-800',
+      icon: '\u26A0\uFE0F',
+      title: 'Your case looks moderate',
+      meaning:
+        'Some of your answers may complicate the claim \u2014 for example a disputed itemization, minor condition issues, an amount you owe, or limited documentation. That doesn\u2019t make your claim invalid; it means your landlord has some footing to argue back.',
+      expect:
+        'Your letter will acknowledge those factors head-on and demand the legitimate net portion of your deposit. Conceding what\u2019s genuinely owed makes the demand for the rest far more credible \u2014 and harder to dismiss.',
     },
     weak: {
-      box: 'border-red-300 bg-red-50',
-      icon: '🔴',
-      title: 'Weak case',
-      body: 'Based on your answers, your landlord may have valid offsets that meet or exceed your deposit. Your letter will still be generated, but it will be more measured in its demands. You may want to consider whether to proceed.',
+      badge: 'border-red-300 bg-red-50 text-red-800',
+      icon: '\uD83D\uDD34',
+      title: 'Your case has real weaknesses',
+      meaning:
+        'Based on your answers, your landlord may have valid offsets or defenses that substantially reduce \u2014 or could eliminate \u2014 what you\u2019re owed back.',
+      expect:
+        'Your letter will still be generated and will demand everything you\u2019re legitimately owed, but it will be measured in tone and realistic in its demands. A recovery is not guaranteed, and you should weigh the $39 cost against what you might realistically get back.',
     },
   };
 
@@ -1013,8 +1209,8 @@ export default function SecurityDepositForm() {
             landlord forces you to small claims court.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-slate-500">
-            Most people finish in about two minutes. The more detail you give in the
-            description, the stronger your letter.
+            Most people finish in about two minutes. Your answers below are what your
+            letter is built from &mdash; answer them accurately and your letter does the rest.
           </p>
           <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-700">
             <li className="inline-flex items-center gap-2">
@@ -1238,6 +1434,26 @@ export default function SecurityDepositForm() {
               </div>
             </div>
 
+            {/* Optional: date the deposit was paid (Project I) */}
+            <div id="f-depositPaidDate">
+              <label className={labelClass}>
+                Date you paid the deposit{' '}
+                <span className="font-normal text-slate-500">(optional)</span>
+              </label>
+              <input
+                type="date"
+                max={todayISO}
+                value={formData.depositPaidDate}
+                onChange={(e) => handleInputChange('depositPaidDate', e.target.value)}
+                className={inputClass(false)}
+              />
+              {warnings.depositPaidDate && <p className="mt-1 text-sm text-amber-700">{warnings.depositPaidDate}</p>}
+              <p className="mt-1 text-xs text-slate-500">
+                If you know it, your letter opens with the exact date and amount of your
+                deposit &mdash; it reads more authoritative. Leave blank if you&apos;re not sure.
+              </p>
+            </div>
+
             {/* Conditional: forwarding-address date */}
             {FORWARDING_ADDRESS_STATES.includes(formData.state) && (
               <div id="f-forwardingAddressDate">
@@ -1380,23 +1596,28 @@ export default function SecurityDepositForm() {
             </div>
           </div>
 
-          {/* ============ CARD 4: YOUR SITUATION ============ */}
-          <div className={cardClass}>
+          {/* ============ CARD 4: WHAT YOUR LANDLORD DID (authoritative scenario) ============ */}
+          <div className={cardClass} id="f-scenario">
             <div>
-              <h3 className={`${sectionLabel} mb-2`}>Your situation</h3>
+              <h3 className={`${sectionLabel} mb-2`}>
+                What did your landlord do with your deposit? <span className="text-red-500">*</span>
+              </h3>
               <p className="text-sm text-slate-600">
-                Select all that apply (optional). Hover the <span className="font-medium">i</span> on any
+                Choose the one that best describes it &mdash; this determines the kind of
+                letter we write. Hover the <span className="font-medium">i</span> on any
                 option for a quick explanation.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {SUB_TYPES.map(subtype => {
-                const active = formData.subtypes.includes(subtype.id);
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="radiogroup">
+              {SCENARIOS.map(sc => {
+                const active = formData.scenario === sc.id;
                 return (
                   <button
-                    key={subtype.id}
+                    key={sc.id}
                     type="button"
-                    onClick={() => toggleSubtype(subtype.id)}
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => handleScenarioChange(sc.id)}
                     className={`rounded-xl border-2 p-4 text-left transition ${
                       active
                         ? 'border-[#B45309] bg-[#B45309]/[0.06]'
@@ -1404,19 +1625,80 @@ export default function SecurityDepositForm() {
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl">{subtype.icon}</span>
+                      <span className="text-2xl">{sc.icon}</span>
                       <span className="text-sm font-medium text-slate-700">
-                        {subtype.label}
-                        <InfoTip text={subtype.tip} />
+                        {sc.label}
+                        <InfoTip text={sc.tip} />
                       </span>
                     </div>
                   </button>
                 );
               })}
             </div>
+            {errors.scenario && <p className="mt-1 text-sm text-red-600">{errors.scenario}</p>}
+
+            {/* Follow-up: partial-return scenarios must state how much came back */}
+            {PARTIAL_SCENARIOS.includes(formData.scenario) && (
+              <div id="f-amountReturned" className="border-t border-slate-200 pt-5">
+                <label className={labelClass}>
+                  How much of your deposit was returned? <span className="text-red-500">*</span>
+                </label>
+                <div className="relative sm:max-w-xs">
+                  <span className="absolute left-4 top-2.5 text-slate-500">$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={formData.amountReturned}
+                    onChange={(e) => handleInputChange('amountReturned', e.target.value)}
+                    placeholder="800"
+                    className={`${inputClass(!!errors.amountReturned)} pl-8`}
+                  />
+                </div>
+                {errors.amountReturned && <p className="mt-1 text-sm text-red-600">{errors.amountReturned}</p>}
+                <p className="mt-1 text-xs text-slate-500">
+                  Your letter demands the exact withheld remainder &mdash; your deposit minus this amount.
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* ============ CARD 5: SPECIAL CIRCUMSTANCES ============ */}
+          {/* ============ CARD 5: WHY IT'S WRONG (dispute grounds) ============ */}
+          {formData.scenario && (
+            <div className={cardClass}>
+              <div>
+                <h3 className={`${sectionLabel} mb-2`}>
+                  {DEDUCTION_SCENARIOS.includes(formData.scenario)
+                    ? 'Why are the deductions wrong?'
+                    : 'Did your landlord break the rules along the way?'}
+                </h3>
+                <p className="text-sm text-slate-600">Select any that apply (optional)</p>
+              </div>
+              <div className="space-y-2">
+                {(DEDUCTION_SCENARIOS.includes(formData.scenario)
+                  ? [...DEDUCTION_DISPUTE_GROUNDS, ...PROCEDURAL_DISPUTE_GROUNDS]
+                  : PROCEDURAL_DISPUTE_GROUNDS
+                ).map(ground => (
+                  <label
+                    key={ground.id}
+                    className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 transition hover:bg-slate-50 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.disputes.includes(ground.id)}
+                      onChange={() => toggleDispute(ground.id)}
+                      className="w-4 h-4 accent-[#B45309]"
+                    />
+                    <span className="text-sm text-slate-700">
+                      {ground.label}
+                      <InfoTip text={ground.tip} />
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ============ CARD 6: SPECIAL CIRCUMSTANCES ============ */}
           <div className={cardClass}>
             <div>
               <h3 className={`${sectionLabel} mb-2`}>Special circumstances</h3>
@@ -1468,44 +1750,26 @@ export default function SecurityDepositForm() {
             )}
           </div>
 
-          {/* ============ CARD 6: QUICK CASE CHECK ============ */}
+          {/* ============ CARD 7: THE HONEST FACTS (required — shape the letter) ============ */}
           <div className={cardClass}>
             <div>
-              <h3 className={`${sectionLabel} mb-2`}>Quick case check</h3>
+              <h3 className={`${sectionLabel} mb-2`}>
+                Your situation &mdash; the honest facts <span className="text-red-500">*</span>
+              </h3>
               <p className="text-sm text-slate-600">
-                Answer a few questions so we can tailor your letter — and flag anything
-                that might affect your case before you pay. Your deposit is your money by
-                default; these only matter if your landlord has a valid reason to keep part of it.
+                These answers shape your letter directly &mdash; it&apos;s calibrated to argue
+                exactly as firmly as your facts support, which is what makes it credible.
+                Your deposit is your money by default; these only matter if your landlord
+                has a valid reason to keep part of it. Answer honestly &mdash; a letter that
+                contradicts the facts is worthless as evidence.
               </p>
             </div>
 
-            {/* Q1 — itemization */}
-            <div>
-              <label className={labelClass}>
-                Did your landlord provide any written itemization of deductions?
-              </label>
-              <div className="space-y-2">
-                {[
-                  ['yes_documented', 'Yes, with supporting documentation'],
-                  ['yes_disputed', 'Yes, but I dispute the items listed'],
-                  ['none', 'No \u2014 no itemization was provided'],
-                ].map(([v, l]) => (
-                  <label key={v} className={radioRow}>
-                    <input type="radio" value={v}
-                      checked={formData.itemizationProvided === v}
-                      onChange={(e) => handleCaseChange('itemizationProvided', e.target.value)}
-                      className="mt-0.5 w-4 h-4 accent-[#B45309]" />
-                    {l}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Q2 — condition */}
-            <div>
+            {/* Condition */}
+            <div id="f-unitCondition">
               <label className={labelClass}>
                 Did you leave the unit in the same or better condition than when you moved
-                in (accounting for normal wear and tear)?
+                in (accounting for normal wear and tear)? <span className="text-red-500">*</span>
               </label>
               <div className="space-y-2">
                 {[
@@ -1522,10 +1786,11 @@ export default function SecurityDepositForm() {
                   </label>
                 ))}
               </div>
+              {errors.unitCondition && <p className="mt-1 text-sm text-red-600">{errors.unitCondition}</p>}
               {formData.unitCondition === 'damage' && (
                 <div className="mt-3">
                   <label className={labelClass}>
-                    Estimated repair cost, if you know it (optional)
+                    Your best estimate of the repair cost <span className="text-red-500">*</span>
                   </label>
                   <div className="relative max-w-xs">
                     <span className="absolute left-4 top-2.5 text-slate-500">$</span>
@@ -1535,20 +1800,23 @@ export default function SecurityDepositForm() {
                       value={formData.damageEstimate}
                       onChange={(e) => handleCaseChange('damageEstimate', e.target.value)}
                       placeholder="e.g., 150"
-                      className={`${inputClass(false)} pl-8`}
+                      className={`${inputClass(!!errors.damageEstimate)} pl-8`}
                     />
                   </div>
+                  {errors.damageEstimate && <p className="mt-1 text-sm text-red-600">{errors.damageEstimate}</p>}
                   <p className="mt-1 text-xs text-slate-500">
-                    You can also describe the damage in the &ldquo;Describe what happened&rdquo; box below.
+                    Your letter concedes this amount and demands the rest &mdash; conceding
+                    what&apos;s fair makes the demand for the remainder much harder to dismiss.
+                    A rough good-faith estimate is fine.
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Q3 — unpaid rent */}
-            <div>
+            {/* Unpaid rent */}
+            <div id="f-unpaidRent">
               <label className={labelClass}>
-                Do you have any outstanding unpaid rent or fees owed to your landlord?
+                Do you have any outstanding unpaid rent or fees owed to your landlord? <span className="text-red-500">*</span>
               </label>
               <div className="space-y-2">
                 {[
@@ -1564,9 +1832,12 @@ export default function SecurityDepositForm() {
                   </label>
                 ))}
               </div>
+              {errors.unpaidRent && <p className="mt-1 text-sm text-red-600">{errors.unpaidRent}</p>}
               {formData.unpaidRent === 'yes' && (
                 <div className="mt-3">
-                  <label className={labelClass}>Approximately how much?</label>
+                  <label className={labelClass}>
+                    Approximately how much? <span className="text-red-500">*</span>
+                  </label>
                   <div className="relative max-w-xs">
                     <span className="absolute left-4 top-2.5 text-slate-500">$</span>
                     <input
@@ -1575,18 +1846,22 @@ export default function SecurityDepositForm() {
                       value={formData.unpaidRentAmount}
                       onChange={(e) => handleCaseChange('unpaidRentAmount', e.target.value)}
                       placeholder="e.g., 500"
-                      className={`${inputClass(false)} pl-8`}
+                      className={`${inputClass(!!errors.unpaidRentAmount)} pl-8`}
                     />
                   </div>
+                  {errors.unpaidRentAmount && <p className="mt-1 text-sm text-red-600">{errors.unpaidRentAmount}</p>}
+                  <p className="mt-1 text-xs text-slate-500">
+                    Your letter accounts for this so your landlord can&apos;t use it to dismiss
+                    your entire demand.
+                  </p>
                 </div>
               )}
             </div>
 
-            {/* Q4 — proper notice (drives Alaska deadline; required there) */}
+            {/* Proper notice (required everywhere; drives the Alaska 14-vs-30-day deadline) */}
             <div id="f-properNotice">
               <label className={labelClass}>
-                Did you give your landlord proper written notice before moving out (per your lease)?
-                {isAlaska && <span className="text-red-500"> *</span>}
+                Did you give your landlord proper written notice before moving out (per your lease)? <span className="text-red-500">*</span>
               </label>
               <div className="space-y-2">
                 {[
@@ -1605,7 +1880,9 @@ export default function SecurityDepositForm() {
               </div>
               {formData.properNotice === 'no' && (
                 <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
-                  <label className={labelClass}>Did you give any notice at all?</label>
+                  <label className={labelClass}>
+                    Did you give any notice at all? <span className="text-red-500">*</span>
+                  </label>
                   <div className="space-y-2">
                     {[
                       ['partial', 'Yes, but less than required (e.g., 2 weeks when 30 days was required)'],
@@ -1620,6 +1897,7 @@ export default function SecurityDepositForm() {
                       </label>
                     ))}
                   </div>
+                  {errors.noticeGiven && <p className="mt-1 text-sm text-red-600">{errors.noticeGiven}</p>}
                 </div>
               )}
               {errors.properNotice && <p className="mt-1 text-sm text-red-600">{errors.properNotice}</p>}
@@ -1630,11 +1908,11 @@ export default function SecurityDepositForm() {
               )}
             </div>
 
-            {/* Q5 — documentation */}
-            <div>
+            {/* Documentation */}
+            <div id="f-conditionDocumentation">
               <label className={labelClass}>
                 Did you document the unit&apos;s condition at move-in or move-out (photos,
-                checklist, inspection report)?
+                checklist, inspection report)? <span className="text-red-500">*</span>
               </label>
               <div className="space-y-2">
                 {[
@@ -1651,42 +1929,34 @@ export default function SecurityDepositForm() {
                   </label>
                 ))}
               </div>
+              {errors.conditionDocumentation && <p className="mt-1 text-sm text-red-600">{errors.conditionDocumentation}</p>}
             </div>
-
-            {/* Inline assessment result */}
-            {tier && (
-              <div className={`rounded-xl border p-4 flex items-start gap-3 ${tierStyles[tier].box}`}>
-                <div className="text-xl leading-none">{tierStyles[tier].icon}</div>
-                <div>
-                  <h4 className="font-semibold text-slate-900">{tierStyles[tier].title}</h4>
-                  <p className="mt-1 text-sm text-slate-700">{tierStyles[tier].body}</p>
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* ============ CARD 7: DESCRIPTION ============ */}
+          {/* ============ CARD 8: ANYTHING ELSE (optional, supporting detail) ============ */}
           <div id="f-situation" className={cardClass}>
             <div>
               <label className={`${labelClass} mb-1`}>
-                Describe what happened <span className="text-red-500">*</span>
+                Anything else we should know?{' '}
+                <span className="font-normal text-slate-500">(optional)</span>
               </label>
               <p className="mb-3 text-sm text-slate-600">
-                Include dates, amounts, and any communication with your landlord. The more
-                detail, the stronger your letter.
+                Your answers above are what your letter is built from &mdash; this box adds
+                supporting detail. Specifics like names, dates, what was said, military
+                service, or anything unusual about your situation can strengthen the letter.
               </p>
             </div>
             <textarea
               value={formData.situation}
               onChange={(e) => handleInputChange('situation', e.target.value)}
-              placeholder="e.g., I moved out on March 1st after giving 30 days notice. My landlord has not returned my $2,400 deposit and it has now been 45 days. They have not provided any itemized deductions. The apartment was left in excellent condition."
-              rows={6}
+              placeholder="e.g., When I asked about my deposit on April 2nd, my landlord texted back \u201Cyou\u2019ll get it when you get it.\u201D I have the text saved. I\u2019m also an active-duty service member."
+              rows={5}
               maxLength={4000}
               className={`${inputClass(!!errors.situation)} resize-none`}
             />
             {errors.situation && <p className="mt-1 text-sm text-red-600">{errors.situation}</p>}
             <p className="text-xs text-slate-500">
-              {formData.situation.length} / 50 characters minimum · 4,000 maximum
+              {formData.situation.length} / 4,000 characters maximum
             </p>
           </div>
 
@@ -1731,48 +2001,60 @@ export default function SecurityDepositForm() {
         </form>
       </div>
 
-      {/* ============ WEAK-CASE ACKNOWLEDGMENT MODAL ============ */}
-      {showWeakModal && (
+      {/* ============ CASE-STRENGTH CONFIRMATION MODAL (all tiers) ============ */}
+      {showStrengthModal && tier && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="weak-modal-title"
+          aria-labelledby="strength-modal-title"
         >
-          <div className="w-full max-w-md rounded-2xl border border-[#E7E5E0] bg-white p-7 shadow-xl">
-            <div className="text-2xl">🔴</div>
-            <h2 id="weak-modal-title" className="mt-3 text-xl font-semibold text-slate-900" style={display}>
-              Before you continue
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-[#E7E5E0] bg-white p-7 shadow-xl">
+            <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold ${tierModalContent[tier].badge}`}>
+              <span>{tierModalContent[tier].icon}</span>
+              {tierModalContent[tier].title}
+            </div>
+            <h2 id="strength-modal-title" className="mt-4 text-xl font-semibold text-slate-900" style={display}>
+              Your case assessment
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-700">
-              Based on your case-check answers, your landlord may have valid offsets that
-              meet or exceed your deposit. A demand letter can still be sent, but it may
-              not result in a refund.
+              {tierModalContent[tier].meaning}
             </p>
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
-              {weakReasons().map((r, i) => (<li key={i}>{r}</li>))}
-            </ul>
-            <label className="mt-5 flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                checked={weakChecked}
-                onChange={(e) => setWeakChecked(e.target.checked)}
-                className="mt-0.5 w-4 h-4 accent-[#B45309]"
-              />
-              I understand my case may be weak and want to generate the letter anyway.
-            </label>
+            <div className="mt-3 rounded-xl border border-[#E7E5E0] bg-slate-50/70 p-4">
+              <h3 className="text-sm font-semibold text-slate-900">What to expect from your letter</h3>
+              <p className="mt-1 text-sm leading-relaxed text-slate-700">
+                {tierModalContent[tier].expect}
+              </p>
+            </div>
+            {tier === 'weak' && (
+              <>
+                <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                  {weakReasons().map((r, i) => (<li key={i}>{r}</li>))}
+                </ul>
+                <label className="mt-4 flex items-start gap-2 text-sm text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={weakChecked}
+                    onChange={(e) => setWeakChecked(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-[#B45309]"
+                  />
+                  I understand my case may be weak, that a refund is not guaranteed, and I
+                  want to generate the letter anyway.
+                </label>
+              </>
+            )}
             <div className="mt-6 flex flex-col gap-3 sm:flex-row-reverse">
               <button
                 type="button"
-                disabled={!weakChecked}
-                onClick={handleProceedAnyway}
+                disabled={tier === 'weak' && !weakChecked}
+                onClick={handleProceedFromModal}
                 className="flex-1 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
               >
-                Proceed anyway — $39
+                Continue to payment — $39
               </button>
               <button
                 type="button"
-                onClick={() => setShowWeakModal(false)}
+                onClick={() => setShowStrengthModal(false)}
                 className="flex-1 rounded-full border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
                 Go back

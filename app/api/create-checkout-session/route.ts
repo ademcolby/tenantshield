@@ -30,6 +30,18 @@ const LEASE_TYPE_STATES = ['Maine'];
 const NOTICE_STATES = ['Alaska'];
 const SITUATION_MAX = 4000;
 
+// Project I — the authoritative single-select scenario. Must stay in sync with
+// the SCENARIOS list in SecurityDepositForm.tsx.
+const SCENARIO_IDS = [
+  'no_response',
+  'full_withholding_no_itemization',
+  'full_withholding_itemized',
+  'partial_return_no_itemization',
+  'partial_return_itemized',
+  'deposit_applied_to_rent',
+];
+const PARTIAL_SCENARIOS = ['partial_return_no_itemization', 'partial_return_itemized'];
+
 type DepositResult =
   | { ok: true; value: number; reason: '' }
   | { ok: false; value: 0; reason: 'blank' | 'invalid' | 'nonpositive' };
@@ -43,6 +55,15 @@ function parseDeposit(raw: string): DepositResult {
   const num = parseFloat(cleaned);
   if (!(num > 0)) return { ok: false, value: 0, reason: 'nonpositive' };
   return { ok: true, value: num, reason: '' };
+}
+
+// Lenient money parse for the case-fact amounts — mirrors the client's
+// parseMoney byte-for-byte (returns 0 when unparseable or non-positive).
+function parseMoney(raw: string): number {
+  const cleaned = (raw || '').replace(/[$,\s]/g, '');
+  if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) return 0;
+  const n = parseFloat(cleaned);
+  return n > 0 ? n : 0;
 }
 
 // Parse yyyy-mm-dd into a UTC-midnight Date.
@@ -133,12 +154,79 @@ function validatePayload(p: Record<string, unknown>): { field: string; message: 
     }
   }
 
-  // --- Situation length bounds (BLOCK) ---
+  // --- Situation length bound (BLOCK) — Project I: the description is now
+  // OPTIONAL supporting detail (the structured scenario + case facts are the
+  // authoritative record), so there is no minimum; only the ceiling remains. ---
   const situation = str(p.situation);
-  if (situation.length < 50) {
-    errs.push({ field: 'situation', message: 'A description of at least 50 characters is required.' });
-  } else if (situation.length > SITUATION_MAX) {
+  if (situation.length > SITUATION_MAX) {
     errs.push({ field: 'situation', message: `Description must be ${SITUATION_MAX} characters or fewer.` });
+  }
+
+  // --- Project I: authoritative scenario (BLOCK) ---
+  const scenario = str(p.scenario);
+  if (!scenario || !SCENARIO_IDS.includes(scenario)) {
+    errs.push({ field: 'scenario', message: 'Select what your landlord did with your deposit.' });
+  }
+
+  // Partial-return scenarios must state how much came back, and it must be a
+  // valid amount strictly below the deposit (otherwise nothing was withheld).
+  if (PARTIAL_SCENARIOS.includes(scenario)) {
+    const returned = parseMoney(str(p.amountReturned));
+    if (returned <= 0) {
+      errs.push({ field: 'amountReturned', message: 'Enter how much of the deposit was returned.' });
+    } else if (dep.ok && returned >= dep.value) {
+      errs.push({
+        field: 'amountReturned',
+        message: 'The amount returned must be less than the deposit — otherwise nothing was withheld.',
+      });
+    }
+  }
+
+  // --- Project I: case facts (all BLOCK; conditional amounts required) ---
+  const unitCondition = str(p.unitCondition);
+  if (!['good', 'minor', 'damage'].includes(unitCondition)) {
+    errs.push({ field: 'unitCondition', message: 'Select the condition you left the unit in.' });
+  }
+  const damageVal = parseMoney(str(p.damageEstimate));
+  if (unitCondition === 'damage' && damageVal <= 0) {
+    errs.push({ field: 'damageEstimate', message: 'Enter your best estimate of the repair cost.' });
+  }
+
+  const unpaidRent = str(p.unpaidRent);
+  if (!['no', 'yes'].includes(unpaidRent)) {
+    errs.push({ field: 'unpaidRent', message: 'Answer whether you owe any unpaid rent or fees.' });
+  }
+  const unpaidVal = parseMoney(str(p.unpaidRentAmount));
+  if (unpaidRent === 'yes' && unpaidVal <= 0) {
+    errs.push({ field: 'unpaidRentAmount', message: 'Enter approximately how much you owe.' });
+  }
+
+  const properNotice = str(p.properNotice);
+  if (!['yes', 'not_required', 'no'].includes(properNotice)) {
+    errs.push({ field: 'properNotice', message: 'Answer whether you gave proper written notice.' });
+  }
+  if (properNotice === 'no' && !['partial', 'none'].includes(str(p.noticeGiven))) {
+    errs.push({ field: 'noticeGiven', message: 'Let us know whether you gave any notice at all.' });
+  }
+
+  if (!['yes', 'partial', 'no'].includes(str(p.conditionDocumentation))) {
+    errs.push({ field: 'conditionDocumentation', message: 'Answer whether you documented the unit\u2019s condition.' });
+  }
+
+  // --- Project I: scope block (BLOCK) — the tenant's own admitted offsets
+  // (admitted damage + admitted unpaid rent/fees) meet or exceed the deposit.
+  // The client shows a soft-redirect screen for this; the server re-checks so
+  // a bypassed client can never pay for a letter the pipeline would refuse. ---
+  if (dep.ok) {
+    const offsets =
+      (unitCondition === 'damage' ? damageVal : 0) + (unpaidRent === 'yes' ? unpaidVal : 0);
+    if (offsets >= dep.value) {
+      errs.push({
+        field: 'scope',
+        message:
+          'Your admitted damage and unpaid rent together meet or exceed your deposit, so a demand letter cannot recover anything. No charge has been made.',
+      });
+    }
   }
 
   return errs;
