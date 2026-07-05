@@ -802,7 +802,12 @@ export default function SecurityDepositForm() {
 
     if (warnKeys.length > 0 && !warningsShown) {
       setWarningsShown(true);
-      scrollToFirstIssue(warnKeys);
+      // Don't scroll here — warnings are non-blocking, and the summary box
+      // with the "click Generate again to proceed" instruction renders right
+      // next to the submit button, where the customer already is. Scrolling
+      // away from that box was the actual bug: it moved them up to the first
+      // warned field and left them to find the continue-instruction on their
+      // own. Genuine BLOCK errors (above) still scroll, since those need a fix.
       return;
     }
 
