@@ -593,9 +593,22 @@ export default function HomeClient() {
                     <Check className="h-4 w-4 text-[#15803D]" /> Verified against primary sources
                   </span>
                   <span className="inline-flex items-center gap-2">
-                    <Check className="h-4 w-4 text-[#15803D]" /> See your letter before you pay
+                    <Check className="h-4 w-4 text-[#15803D]" />{' '}
+                    <Link href="/refund" className="underline-offset-2 hover:underline">
+                      Backed by our refund policy
+                    </Link>
                   </span>
                 </div>
+                <p className="mt-8 text-sm text-slate-500">
+                  Already used TenantShield?{' '}
+                  <a
+                    href="mailto:support@gettenantshield.com?subject=My%20TenantShield%20story"
+                    className="font-medium text-[#B45309] underline-offset-2 hover:underline"
+                  >
+                    Share your story
+                  </a>{' '}
+                  — we&apos;d love to feature it here.
+                </p>
               </div>
             )}
           </div>
