@@ -44,6 +44,34 @@ const Arrow = ({ className = '' }: { className?: string }) => (
   </svg>
 )
 
+const Quote = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M9.5 6C6.5 7.2 4.7 9.9 4.7 13.2V18h5.2v-5.2H7.4c0-1.9 1-3.3 2.9-4.2L9.5 6zm9 0c-3 1.2-4.8 3.9-4.8 7.2V18h5.2v-5.2h-2.5c0-1.9 1-3.3 2.9-4.2L18.5 6z" />
+  </svg>
+)
+
+// ==================== TESTIMONIALS ====================
+// Real customer reviews only. This array is intentionally EMPTY until genuine
+// testimonials are collected from real users (planned: free/discounted letters
+// to real tenants sourced from renter communities, with permission to quote).
+// The section below auto-detects whether this array has entries: empty -> an
+// honest "be the first" invite; populated -> a real review grid. To go live
+// with reviews, just add objects here — no other code changes needed.
+//
+// FTC note: only add entries for real people who actually used the product and
+// gave permission. Never fabricate. Use first name + state (or "Verified
+// customer" if they prefer anonymity). `result` is an optional short outcome.
+type Testimonial = {
+  quote: string
+  name: string
+  location: string
+  result?: string
+}
+const TESTIMONIALS: Testimonial[] = [
+  // Example shape (do NOT ship until real):
+  // { quote: 'Had my full deposit back within two weeks.', name: 'Sarah M.', location: 'Austin, TX', result: '$1,800 recovered' },
+]
+
 export default function HomeClient() {
   // Deadline lookup state — visitor picks a state and we render its baseline
   // deadline plus any city overlays inline. Data comes from lib/stateDeadlines.ts.
@@ -474,6 +502,103 @@ export default function HomeClient() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      {/* ==================== FOUNDER NOTE + TESTIMONIALS ==================== */}
+      <section className="border-y border-[#E7E5E0] bg-white">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
+          {/* Founder note — honest early-stage trust signal */}
+          <div className="mx-auto max-w-3xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">Why I built this</p>
+            <h2 className="text-4xl font-medium tracking-tight text-slate-900 sm:text-5xl" style={{ fontFamily: 'var(--font-display)' }}>
+              A note from the founder.
+            </h2>
+            <div className="mt-6 space-y-4 text-lg leading-relaxed text-slate-600">
+              <p>
+                Too many tenants never get their deposit back simply because writing a
+                proper demand letter — one that cites the actual statute, the exact
+                deadline, and the penalties a landlord faces — felt out of reach. So they
+                let it go, and landlords count on exactly that.
+              </p>
+              <p>
+                I built TenantShield to close that gap: the same state-specific,
+                statute-cited letter a tenant might pay a lawyer hundreds for, generated in
+                about two minutes for $39. Every citation in your letter is a real statute
+                I&apos;ve verified against primary sources across all 50 states and DC —
+                nothing generic, nothing invented.
+              </p>
+              <p className="font-medium text-slate-700">
+                If it doesn&apos;t help, email me directly at{' '}
+                <a href="mailto:support@gettenantshield.com" className="text-[#B45309] underline-offset-2 hover:underline">
+                  support@gettenantshield.com
+                </a>
+                . A real person reads it.
+              </p>
+            </div>
+          </div>
+
+          {/* Testimonials — auto-flips based on whether TESTIMONIALS has entries */}
+          <div className="mt-16 border-t border-[#E7E5E0] pt-16">
+            {TESTIMONIALS.length > 0 ? (
+              <>
+                <div className="mx-auto max-w-2xl text-center">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#B45309]">What tenants say</p>
+                  <h2 className="text-4xl font-medium tracking-tight text-slate-900 sm:text-5xl" style={{ fontFamily: 'var(--font-display)' }}>
+                    Real results from real tenants.
+                  </h2>
+                </div>
+                <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {TESTIMONIALS.map((t, i) => (
+                    <figure key={i} className="flex flex-col rounded-xl border border-[#E7E5E0] bg-[#FAFAF7] p-6">
+                      <Quote className="h-6 w-6 text-[#B45309]/40" />
+                      <blockquote className="mt-4 flex-1 text-slate-700 leading-relaxed">
+                        &ldquo;{t.quote}&rdquo;
+                      </blockquote>
+                      <figcaption className="mt-5 border-t border-[#E7E5E0] pt-4">
+                        <div className="font-semibold text-slate-900">{t.name}</div>
+                        <div className="text-sm text-slate-500">{t.location}</div>
+                        {t.result && (
+                          <div className="mt-2 inline-block rounded-full bg-[#15803D]/[0.08] px-3 py-1 text-xs font-semibold text-[#15803D]">
+                            {t.result}
+                          </div>
+                        )}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </>
+            ) : (
+              /* Honest pre-launch state — no fabricated reviews. Invites the
+                 first real customers to be quoted, and reinforces real proof. */
+              <div className="mx-auto max-w-2xl text-center">
+                <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#B45309]/10 text-[#B45309]">
+                  <Quote className="h-6 w-6" />
+                </div>
+                <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
+                  Be one of the first.
+                </h2>
+                <p className="mt-4 text-lg leading-relaxed text-slate-600">
+                  TenantShield is new, so we&apos;re not going to show you reviews from
+                  people who don&apos;t exist. What we will show you: real statute
+                  citations, exact deadlines, and a letter you can read before you pay.
+                  Use it, and if it helps get your deposit back, we&apos;d be honored to
+                  share your story here — with your permission.
+                </p>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-slate-700">
+                  <span className="inline-flex items-center gap-2">
+                    <Check className="h-4 w-4 text-[#15803D]" /> All 50 states + DC
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <Check className="h-4 w-4 text-[#15803D]" /> Verified against primary sources
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <Check className="h-4 w-4 text-[#15803D]" /> See your letter before you pay
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
