@@ -96,6 +96,10 @@ function validatePayload(p: Record<string, unknown>): { field: string; message: 
   }
 
   if (!str(p.landlordName)) errs.push({ field: 'landlordName', message: 'Landlord name is required.' });
+  // Mandatory yes/no — mirrors the client. Drives successor-owner handling.
+  if (!['yes', 'no'].includes(str(p.propertySold))) {
+    errs.push({ field: 'propertySold', message: 'Answer whether the property was sold while you lived there.' });
+  }
   if (!str(p.rentalPropertyAddress)) {
     errs.push({ field: 'rentalPropertyAddress', message: 'Rental property address is required.' });
   }

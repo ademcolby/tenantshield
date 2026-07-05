@@ -186,7 +186,6 @@ const PARTIAL_SCENARIOS = ['partial_return_no_itemization', 'partial_return_item
 // captured by the condition question + the inflated-charges dispute ground.
 const SPECIAL_CIRCUMSTANCES: CircumstanceItem[] = [
   { id: 'multiple_tenants_on_lease', label: 'I had roommates on the lease', tip: 'Other tenants were also listed on the lease. This affects how the letter is addressed and how the deposit demand is structured.' },
-  { id: 'property_sold_during_tenancy', label: 'The property was sold during my tenancy', tip: 'Your landlord sold the property while you were still living there. The new owner may have inherited the obligation to return your deposit.' },
   { id: 'tenant_broke_lease_early', label: 'I broke the lease early', tip: 'You moved out before your lease end date. Your letter will reference your landlord\u2019s legal duty to re-rent and mitigate losses rather than simply keep your deposit.' },
   { id: 'non_refundable_cleaning_fee', label: 'I paid a non-refundable cleaning fee', tip: 'You paid a fee at move-in that was labeled non-refundable. Depending on your state, this may still be legally recoverable.' },
 ];
@@ -312,10 +311,14 @@ export default function SecurityDepositForm() {
     amountReturned: '',        // numeric string; required for PARTIAL_SCENARIOS
     depositPaidDate: '',       // optional yyyy-mm-dd
     specialCircumstances: [] as string[],
-    // Optional — only shown/used when 'property_sold_during_tenancy' is
-    // checked. Free text (no address sub-fields) since this is secondary
-    // context the tenant often won't have in full; the letter's existing
-    // "unknown landlord address" fallback pattern covers a blank address.
+    // Was the property sold during the tenancy? Mandatory yes/no (asked in the
+    // Landlord card). 'yes' reveals the optional current-owner fields below and
+    // drives the letter's successor-owner handling in systemPrompt.ts.
+    propertySold: '',          // 'yes' | 'no'
+    // Optional — only shown/used when propertySold === 'yes'. Free text (no
+    // address sub-fields) since this is secondary context the tenant often
+    // won't have in full; the letter's "unknown landlord address" fallback
+    // pattern covers a blank address.
     newOwnerName: '',
     newOwnerAddress: '',
     leaseDesignation: '',
@@ -361,7 +364,16 @@ export default function SecurityDepositForm() {
   const isAlaska = formData.state === 'Alaska';
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [field]: value };
+      // If they say the property wasn't sold, drop any current-owner info so a
+      // stale value from a toggled-off "yes" can't reach the payload.
+      if (field === 'propertySold' && value !== 'yes') {
+        next.newOwnerName = '';
+        next.newOwnerAddress = '';
+      }
+      return next;
+    });
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
     if (warnings[field]) setWarnings(prev => ({ ...prev, [field]: '' }));
   };
@@ -470,7 +482,7 @@ export default function SecurityDepositForm() {
   const FIELD_ORDER = [
     'state', 'city', 'tenantName', 'email', 'rentalPropertyAddress', 'depositAmount', 'vacatedDate',
     'depositPaidDate', 'forwardingAddressDate', 'buildingUnitCount', 'leaseType', 'tenantAddress',
-    'landlordName', 'landlordAddress', 'scenario', 'amountReturned',
+    'landlordName', 'landlordAddress', 'propertySold', 'scenario', 'amountReturned',
     'unitCondition', 'damageEstimate', 'unpaidRent', 'unpaidRentAmount',
     'properNotice', 'noticeGiven', 'conditionDocumentation', 'situation',
     'newOwnerName', 'newOwnerAddress',
@@ -594,6 +606,10 @@ export default function SecurityDepositForm() {
     }
 
     if (!formData.landlordName) b.landlordName = 'Landlord name is required';
+    // Mandatory yes/no — drives successor-owner handling.
+    if (formData.propertySold !== 'yes' && formData.propertySold !== 'no') {
+      b.propertySold = 'Let us know whether the property was sold while you lived there.';
+    }
     if (!rentalAddr.street) b.rentalPropertyAddress = 'Rental property street address is required';
     if (!formData.vacatedDate) b.vacatedDate = 'Move-out date is required';
 
@@ -1585,6 +1601,11 @@ export default function SecurityDepositForm() {
               <label className={labelClass}>
                 Landlord / property manager name <span className="text-red-500">*</span>
               </label>
+              <p className="mb-2 text-sm text-slate-600">
+                The person or company you paid your deposit to &mdash; the landlord named on
+                your lease. If the property was sold, enter your <span className="font-medium">original</span>{' '}
+                landlord here, not the new owner (you&apos;ll add the new owner below).
+              </p>
               <input
                 type="text"
                 value={formData.landlordName}
@@ -1603,6 +1624,75 @@ export default function SecurityDepositForm() {
                 warnMessage:
                   warnings.landlordAddress || warnings.landlordZip || warnings.identicalParties,
               })}
+            </div>
+
+            {/* Mandatory: was the property sold during the tenancy? */}
+            <div id="f-propertySold" className="border-t border-slate-200 pt-5">
+              <label className={labelClass}>
+                Was this property sold while you were living there?{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <div className="space-y-2">
+                {[
+                  ['no', 'No'],
+                  ['yes', 'Yes'],
+                ].map(([v, l]) => (
+                  <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
+                    <input
+                      type="radio"
+                      name="propertySold"
+                      value={v}
+                      checked={formData.propertySold === v}
+                      onChange={(e) => handleInputChange('propertySold', e.target.value)}
+                      className="w-4 h-4 accent-[#B45309]"
+                    />
+                    {l}
+                  </label>
+                ))}
+              </div>
+              {errors.propertySold && <p className="mt-1 text-sm text-red-600">{errors.propertySold}</p>}
+
+              {formData.propertySold === 'yes' && (
+                <div className="mt-5">
+                  <p className="mb-3 text-sm text-slate-600">
+                    If you know who owns the property now, add them below and your letter
+                    will be addressed to them. If you don&apos;t know, leave these blank
+                    &mdash; your letter will go to your original landlord above and hold
+                    them to their obligation to have properly transferred your deposit.
+                  </p>
+                  <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+                    Enter the <span className="font-semibold">new</span> owner here only
+                    &mdash; not the same landlord you listed above. These should be two
+                    different parties. If they&apos;re the same, leave this blank.
+                  </div>
+                  <div id="f-newOwnerName" className="mb-4">
+                    <label className={labelClass}>
+                      Current owner&apos;s name{' '}
+                      <span className="font-normal text-slate-500">(if known)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.newOwnerName}
+                      onChange={(e) => handleInputChange('newOwnerName', e.target.value)}
+                      placeholder="Different from the landlord above"
+                      className={inputClass(false)}
+                    />
+                  </div>
+                  <div id="f-newOwnerAddress">
+                    <label className={labelClass}>
+                      Current owner&apos;s address{' '}
+                      <span className="font-normal text-slate-500">(if known)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.newOwnerAddress}
+                      onChange={(e) => handleInputChange('newOwnerAddress', e.target.value)}
+                      placeholder="Street, City, State ZIP"
+                      className={inputClass(false)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1733,42 +1823,6 @@ export default function SecurityDepositForm() {
                 </label>
               ))}
             </div>
-            {formData.specialCircumstances.includes('property_sold_during_tenancy') && (
-              <div className="border-t border-slate-200 pt-5">
-                <p className="mb-3 text-sm text-slate-600">
-                  If you know who owns the property now, add their info below &mdash; your
-                  letter will be addressed to them instead of the landlord you originally
-                  signed your lease with. Don&apos;t know? Leave these blank; the letter will
-                  still reference the sale and the prior landlord&apos;s obligations.
-                </p>
-                <div id="f-newOwnerName" className="mb-4">
-                  <label className={labelClass}>
-                    New owner&apos;s name{' '}
-                    <span className="font-normal text-slate-500">(if known)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.newOwnerName}
-                    onChange={(e) => handleInputChange('newOwnerName', e.target.value)}
-                    placeholder="New owner or management company name"
-                    className={inputClass(false)}
-                  />
-                </div>
-                <div id="f-newOwnerAddress">
-                  <label className={labelClass}>
-                    New owner&apos;s address{' '}
-                    <span className="font-normal text-slate-500">(if known)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.newOwnerAddress}
-                    onChange={(e) => handleInputChange('newOwnerAddress', e.target.value)}
-                    placeholder="Street, City, State ZIP"
-                    className={inputClass(false)}
-                  />
-                </div>
-              </div>
-            )}
             {showLeaseDesignation && (
               <div className="border-t border-slate-200 pt-5">
                 <label className={labelClass}>

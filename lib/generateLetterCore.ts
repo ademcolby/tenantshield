@@ -37,9 +37,12 @@ export interface FormData {
   forwardingAddressDate: string;
   situation: string;
   specialCircumstances: string[];
-  // Optional — only meaningful when 'property_sold_during_tenancy' is in
-  // specialCircumstances. Lets the letter address the current owner instead
-  // of the original landlord when the tenant knows who bought the property.
+  // Mandatory yes/no: was the property sold during the tenancy? Drives the
+  // successor-owner handling in systemPrompt.ts.
+  propertySold?: string;      // 'yes' | 'no'
+  // Optional — only meaningful when propertySold === 'yes'. Lets the letter
+  // address the current owner instead of the original landlord when the tenant
+  // knows who bought the property.
   newOwnerName?: string;
   newOwnerAddress?: string;
   leaseDesignation: string;
@@ -298,22 +301,37 @@ RENTAL PROPERTY:
     message += `\n\nDISPUTED DEDUCTION GROUNDS (confirmed facts \u2014 weave each matching argument in): ${data.disputes.join(', ')}`;
   }
 
-  if (data.specialCircumstances && data.specialCircumstances.length > 0) {
-    message += `\n\nSPECIAL CIRCUMSTANCES: ${data.specialCircumstances.join(', ')}`;
-  }
-
-  // --- New owner info (only meaningful for property_sold_during_tenancy) ---
-  if (data.specialCircumstances?.includes('property_sold_during_tenancy')) {
+  // --- Property sold during tenancy: successor-owner handling --------------
+  // Keyed off the mandatory propertySold answer. Three cases feed the model an
+  // explicit instruction so it never has to guess:
+  //   1. new owner named (and distinct from the original landlord) -> address them
+  //   2. new owner named but SAME as the original landlord -> collapse to one party
+  //      (belt-and-suspenders against a customer typing the name in both places)
+  //   3. sold but no new owner named -> address the original landlord, hold them
+  //      to their transfer obligations
+  if (data.propertySold === 'yes') {
     const newOwnerName = (data.newOwnerName || '').trim();
     const newOwnerAddress = (data.newOwnerAddress || '').trim();
-    if (newOwnerName) {
-      message += `\n- New owner's name (address the letter to this party): ${newOwnerName}`;
+    const origLandlord = (data.landlordName || '').trim().toLowerCase();
+    const sameAsOriginal =
+      newOwnerName !== '' && newOwnerName.toLowerCase() === origLandlord;
+
+    message += `\n\nPROPERTY SOLD DURING TENANCY: yes.`;
+    if (newOwnerName && !sameAsOriginal) {
+      message += `\n- Current owner's name (address the letter to this party): ${newOwnerName}`;
       message += newOwnerAddress
-        ? `\n- New owner's address: ${newOwnerAddress}`
-        : `\n- New owner's address: not provided \u2014 omit the address block per the unknown-address rule`;
+        ? `\n- Current owner's address: ${newOwnerAddress}`
+        : `\n- Current owner's address: not provided \u2014 omit the address block per the unknown-address rule`;
+      message += `\n- The name in the "Landlord information" field above is the ORIGINAL landlord (whom the tenant paid the deposit to); reference them only as context, do not address the letter to them.`;
+    } else if (sameAsOriginal) {
+      message += `\n- The tenant entered the same party as both the original landlord and the current owner \u2014 treat them as a SINGLE party. Address the letter to that one party once; do NOT describe them as their own successor or name them twice.`;
     } else {
-      message += `\n- New owner: tenant does not know who currently owns the property \u2014 address the letter to "the current owner/property manager" and rely on the original landlord's transfer obligations`;
+      message += `\n- The tenant does not know who currently owns the property. Address the letter to the original landlord named in the "Landlord information" field, state that the property was sold during the tenancy, and hold that landlord to their obligation to have either returned the deposit or properly transferred it and given the tenant written notice.`;
     }
+  }
+
+  if (data.specialCircumstances && data.specialCircumstances.length > 0) {
+    message += `\n\nSPECIAL CIRCUMSTANCES: ${data.specialCircumstances.join(', ')}`;
   }
 
   if (data.leaseDesignation) {
