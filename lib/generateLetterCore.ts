@@ -37,6 +37,11 @@ export interface FormData {
   forwardingAddressDate: string;
   situation: string;
   specialCircumstances: string[];
+  // Optional — only meaningful when 'property_sold_during_tenancy' is in
+  // specialCircumstances. Lets the letter address the current owner instead
+  // of the original landlord when the tenant knows who bought the property.
+  newOwnerName?: string;
+  newOwnerAddress?: string;
   leaseDesignation: string;
   isRentStabilized: string;
   leaseStartDate: string;
@@ -295,6 +300,20 @@ RENTAL PROPERTY:
 
   if (data.specialCircumstances && data.specialCircumstances.length > 0) {
     message += `\n\nSPECIAL CIRCUMSTANCES: ${data.specialCircumstances.join(', ')}`;
+  }
+
+  // --- New owner info (only meaningful for property_sold_during_tenancy) ---
+  if (data.specialCircumstances?.includes('property_sold_during_tenancy')) {
+    const newOwnerName = (data.newOwnerName || '').trim();
+    const newOwnerAddress = (data.newOwnerAddress || '').trim();
+    if (newOwnerName) {
+      message += `\n- New owner's name (address the letter to this party): ${newOwnerName}`;
+      message += newOwnerAddress
+        ? `\n- New owner's address: ${newOwnerAddress}`
+        : `\n- New owner's address: not provided \u2014 omit the address block per the unknown-address rule`;
+    } else {
+      message += `\n- New owner: tenant does not know who currently owns the property \u2014 address the letter to "the current owner/property manager" and rely on the original landlord's transfer obligations`;
+    }
   }
 
   if (data.leaseDesignation) {
