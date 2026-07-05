@@ -67,7 +67,7 @@ export interface FormData {
 
 // The shape returned to callers. Mirrors what the routes hand back as JSON.
 export type GenerateResult =
-  | { kind: 'letter'; letter: string; refNumber: string; cached: boolean }
+  | { kind: 'letter'; letter: string; refNumber: string; cached: boolean; email: string }
   | { kind: 'missing_info'; message: string }
   | { kind: 'out_of_scope'; message: string }
   | { kind: 'error'; status: number; message: string };
@@ -479,7 +479,17 @@ export async function generateLetterForSession(
   // Retry-safe: return the cached letter without regenerating or re-charging.
   const cached = await redis.get<string>(letterKey(sessionId));
   if (cached) {
-    return { kind: 'letter', letter: cached, refNumber, cached: true };
+    // formData isn't loaded on the cached path (this returns before the Redis
+    // form lookup), so fall back to the email Stripe captured at checkout. It's
+    // the same address the form collected — it's passed to Stripe as
+    // customer_email when the Checkout Session is created.
+    return {
+      kind: 'letter',
+      letter: cached,
+      refNumber,
+      cached: true,
+      email: session.customer_details?.email || '',
+    };
   }
 
   const formId = session.metadata?.formId;
@@ -528,7 +538,16 @@ export async function generateLetterForSession(
   await persistOrderIfNeeded(formData, session, letterText, refNumber);
   await sendReceiptIfNeeded(sessionId, formData, session, letterText, refNumber);
 
-  return { kind: 'letter', letter: letterText, refNumber, cached: false };
+  return {
+    kind: 'letter',
+    letter: letterText,
+    refNumber,
+    cached: false,
+    email:
+      (formData.email && formData.email.trim()) ||
+      session.customer_details?.email ||
+      '',
+  };
 }
 
 /**

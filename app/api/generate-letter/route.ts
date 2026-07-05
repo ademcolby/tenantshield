@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
           type: 'letter',
           letter: result.letter,
           refNumber: result.refNumber,
+          email: result.email,
           generatedAt: new Date().toISOString(),
           cached: result.cached,
         });
