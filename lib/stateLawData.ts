@@ -1,10 +1,11 @@
 // lib/stateLawData.ts
 //
-// PROJECT K — Phase 2 (population in progress). Data model from Phase 0;
-// facts verified in Phase 1 (PROJECT_K_PHASE1_FINDINGS.md) and written here
-// batch by batch. Populated so far: Batch 1 (CA, CO, NY) + the 6 original
-// seeded states (TX, FL, AR, AL, AK, AZ), all now Phase-1-audited. Remaining
-// states/DC + 10 city overlays land in later batches.
+// PROJECT K — Phase 2 COMPLETE (all 51 states + DC populated), plus all 15
+// city overlays. Facts verified in Phase 1 (PROJECT_K_PHASE1_FINDINGS.md) for
+// the 51 states/DC + 13 cities; Santa Monica and Boston added and verified in
+// the July 7, 2026 Phase 1b city cleanup. Written batch by batch (Batches 1-7)
+// from the audit findings; the 6 originally-seeded states (TX, FL, AR, AL, AK,
+// AZ) were re-confirmed against the Phase 1 audit.
 //
 // Single source of truth for security-deposit legal facts consumed by the
 // marketing state pages (and, later, blog sync). NOT consumed by the letter
@@ -928,14 +929,17 @@ const DELAWARE: SimpleJurisdiction = {
     short: '2× damages',
     long:
       'A landlord who fails to remit the deposit or itemized statement within 20 ' +
-      'days is liable for double the amount wrongfully withheld under ' +
-      '§ 5514(g); failing to provide an itemized list forfeits the right to ' +
-      'withhold.',
+      'days is liable for DOUBLE THE SECURITY DEPOSIT under § 5514(g)(1) (the ' +
+      'penalty base is the deposit itself, not merely the withheld portion); ' +
+      'failing to provide an itemized list forfeits the right to withhold. A ' +
+      'tenant who fails to provide a forwarding address relieves the landlord of ' +
+      'double-damages liability under § 5514(h), though a one-year claim window ' +
+      'remains.',
   },
   statuteCardLabel: '§ 5514',
   statuteCardSubtext: 'Delaware Code, Title 25',
-  penaltyCardLabel: '2× damages',
-  penaltyCardSubtext: 'for missing the 20-day deadline',
+  penaltyCardLabel: '2× deposit',
+  penaltyCardSubtext: 'double the deposit, for missing the 20-day deadline',
   copy: {
     heroSummary:
       "A professional demand letter citing Delaware's security deposit statute " +
@@ -946,11 +950,13 @@ const DELAWARE: SimpleJurisdiction = {
       'ends to return your security deposit or provide a written, itemized list ' +
       'of any deductions.',
     penaltyLeadIn:
-      'If the landlord wrongfully withholds your deposit, you may recover:',
-    penaltyBullets: ['Double the amount wrongfully withheld'],
+      'If the landlord fails to return your deposit or provide the itemized list ' +
+      'within 20 days, you may recover:',
+    penaltyBullets: ['Double the amount of the security deposit under § 5514(g)(1)'],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000. Most landlords settle quickly once they realize you know the law.',
+      'So a $1,500 deposit not returned on time can support a court judgment of ' +
+      '$3,000 (twice the deposit). Most landlords settle quickly once they ' +
+      'realize you know the law.',
     statuteLine:
       '25 Del. C. \u00a7 5514 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -966,10 +972,19 @@ const DELAWARE: SimpleJurisdiction = {
         'year or longer; higher amounts are allowed for furnished or shorter-term ' +
         'rentals.',
     },
+    {
+      kind: 'trigger_condition',
+      heading: 'Provide a forwarding address:',
+      body:
+        'Under \u00a7 5514(h), a tenant who does not give a forwarding address ' +
+        'relieves the landlord of the double-damages liability (a one-year claim ' +
+        'window still remains). Your demand letter supplies your address in ' +
+        'writing, which protects that remedy.',
+    },
   ],
   lastVerified: '2026-07-05',
   primarySource:
-    '25 Del. C. § 5514 (verified against statute text); 20-day deadline + 2× + 1-mo cap (≥1-yr leases) confirmed (Phase 1 audit)',
+    '25 Del. C. § 5514 (verified against statute text); penalty = 2× the DEPOSIT per §5514(g)(1) + §5514(h) address gate + 1-mo cap (≥1-yr leases) confirmed (Phase 1 audit)',
 };
 
 const GEORGIA: SimpleJurisdiction = {
@@ -1221,7 +1236,7 @@ const ILLINOIS: ScopeGatedJurisdiction = {
       'refusing to return it, providing no itemization, or making clearly ' +
       'improper deductions \u2014 you may recover:',
     penaltyBullets: [
-      'Two times the amount wrongfully withheld',
+      'Two times the security deposit due (on a bad-faith finding)',
       'Court costs',
       "Reasonable attorney's fees",
     ],
@@ -4296,9 +4311,111 @@ const PHILADELPHIA_PA: DeferringCity = {
     '68 P.S. § 250.512 (verified in Batch 5); MEDIUM confidence — no distinct Philadelphia ordinance surfaced, likely defers to state (Phase 1 audit)',
 };
 
-/** All 13 city overlays now populated and Phase-1-audited: 3 originally seeded
+// ===========================================================================
+// PHASE 1b — city cleanup (Santa Monica, Boston). These two existed in
+// systemPrompt.ts but were outside the original 13-city Phase 1 scope and had
+// never been primary-source audited. Verified July 7, 2026 against the Santa
+// Monica Rent Control Charter (§ 1803(s), current codified text + Action
+// Apartment Assn. v. SMRCB (2001)) and MGL c.186 § 15B / mass.gov / MassLegalHelp.
+// Added here so the data file matches the prompt's 15-city coverage.
+// ===========================================================================
+
+/** AUGMENTS — Santa Monica layers a deposit-interest/escrow requirement on top
+ *  of California Civil Code § 1950.5, which still fully governs deadline and
+ *  penalty. */
+const SANTA_MONICA_CA: AugmentingCity = {
+  type: 'augments',
+  slug: 'santa-monica-ca',
+  name: 'Santa Monica, California',
+  parentStateSlug: 'california',
+  statutes: [
+    { label: 'SM Charter § 1803(s)', full: 'Santa Monica Rent Control Charter Amendment § 1803(s)' },
+  ],
+  cityPenalty: {
+    kind: 'none',
+    attorneyFees: false,
+    short: 'Interest/escrow layer',
+    long:
+      'Santa Monica\u2019s overlay is a deposit-interest and escrow requirement ' +
+      'rather than a separate withholding multiplier: deposits must be held in an ' +
+      'interest-bearing account at a federally insured institution, and the Rent ' +
+      'Control Board may regulate the amount and use of deposits consistent with ' +
+      'the Charter and state law. The state § 1950.5 penalties remain the route ' +
+      'for wrongful withholding of the deposit itself.',
+  },
+  cityDuties: [
+    'Hold the deposit in an interest-bearing account at a federally insured financial institution (\u00a7 1803(s))',
+    'Pay or credit deposit interest at the rate set/published by the Santa Monica Rent Control Board',
+  ],
+  stateStillApplies:
+    'California Civil Code § 1950.5 applies in full: a 21-day return deadline, up ' +
+    'to 2\u00d7 the deposit for bad-faith withholding plus actual damages, the ' +
+    'one-month cap (the statewide AB 12 cap, NOT a Santa Monica-specific limit), ' +
+    'and the AB 2801 photo-evidence rules. The city layer adds interest/escrow on ' +
+    'top \u2014 it does not replace the state remedy.',
+  notes: [
+    {
+      kind: 'general',
+      heading: 'Interest rate — never hardcode:',
+      body:
+        'Santa Monica\u2019s former flat 3% deposit-interest rate was struck down ' +
+        'as an unconstitutional taking (Action Apartment Assn. v. Santa Monica ' +
+        'Rent Control Bd., 2001). Reference the current rate set/published by the ' +
+        'Rent Control Board rather than stating a number.',
+    },
+    {
+      kind: 'general',
+      heading: 'Correct section cite:',
+      body:
+        'The deposit-interest provision is Charter § 1803(s) in the current ' +
+        'codified text \u2014 not § 1803(f), which some older secondary sources ' +
+        '(and an earlier draft) cited in error.',
+    },
+  ],
+  lastVerified: '2026-07-07',
+  primarySource:
+    'SM Rent Control Charter § 1803(s) (verified against current codified text + Action Apartment Assn. v. SMRCB (2001)); overlay on Cal. Civ. Code § 1950.5; §1803(f) cite corrected to §1803(s) (Phase 1b audit)',
+};
+
+/** DEFERS — Boston applies Massachusetts state law; it has NO separate
+ *  municipal security-deposit ordinance. */
+const BOSTON_MA: DeferringCity = {
+  type: 'defers',
+  slug: 'boston-ma',
+  name: 'Boston, Massachusetts',
+  parentStateSlug: 'massachusetts',
+  statutes: [
+    { label: 'MGL c.186 § 15B', full: 'Massachusetts General Laws Chapter 186, § 15B' },
+  ],
+  apply:
+    'Apply Massachusetts state law (MGL c.186 § 15B): a 30-day return, a separate ' +
+    'interest-bearing Massachusetts account, 5% (or lesser bank-rate) interest, ' +
+    'and a one-month cap. For the three triggering violations (no separate ' +
+    'interest-bearing account, failure to return within 30 days with the required ' +
+    'statement, or failure to transfer to a successor), treble (3\u00d7) damages ' +
+    'plus interest, costs, and attorney fees are MANDATORY and non-discretionary ' +
+    '(Mellor v. Berman).',
+  notes: [
+    {
+      kind: 'general',
+      heading: 'No separate Boston deposit ordinance:',
+      body:
+        'Boston has no municipal security-deposit ordinance beyond state law ' +
+        '(verified against mass.gov, MassLegalHelp, and MassLandlords). The City ' +
+        'of Boston\u2019s Office of Housing Stability provides enforcement and ' +
+        'tenant education but adds no deposit escrow, interest, or return rules. ' +
+        'Deposit returns follow MGL c.186 § 15B.',
+    },
+  ],
+  lastVerified: '2026-07-07',
+  primarySource:
+    'MGL c.186 § 15B (verified against mass.gov + MassLegalHelp + MassLandlords); confirmed Boston has NO separate municipal deposit ordinance (Phase 1b audit)',
+};
+
+/** All 15 city overlays now populated and audited: 3 originally seeded
  *  (Portland, Evanston, Cambridge) + Batch 7 (Chicago, Cook County, SF, Berkeley,
- *  LA, West Hollywood, Seattle, NYC, Baltimore, Philadelphia). */
+ *  LA, West Hollywood, Seattle, NYC, Baltimore, Philadelphia) + Phase 1b
+ *  cleanup (Santa Monica, Boston). */
 export const CITY_OVERLAYS: CityOverlay[] = [
   PORTLAND_OR,
   EVANSTON_IL,
@@ -4313,6 +4430,8 @@ export const CITY_OVERLAYS: CityOverlay[] = [
   NEW_YORK_CITY_NY,
   BALTIMORE_MD,
   PHILADELPHIA_PA,
+  SANTA_MONICA_CA,
+  BOSTON_MA,
 ];
 
 /** Lookup helper for city overlay pages. */
