@@ -28,22 +28,22 @@ Some states only require one of these; a few also factor in the date the lease o
 | State | Return Deadline | Penalty for Non-Compliance | Statute |
 |---|---|---|---|
 | Alabama | 60 days | 2x deposit (failure to timely refund) | Ala. Code § 35-9A-201 |
-| Alaska | 14 days (no deductions) / 30 days (with deductions) | — | AS § 34.03.070 |
+| Alaska | 14 days (proper notice given, no deductions) / 30 days (otherwise) | 2x wrongfully withheld (willful) | AS § 34.03.070 |
 | Arizona | 14 days | 2x wrongfully withheld amount | A.R.S. § 33-1321 |
 | Arkansas | 60 days | 2x + fees (landlords with 6+ units) | A.C.A. § 18-16-305 |
-| California | 21 days | 2x bad-faith withholding | Cal. Civ. Code § 1950.5 |
-| Colorado | 30 days (60 days if specified in lease) | 3x + attorney's fees | C.R.S. § 38-12-103 |
-| Connecticut | 15 days (forwarding address provided) / 30 days (otherwise) | 2x | C.G.S. § 47a-21 |
+| California | 21 days | 2x bad-faith withholding (see AB 2801/AB 414 note below) | Cal. Civ. Code § 1950.5 |
+| Colorado | 30 days (60 days if specified in lease) | 3x + attorney's fees (see HB25-1249 note below) | C.R.S. § 38-12-103 |
+| Connecticut | 21 days | 2x | C.G.S. § 47a-21 |
 | Delaware | 20 days | 2x wrongfully withheld | 25 Del. C. § 5514 |
 | DC | 45 days | 3x (bad faith) + attorney's fees | 14 DCMR § 309 |
 | Florida | 15 days (no deductions) / 30 days (with deductions) | Forfeiture of right to deductions | Fla. Stat. § 83.49 |
 | Georgia | 30 days | 3x + attorney's fees | O.C.G.A. § 44-7-34 |
 | Hawaii | 14 days | 3x | HRS § 521-44 |
-| Idaho | 30 days (21 days if required by written agreement) | 3x (willful/bad faith) | Idaho Code § 6-321 |
+| Idaho | 21 days (default) / up to 30 days if the lease specifies | 3x (willful/bad faith) | Idaho Code § 6-321 |
 | Illinois | 30 days (itemized statement) / 45 days (return); 5+ unit landlords | 2x + fees (Chicago RLTO: automatic 2x) | 765 ILCS 710; Chicago RLTO § 5-12-080 |
 | Indiana | 45 days | Forfeiture of deposit + attorney's fees | Ind. Code § 32-31-3-12 |
 | Iowa | 30 days | Up to 2x | Iowa Code § 562A.12 |
-| Kansas | 30 days | 1.5x | K.S.A. § 58-2550 |
+| Kansas | 14 days after deductions determined / 30 days max | 1.5x | K.S.A. § 58-2550 |
 | Kentucky | 30 days (60 days if itemization needed) | — | KRS § 383.580 |
 | Louisiana | 1 month | Greater of $300 or 2x wrongfully withheld + fees (bad faith) | La. R.S. 9:3251 |
 | Maine | 30 days (21 days for at-will tenancy) | 2x | 14 M.R.S.A. § 6033 |
@@ -59,7 +59,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | New Hampshire | 30 days | 2x | N.H. Rev. Stat. § 540-A:7 |
 | New Jersey | 30 days (5 days if fire/flood displacement) | 2x + attorney's fees | N.J.S.A. § 46:8-21.1 |
 | New Mexico | 30 days | Forfeiture + $250 civil penalty + fees | N.M. Stat. § 47-8-18 |
-| New York | 14 days | 2x | N.Y. Gen. Oblig. Law § 7-108 |
+| New York | 14 days | 2x (see § 7-107 note below) | N.Y. Gen. Oblig. Law § 7-108 |
 | North Carolina | 30 days | — | N.C. Gen. Stat. § 42-52 |
 | North Dakota | 30 days | Up to 3x | N.D. Cent. Code § 47-16-07.1 |
 | Ohio | 30 days | 2x + attorney's fees | Ohio Rev. Code § 5321.16 |
@@ -68,7 +68,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | Pennsylvania | 30 days | 2x | 68 Pa. Stat. § 250.512 |
 | Rhode Island | 20 days | 2x | R.I. Gen. Laws § 34-18-19 |
 | South Carolina | 30 days | — | S.C. Code § 27-40-410 |
-| South Dakota | 14 days (no deductions) / 45 days (with deductions) | — | SDCL § 43-32-24 |
+| South Dakota | 14 days (return) / 45 days (full itemization on request) | — | SDCL § 43-32-24 |
 | Tennessee | 30 days | 2x amount wrongfully withheld | Tenn. Code § 66-28-301 |
 | Texas | 30 days | $100 + 3x + attorney's fees (bad faith) | Tex. Prop. Code § 92.103, § 92.109 |
 | Utah | 30 days | $100 civil penalty + deposit + fees | Utah Code § 57-17-3 |
@@ -80,6 +80,22 @@ Some states only require one of these; a few also factor in the date the lease o
 | Wyoming | 30 days | Full deposit + court costs | Wyo. Stat. § 1-21-1208 |
 
 *Note: This table reflects general state law as of 2026. Local ordinances (Chicago, San Francisco, Seattle, and others) may apply additional protections. Always verify your current state statute.*
+
+---
+
+## Recent Law Changes Worth Knowing (2025–2026)
+
+A handful of states changed their security-deposit rules recently. If your move-out is recent, these matter:
+
+**California — new photo-documentation rules (AB 2801).** For move-outs on or after April 1, 2025, a landlord who deducts for repairs or cleaning must take photographs of the unit after you move out and again after any work is done, and include those photos with the itemized statement. A landlord who skips this in bad faith can be barred from making a claim against the deposit. Separately, AB 414 (effective January 1, 2026) allows electronic delivery of the deposit refund and itemization when the tenant agrees in writing. The one-month deposit cap (AB 12) also remains in force for most tenancies.
+
+**Colorado — HB25-1249.** For conduct on or after January 1, 2026, "normal wear and tear" now expressly includes ordinary uncleanliness — so routine cleaning charges are off the table — and deductions for pre-existing damage are barred. A tenant can also demand supporting documentation within 14 days, and a landlord's failure to produce it supports a wrongful-withholding claim. (Colorado's deposit cap remains two months' rent under SB23-184; reports of a new one-month cap are mistaken.)
+
+**New York — rent-stabilized carve-out (GOL § 7-107).** Effective November 15, 2025, rent-stabilized tenants gained the 14-day return, itemization, and pre-move-out inspection and cure rights that previously applied more narrowly. The separate interest-bearing-account requirement (§ 7-103) applies statewide to buildings with six or more units, not only in New York City.
+
+**Connecticut — shorter deadline since 2023.** Connecticut's return deadline was reduced from 30 days to 21 days effective October 1, 2023. Many online sources still cite the old 30-day figure — the current rule is 21 days.
+
+**A note on Alaska, Kansas, and Idaho timing.** These states phrase their deadlines in a way that's easy to misread. Alaska's 14-day window applies only when you gave proper notice *and* the landlord isn't claiming damages — otherwise it's 30 days. Kansas requires return within 14 days of the landlord determining deductions, but no more than 30 days after the tenancy ends. Idaho's default is 21 days; a lease can set a different period, but never longer than 30.
 
 ---
 
