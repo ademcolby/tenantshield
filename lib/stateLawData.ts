@@ -107,6 +107,11 @@ interface BaseJurisdiction {
   penaltyCardLabel: string;
   /** the small grey line under the penalty card */
   penaltyCardSubtext: string;
+  /** optional caption for the homepage deadline lookup, for states where a
+   *  bare deadline label would mislead without the state page's surrounding
+   *  prose (KY, IL, WV). Rendered under the number, next to a link to the
+   *  full state page. */
+  homepageDeadlineNote?: string;
   /** optional across all types */
   unitThreshold?: UnitThreshold;
   /** audit provenance — REQUIRED so nothing ships unverified */
@@ -184,6 +189,10 @@ interface BaseCityOverlay {
   name: string;
   /** the state this city sits in — links to a Jurisdiction.slug */
   parentStateSlug: string;
+  /** one-sentence summary for the homepage city-variations card. MUST stay
+   *  consistent with this entry's audited facts — it renders on the homepage
+   *  lookup with no surrounding prose. */
+  homepageSummary: string;
   statutes: StatuteCitation[];
   notes: NuanceNote[];
   lastVerified: string;
@@ -1188,6 +1197,8 @@ const ILLINOIS: ScopeGatedJurisdiction = {
   type: 'scope_gated',
   slug: 'illinois',
   name: 'Illinois',
+  homepageDeadlineNote:
+    '45 days is the return deadline \u2014 30 days is only the itemized-statement window. See the full Illinois rule.',
   deadlineDays: 45,
   deadlineLabel: '30 / 45 days',
   statutes: [
@@ -1468,6 +1479,8 @@ const KENTUCKY: ScopeGatedJurisdiction = {
   type: 'scope_gated',
   slug: 'kentucky',
   name: 'Kentucky',
+  homepageDeadlineNote:
+    'These are notice/response windows, not simple return deadlines \u2014 see the full Kentucky rule.',
   deadlineDays: 30,
   deadlineLabel: '30 / 60 days',
   statutes: [{ label: '§ 383.580', full: 'KRS § 383.580' }],
@@ -3429,6 +3442,8 @@ const WEST_VIRGINIA: SimpleJurisdiction = {
   type: 'simple',
   slug: 'west-virginia',
   name: 'West Virginia',
+  homepageDeadlineNote:
+    'Shortens to 45 days if the unit is re-rented to a new tenant sooner \u2014 see the full West Virginia rule.',
   deadlineDays: 60,
   deadlineLabel: '60 days',
   statutes: [
@@ -3761,6 +3776,8 @@ const PORTLAND_OR: AugmentingCity = {
   type: 'augments',
   slug: 'portland-or',
   name: 'Portland, Oregon',
+  homepageSummary:
+    'Portland layers extra duties on Oregon\'s 31-day state rules \u2014 deposit caps in some cases, a separate interest-bearing account, condition reports, and notice requirements, at $250 per violation.',
   parentStateSlug: 'oregon',
   statutes: [
     { label: 'PCC § 30.01.087', full: 'Portland City Code § 30.01.087' },
@@ -3813,6 +3830,8 @@ const EVANSTON_IL: ReplacingCity = {
   type: 'replaces',
   slug: 'evanston-il',
   name: 'Evanston, Illinois',
+  homepageSummary:
+    'Evanston\'s own ordinance supersedes Illinois state law \u2014 21-day return, deposit capped at 1.5\u00d7 monthly rent, up to 2\u00d7 the amount wrongfully withheld plus attorney fees.',
   parentStateSlug: 'illinois',
   deadlineDays: 21,
   deadlineLabel: '21 days',
@@ -3840,8 +3859,8 @@ const EVANSTON_IL: ReplacingCity = {
       body:
         'It does not follow either the Chicago RLTO or default Illinois state law ' +
         'for deposits. Deposit capped at 1.5\u00d7 monthly rent, held in a separate ' +
-        'account, returned within 21 days with an itemized list; interest required ' +
-        'on deposits held six months or more.',
+        'account, and returned within 21 days with an itemized list. (The ' +
+        'former deposit-interest requirement was removed effective Jan 1, 2025.)',
     },
   ],
   lastVerified: '2026-07-05',
@@ -3854,6 +3873,8 @@ const CAMBRIDGE_MA: DeferringCity = {
   type: 'defers',
   slug: 'cambridge-ma',
   name: 'Cambridge, Massachusetts',
+  homepageSummary:
+    'No separate Cambridge deposit ordinance \u2014 Massachusetts\'s strict MGL c.186 \u00a7 15B framework applies in full (30-day return, treble damages plus fees).',
   parentStateSlug: 'massachusetts',
   statutes: [
     { label: 'MGL c.186 § 15B', full: 'Massachusetts General Laws ch. 186, § 15B' },
@@ -3895,6 +3916,8 @@ const CHICAGO_IL: ReplacingCity = {
   type: 'replaces',
   slug: 'chicago-il',
   name: 'Chicago, Illinois',
+  homepageSummary:
+    'The Chicago RLTO supersedes Illinois state law \u2014 deposit plus interest due within 45 days of vacating (itemized statement with receipts within 30 days when deducting), with a strict-liability 2\u00d7 penalty plus interest, fees, and costs. Owner-occupied buildings of six or fewer units are exempt.',
   parentStateSlug: 'illinois',
   deadlineDays: 45,
   deadlineLabel: '30 / 45 days',
@@ -3950,6 +3973,8 @@ const COOK_COUNTY_IL: ReplacingCity = {
   type: 'replaces',
   slug: 'cook-county-il',
   name: 'Cook County, Illinois',
+  homepageSummary:
+    'The Cook County RTLO governs suburban Cook County outside Chicago \u2014 30-day return, with a 2\u00d7-plus-fees penalty for violations.',
   parentStateSlug: 'illinois',
   deadlineDays: 30,
   deadlineLabel: '30 days',
@@ -3994,6 +4019,8 @@ const SAN_FRANCISCO_CA: AugmentingCity = {
   type: 'augments',
   slug: 'san-francisco-ca',
   name: 'San Francisco, California',
+  homepageSummary:
+    'San Francisco adds an annual deposit-interest requirement (with a penalty if unpaid) on top of California\'s \u00a7 1950.5 rules.',
   parentStateSlug: 'california',
   statutes: [
     { label: 'SF Admin Code Ch. 49', full: 'San Francisco Administrative Code Chapter 49' },
@@ -4040,6 +4067,8 @@ const BERKELEY_CA: AugmentingCity = {
   type: 'augments',
   slug: 'berkeley-ca',
   name: 'Berkeley, California',
+  homepageSummary:
+    'Berkeley requires annual deposit interest at the city-published Berkeley Bank Rate (10% penalty if unpaid by Jan 31) \u2014 on top of California\'s \u00a7 1950.5 rules.',
   parentStateSlug: 'california',
   statutes: [
     { label: 'BMC § 13.76', full: 'Berkeley Municipal Code § 13.76' },
@@ -4086,6 +4115,8 @@ const LOS_ANGELES_CA: AugmentingCity = {
   type: 'augments',
   slug: 'los-angeles-ca',
   name: 'Los Angeles, California',
+  homepageSummary:
+    'For rent-stabilized units, Los Angeles requires annual interest on deposits held a year or longer, at the rate set by the Rent Adjustment Commission \u2014 on top of California\'s \u00a7 1950.5 rules.',
   parentStateSlug: 'california',
   statutes: [
     { label: 'LAMC § 151.06.02', full: 'Los Angeles Municipal Code § 151.06.02 (Rent Stabilization Ordinance)' },
@@ -4132,6 +4163,8 @@ const WEST_HOLLYWOOD_CA: AugmentingCity = {
   type: 'augments',
   slug: 'west-hollywood-ca',
   name: 'West Hollywood, California',
+  homepageSummary:
+    'For rent-stabilized units, West Hollywood requires annual deposit interest at the city-published rate \u2014 on top of California\'s \u00a7 1950.5 rules.',
   parentStateSlug: 'california',
   statutes: [
     { label: 'WHMC RSO', full: 'West Hollywood Municipal Code, Rent Stabilization Ordinance' },
@@ -4174,6 +4207,8 @@ const SEATTLE_WA: AugmentingCity = {
   type: 'augments',
   slug: 'seattle-wa',
   name: 'Seattle, Washington',
+  homepageSummary:
+    'Seattle caps the deposit plus nonrefundable move-in fees at one month\'s rent (pet deposits at 25%) and requires installment plans \u2014 Washington\'s 30-day return rules still govern the deposit itself.',
   parentStateSlug: 'washington',
   statutes: [
     { label: 'SMC 7.24', full: 'Seattle Municipal Code Chapter 7.24' },
@@ -4219,6 +4254,8 @@ const NEW_YORK_CITY_NY: DeferringCity = {
   type: 'defers',
   slug: 'new-york-city-ny',
   name: 'New York City, New York',
+  homepageSummary:
+    'No separate NYC deposit ordinance \u2014 New York State law applies: 14-day return, up to 2\u00d7 for a willful violation, and a one-month deposit cap.',
   parentStateSlug: 'new-york',
   statutes: [
     { label: 'GOL § 7-108', full: 'New York General Obligations Law § 7-108' },
@@ -4253,6 +4290,8 @@ const BALTIMORE_MD: DeferringCity = {
   type: 'defers',
   slug: 'baltimore-md',
   name: 'Baltimore, Maryland',
+  homepageSummary:
+    'No separate Baltimore deposit ordinance \u2014 Maryland state law applies: 45-day return, up to treble damages plus fees for withholding without a reasonable basis.',
   parentStateSlug: 'maryland',
   statutes: [
     { label: 'Md. Real Prop. § 8-203', full: 'Maryland Code, Real Property § 8-203' },
@@ -4285,6 +4324,8 @@ const PHILADELPHIA_PA: DeferringCity = {
   type: 'defers',
   slug: 'philadelphia-pa',
   name: 'Philadelphia, Pennsylvania',
+  homepageSummary:
+    'No distinct Philadelphia deposit ordinance \u2014 Pennsylvania state law applies: 30-day return, with double damages on amounts wrongfully withheld.',
   parentStateSlug: 'pennsylvania',
   statutes: [
     { label: '68 P.S. § 250.512', full: 'Pennsylvania Landlord and Tenant Act, 68 P.S. § 250.512' },
@@ -4327,6 +4368,8 @@ const SANTA_MONICA_CA: AugmentingCity = {
   type: 'augments',
   slug: 'santa-monica-ca',
   name: 'Santa Monica, California',
+  homepageSummary:
+    'Santa Monica\'s rent-control charter (\u00a7 1803(s)) adds an interest/escrow layer at the Rent Control Board\'s published rate \u2014 on top of California\'s \u00a7 1950.5 rules.',
   parentStateSlug: 'california',
   statutes: [
     { label: 'SM Charter § 1803(s)', full: 'Santa Monica Rent Control Charter Amendment § 1803(s)' },
@@ -4383,6 +4426,8 @@ const BOSTON_MA: DeferringCity = {
   type: 'defers',
   slug: 'boston-ma',
   name: 'Boston, Massachusetts',
+  homepageSummary:
+    'No separate Boston deposit ordinance \u2014 Massachusetts\'s strict MGL c.186 \u00a7 15B framework applies in full (30-day return, treble damages plus fees).',
   parentStateSlug: 'massachusetts',
   statutes: [
     { label: 'MGL c.186 § 15B', full: 'Massachusetts General Laws Chapter 186, § 15B' },
@@ -4437,4 +4482,55 @@ export const CITY_OVERLAYS: CityOverlay[] = [
 /** Lookup helper for city overlay pages. */
 export function getCityOverlay(slug: string): CityOverlay | undefined {
   return CITY_OVERLAYS.find((c) => c.slug === slug);
+}
+
+// ---------------------------------------------------------------------------
+// Homepage lookup helpers
+// ---------------------------------------------------------------------------
+// Added when lib/stateDeadlines.ts (a third, manually-synced copy of the legal
+// data) was retired. The homepage deadline lookup now derives from THIS file,
+// so the homepage and the /states pages can never drift apart. These helpers
+// return small serializable rows computed server-side (app/page.tsx) and
+// passed to the client component as props, so the full data file never ships
+// in the client bundle.
+
+export interface HomepageStateRow {
+  slug: string;
+  name: string;
+  days: string;
+  statute: string;
+  deadlineNote?: string;
+}
+
+export interface HomepageCityRow {
+  name: string;
+  ordinance: string;
+  summary: string;
+}
+
+export function getHomepageStates(): HomepageStateRow[] {
+  return [...JURISDICTIONS]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((j) => ({
+      slug: j.slug,
+      name: j.name,
+      days: j.deadlineLabel,
+      statute: `${j.statuteCardLabel} \u00b7 ${j.statuteCardSubtext}`,
+      ...(j.homepageDeadlineNote ? { deadlineNote: j.homepageDeadlineNote } : {}),
+    }));
+}
+
+/** Map of parent-state display name -> that state's city overlay rows. */
+export function getHomepageCityMap(): Record<string, HomepageCityRow[]> {
+  const map: Record<string, HomepageCityRow[]> = {};
+  for (const c of CITY_OVERLAYS) {
+    const parent = JURISDICTIONS.find((j) => j.slug === c.parentStateSlug);
+    if (!parent) continue;
+    (map[parent.name] ??= []).push({
+      name: c.name,
+      ordinance: c.statutes[0]?.label ?? '',
+      summary: c.homepageSummary,
+    });
+  }
+  return map;
 }

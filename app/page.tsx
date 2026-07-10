@@ -1,6 +1,7 @@
 // app/page.tsx
 import type { Metadata } from 'next'
 import HomeClient from './HomeClient'
+import { getHomepageStates, getHomepageCityMap } from '@/lib/stateLawData'
 
 // This is a SERVER component (no 'use client') so it can export metadata.
 // A self-referencing canonical tells Google the homepage is the primary page
@@ -23,5 +24,11 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <HomeClient />
+  // Derived server-side so the full legal data file never ships to the client.
+  return (
+    <HomeClient
+      deadlineStates={getHomepageStates()}
+      cityOverlaysByState={getHomepageCityMap()}
+    />
+  )
 }

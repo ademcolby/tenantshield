@@ -6,10 +6,7 @@ import Link from 'next/link'
 import { Fraunces, DM_Sans } from 'next/font/google'
 import type { Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '@/lib/auth'
-import {
-  STATE_DEADLINES,
-  getCityOverlaysForState,
-} from '@/lib/stateDeadlines'
+import type { HomepageStateRow, HomepageCityRow } from '@/lib/stateLawData'
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -72,12 +69,19 @@ const TESTIMONIALS: Testimonial[] = [
   // { quote: 'Had my full deposit back within two weeks.', name: 'Sarah M.', location: 'Austin, TX', result: '$1,800 recovered' },
 ]
 
-export default function HomeClient() {
+type HomeClientProps = {
+  deadlineStates: HomepageStateRow[]
+  cityOverlaysByState: Record<string, HomepageCityRow[]>
+}
+
+export default function HomeClient({ deadlineStates, cityOverlaysByState }: HomeClientProps) {
   // Deadline lookup state — visitor picks a state and we render its baseline
-  // deadline plus any city overlays inline. Data comes from lib/stateDeadlines.ts.
+  // deadline plus any city overlays inline. Rows are derived server-side in
+  // app/page.tsx from lib/stateLawData.ts (the single audited source that also
+  // feeds the /states pages) and passed in as props.
   const [selectedState, setSelectedState] = useState('')
-  const selected = STATE_DEADLINES.find((s) => s.state === selectedState)
-  const cityOverlays = selectedState ? getCityOverlaysForState(selectedState) : []
+  const selected = deadlineStates.find((s) => s.name === selectedState)
+  const cityOverlays = selectedState ? (cityOverlaysByState[selectedState] ?? []) : []
 
   // Project E: session-aware nav. null = still checking (render nothing to avoid
   // a flash); true/false swaps "Sign in" <-> "My account". Mirrors SiteChrome.
@@ -369,17 +373,23 @@ export default function HomeClient() {
             className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#B45309]/40 focus:border-[#B45309] transition"
           >
             <option value="">Choose a state…</option>
-            {STATE_DEADLINES.map((row) => (
-              <option key={row.state} value={row.state}>{row.state}</option>
+            {deadlineStates.map((row) => (
+              <option key={row.name} value={row.name}>{row.name}</option>
             ))}
           </select>
 
           {selected && (
             <div className="mt-6 overflow-hidden rounded-xl border border-[#E7E5E0] bg-white">
-              <div className="border-b border-[#E7E5E0] bg-slate-50/70 px-6 py-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[#E7E5E0] bg-slate-50/70 px-6 py-4">
                 <h3 className="text-lg font-semibold text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
-                  {selected.state}
+                  {selected.name}
                 </h3>
+                <Link
+                  href={`/states/${selected.slug}`}
+                  className="text-sm font-medium text-[#B45309] transition hover:text-[#92400E]"
+                >
+                  Full {selected.name} rule →
+                </Link>
               </div>
               <div className="grid grid-cols-1 gap-4 px-6 py-5 sm:grid-cols-2">
                 <div>
@@ -387,6 +397,9 @@ export default function HomeClient() {
                   <p className="mt-1 text-2xl font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
                     {selected.days}
                   </p>
+                  {selected.deadlineNote && (
+                    <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{selected.deadlineNote}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Statute</p>
@@ -400,14 +413,14 @@ export default function HomeClient() {
                     City-level variations
                   </p>
                   <p className="mt-1 mb-4 text-sm text-slate-600">
-                    Some cities in {selected.state} add protections or set different deadlines.
+                    Some cities in {selected.name} add protections or set different deadlines.
                     If your rental is in one of these, your letter will apply the local rules too.
                   </p>
                   <ul className="space-y-4">
                     {cityOverlays.map((overlay) => (
-                      <li key={overlay.city} className="rounded-lg border border-[#E7E5E0] bg-white p-4">
+                      <li key={overlay.name} className="rounded-lg border border-[#E7E5E0] bg-white p-4">
                         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                          <h4 className="font-semibold text-slate-900">{overlay.city}</h4>
+                          <h4 className="font-semibold text-slate-900">{overlay.name}</h4>
                           <span className="font-mono text-xs text-slate-500">{overlay.ordinance}</span>
                         </div>
                         <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{overlay.summary}</p>
