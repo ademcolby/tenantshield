@@ -32,9 +32,23 @@
 //   date ('2026-07-05'), which JS parses as UTC midnight — formatting it in a
 //   negative-offset zone (e.g. US Eastern) would render the PREVIOUS day. Every
 //   date on the site would silently be off by one.
+//
+// JULY 11, 2026 — "Local ordinances" section added.
+//   Lists EVERY city overlay for this state, INCLUDING the 'defers' cities.
+//   This is deliberate and load-bearing: 'defers' cities (Boston, Cambridge,
+//   NYC, Philadelphia, Baltimore) get NO page of their own — a page could only
+//   say "see the state page," which is a thin/doorway page. This section is how
+//   they stay visible and useful without shipping a stub. See the page-
+//   eligibility rule in lib/cityHelpers.ts before changing this.
 
 import Link from 'next/link';
 import type { Jurisdiction } from '@/lib/stateLawData';
+import {
+  getCitiesForState,
+  cityHasPage,
+  cityShortName,
+  toCitySegment,
+} from '@/lib/cityHelpers';
 
 /** Format a bare ISO date ('2026-07-05') as 'July 5, 2026' without timezone drift. */
 function formatVerifiedDate(iso: string): string {
@@ -48,6 +62,7 @@ function formatVerifiedDate(iso: string): string {
 
 export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction }) {
   const j = jurisdiction;
+  const cities = getCitiesForState(j.slug);
 
   return (
     <div className="min-h-screen bg-[#FAFAF7]" style={{ fontFamily: 'var(--font-sans)' }}>
@@ -160,6 +175,57 @@ export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction
           ))}
         </div>
       </section>
+
+      {/* Local ordinances — every city overlay for this state, including the
+          'defers' cities, which never get their own page by design. */}
+      {cities.length > 0 && (
+        <section className="border-y border-[#E7E5E0] bg-white">
+          <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 sm:py-20">
+            <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
+              Local ordinances in {j.name}.
+            </h2>
+            <p className="mt-6 text-slate-700">
+              Some cities layer their own security deposit rules on top of state law &mdash; and some
+              don&apos;t. Here&apos;s where {j.name}&apos;s major cities stand.
+            </p>
+            <div className="mt-8 space-y-4">
+              {cities.map((c) => {
+                const short = cityShortName(c);
+                if (cityHasPage(c)) {
+                  return (
+                    <Link
+                      key={c.slug}
+                      href={`/states/${j.slug}/${toCitySegment(c.slug)}`}
+                      className="block rounded-lg border border-[#E7E5E0] bg-[#FAFAF7] p-5 transition hover:border-[#B45309]"
+                    >
+                      <p className="font-medium text-slate-900">
+                        {short}
+                        <span className="ml-2 text-xs font-semibold uppercase tracking-widest text-[#B45309]">
+                          {c.type === 'replaces' ? 'Own ordinance' : 'Extra local rules'}
+                        </span>
+                      </p>
+                      <p className="mt-2 text-sm text-slate-600">{c.homepageSummary}</p>
+                      <p className="mt-3 text-sm font-medium text-[#B45309]">See the {short} rule &rarr;</p>
+                    </Link>
+                  );
+                }
+                // 'defers' — no separate city ordinance; state law governs.
+                return (
+                  <div key={c.slug} className="rounded-lg border border-[#E7E5E0] bg-[#FAFAF7] p-5">
+                    <p className="font-medium text-slate-900">
+                      {short}
+                      <span className="ml-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
+                        State law applies
+                      </span>
+                    </p>
+                    <p className="mt-2 text-sm text-slate-600">{c.homepageSummary}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Sources & verification — E-E-A-T trust block (Task 2) */}
       {j.statutes.length > 0 && (
