@@ -16,9 +16,35 @@
 //
 // Chrome (header/footer) is inlined to match the existing pages exactly —
 // state pages do NOT use SiteChrome.
+//
+// JULY 11, 2026 — "Sources & verification" block added (E-E-A-T / Task 2).
+//   Renders `statutes[].full` (the clean, customer-facing citations) and
+//   `lastVerified`, and links to /about.
+//
+//   ⚠️ DO NOT render `primarySource` here. It is an INTERNAL audit-provenance
+//   field and its prose contains notes never meant for customers — e.g. Oklahoma
+//   carries "MEDIUM confidence on civil multiplier ... ambiguous" and Santa
+//   Monica carries "§1803(f) cite corrected to §1803(s)". Publishing that would
+//   undercut the exact credibility this block exists to build. `statutes[].full`
+//   is the display field; `primarySource` is the audit trail.
+//
+//   ⚠️ Date formatting MUST pin timeZone: 'UTC'. `lastVerified` is a bare ISO
+//   date ('2026-07-05'), which JS parses as UTC midnight — formatting it in a
+//   negative-offset zone (e.g. US Eastern) would render the PREVIOUS day. Every
+//   date on the site would silently be off by one.
 
 import Link from 'next/link';
 import type { Jurisdiction } from '@/lib/stateLawData';
+
+/** Format a bare ISO date ('2026-07-05') as 'July 5, 2026' without timezone drift. */
+function formatVerifiedDate(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
 
 export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction }) {
   const j = jurisdiction;
@@ -135,6 +161,49 @@ export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction
         </div>
       </section>
 
+      {/* Sources & verification — E-E-A-T trust block (Task 2) */}
+      {j.statutes.length > 0 && (
+        <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-8 sm:pb-20">
+          <div className="rounded-xl border border-[#E7E5E0] bg-white p-6 sm:p-7">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Sources &amp; verification
+            </p>
+
+            <p className="mt-4 text-sm text-slate-600">
+              The {j.name} rules on this page were verified against the statute text itself:
+            </p>
+            <ul className="mt-3 space-y-1.5">
+              {j.statutes.map((s, i) => (
+                <li key={i} className="text-sm font-medium text-slate-900">
+                  {s.full}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-5 flex flex-col gap-2 border-t border-[#E7E5E0] pt-5 text-sm sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-slate-600">
+                Last verified against primary sources on{' '}
+                <time dateTime={j.lastVerified} className="font-medium text-slate-900">
+                  {formatVerifiedDate(j.lastVerified)}
+                </time>
+                .
+              </p>
+              <Link href="/about" className="shrink-0 font-medium text-[#B45309] transition hover:text-[#92400E]">
+                How we verify this →
+              </Link>
+            </div>
+
+            <p className="mt-4 text-xs text-slate-500">
+              Laws change. If you spot something out of date, tell us at{' '}
+              <a href="mailto:support@gettenantshield.com" className="underline transition hover:text-slate-700">
+                support@gettenantshield.com
+              </a>{' '}
+              and we&apos;ll correct it.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* What TenantShield does */}
       <section className="bg-white border-y border-[#E7E5E0]">
         <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-20">
@@ -181,6 +250,7 @@ export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-6 sm:px-8">
           <Link href="/" className="text-base font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>TenantShield</Link>
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+            <Link href="/about" className="transition hover:text-slate-900">About</Link>
             <Link href="/terms" className="transition hover:text-slate-900">Terms</Link>
             <Link href="/privacy" className="transition hover:text-slate-900">Privacy</Link>
             <Link href="/refund" className="transition hover:text-slate-900">Refund Policy</Link>
