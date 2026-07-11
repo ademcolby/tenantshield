@@ -135,6 +135,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             <a href={sectionLink('#faq')} className="transition hover:text-slate-900">
               FAQ
             </a>
+            <Link href="/about" className="transition hover:text-slate-900">
+              About
+            </Link>
           </nav>
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Project D: admin-only nav link. Rendering is cosmetic; the
@@ -188,6 +191,15 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             </span>
           </div>
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+            <Link href="/states" className="transition hover:text-slate-900">
+              All states
+            </Link>
+            <Link href="/blog" className="transition hover:text-slate-900">
+              Blog
+            </Link>
+            <Link href="/about" className="transition hover:text-slate-900">
+              About
+            </Link>
             <Link href="/terms" className="transition hover:text-slate-900">
               Terms
             </Link>

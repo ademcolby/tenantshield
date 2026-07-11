@@ -235,6 +235,15 @@ export default function RefundPage() {
             </span>
           </div>
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+            <Link href="/states" className="transition hover:text-slate-900">
+              All states
+            </Link>
+            <Link href="/blog" className="transition hover:text-slate-900">
+              Blog
+            </Link>
+            <Link href="/about" className="transition hover:text-slate-900">
+              About
+            </Link>
             <Link href="/terms" className="transition hover:text-slate-900">
               Terms
             </Link>
