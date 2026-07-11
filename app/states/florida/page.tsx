@@ -3,7 +3,7 @@ import StatePage from '@/app/components/StatePage';
 import { getJurisdiction } from '@/lib/stateLawData';
 
 export const metadata: Metadata = {
-  title: 'Security Deposit Demand Letter Florida | TenantShield',
+  title: 'Security Deposit Demand Letter Florida',
   description: 'Get your security deposit back in Florida. State-specific demand letter citing Florida Statutes § 83.49, the 15/30-day landlord deadlines, and forfeiture rule. Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/florida',

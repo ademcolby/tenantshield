@@ -3,7 +3,7 @@ import StatePage from '@/app/components/StatePage';
 import { getJurisdiction } from '@/lib/stateLawData';
 
 export const metadata: Metadata = {
-  title: 'Security Deposit Demand Letter Alaska | TenantShield',
+  title: 'Security Deposit Demand Letter Alaska',
   description: 'Get your security deposit back in Alaska. State-specific demand letter citing AS § 34.03.070, the 14 / 30 days deadline, and the penalty for wrongful withholding. Ready in minutes for $39.',
   alternates: {
     canonical: 'https://gettenantshield.com/states/alaska',
