@@ -3,24 +3,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Fraunces, DM_Sans } from 'next/font/google'
 import type { Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '@/lib/auth'
 import type { HomepageStateRow, HomepageCityRow } from '@/lib/stateLawData'
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-})
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-})
 
 const Check = ({ className = '' }: { className?: string }) => (
   <svg className={className} viewBox="0 0 20 20" fill="none" aria-hidden>
@@ -110,10 +95,7 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
   }, [])
 
   return (
-    <div
-      className={`${fraunces.variable} ${dmSans.variable} min-h-screen bg-[#FAFAF7] text-slate-900 antialiased`}
-      style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}
-    >
+    <div className="min-h-screen bg-[#FAFAF7] text-slate-900 antialiased">
       {/* ==================== NAVBAR ==================== */}
       <header className="sticky top-0 z-50 border-b border-[#E7E5E0] bg-[#FAFAF7]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">

@@ -1,6 +1,5 @@
 // app/privacy/page.tsx
 import Link from 'next/link'
-import { Fraunces, DM_Sans } from 'next/font/google'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -11,20 +10,6 @@ export const metadata: Metadata = {
     canonical: '/privacy',
   },
 }
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-})
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-})
 
 // ============================================================
 //  EDIT THESE TWO LINES WHEN YOUR LLC IS APPROVED / ON REVISION
@@ -76,10 +61,7 @@ function Section({
 
 export default function PrivacyPage() {
   return (
-    <div
-      className={`${fraunces.variable} ${dmSans.variable} min-h-screen bg-[#FAFAF7] text-slate-900 antialiased`}
-      style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}
-    >
+    <div className="min-h-screen bg-[#FAFAF7] text-slate-900 antialiased">
       {/* Navbar */}
       <header className="border-b border-[#E7E5E0] bg-[#FAFAF7]">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4 sm:px-8">

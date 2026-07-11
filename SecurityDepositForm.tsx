@@ -2,21 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Fraunces, DM_Sans } from 'next/font/google';
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-});
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-});
 
 // Basic email format check. Kept byte-for-byte identical to the server mirror
 // in app/api/create-checkout-session/route.ts so client and server never drift.
@@ -889,7 +874,10 @@ export default function SecurityDepositForm() {
     setErrorMessage('');
   };
 
-  const fontVars = `${fraunces.variable} ${dmSans.variable}`;
+  // Fonts are provided globally by app/layout.tsx (July 11, 2026 hoist).
+  // Kept as a variable so the eight `${fontVars} ...` templates below
+  // didn't need to be individually rewritten in a 2,100-line file.
+  const fontVars = '';
   const display = { fontFamily: 'var(--font-display)' };
 
   // ---------- Loading ----------

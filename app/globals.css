@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --font-display / --font-body are emitted by next/font in app/layout.tsx
+   (the ONLY place fonts are declared — see the comment there).
+   --font-sans predates the hoist: ~40 references across the blog, /states,
+   /about, StatePage and CityPage use it, so it's aliased here instead of
+   rewriting 64 files. It IS DM Sans. */
+:root {
+  --font-sans: var(--font-body);
+}
+
 @layer base {
   body {
     @apply antialiased;
+    font-family: var(--font-body), system-ui, sans-serif;
   }
 }
 
