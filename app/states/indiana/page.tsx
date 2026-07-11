@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
 import StatePage from '@/app/components/StatePage';
 import { getJurisdiction } from '@/lib/stateLawData';
+import { buildStateMetadata } from '@/lib/stateMetadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildStateMetadata({
+  slug: 'indiana',
   title: 'Security Deposit Demand Letter Indiana',
   description: 'Get your security deposit back in Indiana. State-specific demand letter citing Ind. Code § 32-31-3-12, the 45 days deadline, and the penalty for wrongful withholding. Ready in minutes for $39.',
-  alternates: {
-    canonical: 'https://gettenantshield.com/states/indiana',
-  },
-};
+});
 
 export default function IndianaPage() {
   const jurisdiction = getJurisdiction('indiana')!;
