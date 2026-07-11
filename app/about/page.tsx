@@ -21,37 +21,24 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About TenantShield — How We Verify the Law | TenantShield',
+  // NOTE: root layout applies a `%s | TenantShield` title template — do NOT
+  // append "| TenantShield" here or it renders doubled.
+  title: 'About TenantShield — How We Verify the Law',
   description:
     'How TenantShield built its security deposit legal data: all 51 states, DC, and 15 city ordinances verified against primary statute text, with a last-verified date on every state page.',
   alternates: { canonical: 'https://gettenantshield.com/about' },
 };
 
-const organizationSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'TenantShield',
-  legalName: 'TenantShield LLC',
-  url: 'https://gettenantshield.com',
-  email: 'support@gettenantshield.com',
-  description:
-    'TenantShield generates security deposit demand letters citing the statutes that apply in the tenant\u2019s jurisdiction. Not a law firm; does not provide legal advice.',
-  areaServed: { '@type': 'Country', name: 'United States' },
-  contactPoint: {
-    '@type': 'ContactPoint',
-    contactType: 'customer support',
-    email: 'support@gettenantshield.com',
-  },
-};
+// ⚠️ NO Organization JSON-LD here. The root layout ALREADY emits a site-wide
+// Organization schema (plus a Service schema) on every page — verified live
+// July 11, 2026. Adding a second Organization block here produced TWO
+// Organization entities on /about, which muddies entity parsing. If the
+// Organization schema needs enriching (e.g. `sameAs`, `areaServed`), edit the
+// one in the root layout so every page benefits — do not add one here.
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF7]" style={{ fontFamily: 'var(--font-sans)' }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-
       {/* Header */}
       <header className="border-b border-[#E7E5E0] bg-[#FAFAF7]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
