@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { JURISDICTIONS } from '@/lib/stateLawData'
 import { getPageCities, toCitySegment } from '@/lib/cityHelpers'
+import { getAllPosts } from '@/lib/posts'
 
 // ---------------------------------------------------------------------------
 // JULY 11, 2026 — rewritten to DERIVE from lib/stateLawData.ts.
@@ -42,6 +43,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }))
 
+  // Blog: /blog + one URL per post, DERIVED from getAllPosts() so a new article
+  // is in the sitemap the moment it's published. The blog index and all 3 posts
+  // were live but MISSING from the sitemap until July 11, 2026 — invisible to
+  // Google. Do not hardcode post slugs here.
+  const blogPages: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }))
+
   return [
     {
       url: baseUrl,
@@ -61,8 +73,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
     ...statePages,
     ...cityPages,
+    ...blogPages,
     {
       url: `${baseUrl}/terms`,
       lastModified: new Date(),

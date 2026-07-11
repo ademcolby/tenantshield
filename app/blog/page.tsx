@@ -1,10 +1,33 @@
 import Link from 'next/link'
 import { getAllPosts } from '@/lib/posts'
 
+// NOTE: the root layout applies a `%s | TenantShield` title template. Do NOT
+// append "| TenantShield" here — it rendered as "Blog | TenantShield | TenantShield"
+// on the live site until July 11, 2026. Same bug previously fixed on all 51 state
+// pages; if you add a new page, let the template supply the suffix.
 export const metadata = {
-  title: 'Blog | TenantShield',
+  title: 'Blog',
   description:
     'Tenant rights guides, security deposit laws by state, and step-by-step advice for getting your deposit back.',
+  alternates: {
+    canonical: 'https://gettenantshield.com/blog',
+  },
+  openGraph: {
+    title: 'Blog',
+    description:
+      'Tenant rights guides, security deposit laws by state, and step-by-step advice for getting your deposit back.',
+    url: 'https://gettenantshield.com/blog',
+    siteName: 'TenantShield',
+    type: 'website',
+    images: [
+      {
+        url: 'https://gettenantshield.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'TenantShield — Get your security deposit back',
+      },
+    ],
+  },
 }
 
 function formatDate(dateStr: string) {
