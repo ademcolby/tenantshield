@@ -20,9 +20,12 @@
 // carries indexing / AI-extraction value — which is the actual goal here.)
 //
 // ⚠️ BREADCRUMB RULE. Every breadcrumb item must point at a URL that EXISTS.
-// There is NO /states index page (verified: /states → 404), so the state trail is
-// Home → {State}, NOT Home → States → {State}. If a /states index is ever built,
-// add it here — but not before.
+// The /states hub was built on July 11, 2026 (it previously 404'd, which is why
+// the States node was originally omitted). The trails are now:
+//     state page → Home > States > {State}
+//     city page  → Home > States > {State} > {City}
+// If app/states/page.tsx is ever deleted, REVERT these trails — a breadcrumb
+// pointing at a dead URL is worse than a shorter trail.
 //
 // All answers are derived from lib/stateLawData.ts, so the FAQ can never drift
 // from the audited legal facts on the rest of the page.
@@ -80,9 +83,9 @@ export function buildFaqSchema(faqs: Faq[]) {
 // ---------------------------------------------------------------------------
 
 export function stateBreadcrumbs(j: Jurisdiction): Crumb[] {
-  // No /states index exists — do not invent one.
   return [
     { name: 'Home', url: SITE_URL },
+    { name: 'States', url: `${SITE_URL}/states` },
     { name: j.name, url: `${SITE_URL}/states/${j.slug}` },
   ];
 }
@@ -153,6 +156,7 @@ export function cityBreadcrumbs(c: PageCity): Crumb[] {
   const state = getParentState(c);
   return [
     { name: 'Home', url: SITE_URL },
+    { name: 'States', url: `${SITE_URL}/states` },
     { name: state.name, url: `${SITE_URL}/states/${state.slug}` },
     { name: cityShortName(c), url: `${SITE_URL}/states/${state.slug}/${toCitySegment(c.slug)}` },
   ];

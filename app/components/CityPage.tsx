@@ -327,6 +327,8 @@ export default function CityPage({ city }: { city: PageCity }) {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-6 sm:px-8">
           <Link href="/" className="text-base font-medium text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>TenantShield</Link>
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+            <Link href="/states" className="transition hover:text-slate-900">All states</Link>
+            <Link href="/blog" className="transition hover:text-slate-900">Blog</Link>
             <Link href="/about" className="transition hover:text-slate-900">About</Link>
             <Link href="/terms" className="transition hover:text-slate-900">Terms</Link>
             <Link href="/privacy" className="transition hover:text-slate-900">Privacy</Link>
