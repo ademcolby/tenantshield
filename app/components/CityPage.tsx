@@ -31,6 +31,12 @@ import {
   getParentState,
   type PageCity,
 } from '@/lib/cityHelpers';
+import {
+  buildBreadcrumbSchema,
+  buildCityFaqs,
+  buildFaqSchema,
+  cityBreadcrumbs,
+} from '@/lib/schema';
 
 /** Same UTC-pinned formatter as StatePage — a bare ISO date parses as UTC
  *  midnight, so formatting it in a negative-offset zone would render the
@@ -76,9 +82,22 @@ export default function CityPage({ city }: { city: PageCity }) {
   const state = getParentState(c);
   const name = cityShortName(c);
   const stateHref = `/states/${state.slug}`;
+  const faqs = buildCityFaqs(c);
 
   return (
     <div className="min-h-screen bg-[#FAFAF7]" style={{ fontFamily: 'var(--font-sans)' }}>
+
+      {/* Structured data (Task 6). Organization + Service ship from the root
+          layout — do NOT add them here. FAQPage is legitimate only because the
+          same Q&A is rendered visibly below. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(cityBreadcrumbs(c))) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqSchema(faqs)) }}
+      />
 
       {/* Header */}
       <header className="border-b border-[#E7E5E0] bg-[#FAFAF7]">
@@ -215,6 +234,23 @@ export default function CityPage({ city }: { city: PageCity }) {
               <p key={i} className="rounded-lg border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
                 <strong className="text-slate-900">{note.heading}</strong> {note.body}
               </p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* FAQ — VISIBLE. Required for the FAQPage schema above. */}
+      {faqs.length > 0 && (
+        <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-8 sm:pb-20">
+          <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
+            Common questions about {name} deposits.
+          </h2>
+          <div className="mt-8 space-y-6">
+            {faqs.map((f, i) => (
+              <div key={i} className="rounded-lg border border-[#E7E5E0] bg-white p-5">
+                <h3 className="font-medium text-slate-900">{f.q}</h3>
+                <p className="mt-2 text-sm text-slate-600">{f.a}</p>
+              </div>
             ))}
           </div>
         </section>
