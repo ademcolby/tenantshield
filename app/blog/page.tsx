@@ -275,6 +275,8 @@ export default function BlogIndexPage() {
           </p>
           <div style={{ display: 'flex', gap: '20px' }}>
             {[
+              { label: 'All states', href: '/states' },
+              { label: 'About', href: '/about' },
               { label: 'Terms', href: '/terms' },
               { label: 'Privacy', href: '/privacy' },
               { label: 'Refund Policy', href: '/refund' },

@@ -134,6 +134,7 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
             <a href="#how-it-works" className="transition hover:text-slate-900">How it works</a>
             <a href="#deadlines" className="transition hover:text-slate-900">State deadlines</a>
             <a href="#faq" className="transition hover:text-slate-900">FAQ</a>
+            <Link href="/about" className="transition hover:text-slate-900">About</Link>
           </nav>
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Project E: swaps with auth state. Hidden while unknown. */}
@@ -377,6 +378,20 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
               <option key={row.name} value={row.name}>{row.name}</option>
             ))}
           </select>
+
+          {/* Crawlable path into the state pages. The `/states/{slug}` link below
+              only renders AFTER a user picks from the dropdown, so it never exists
+              in the server HTML — and search engines do not follow links inside a
+              <select>. Before this link was added (July 11, 2026) a live check
+              found ZERO crawlable links to any state page from anywhere on the
+              site: all 51 were orphans, discoverable only via sitemap.xml.
+              Do not remove. */}
+          <p className="mt-3 text-sm text-slate-600">
+            Or{' '}
+            <Link href="/states" className="font-medium text-[#B45309] transition hover:text-[#92400E]">
+              browse all 50 states + DC and city ordinances →
+            </Link>
+          </p>
 
           {selected && (
             <div className="mt-6 overflow-hidden rounded-xl border border-[#E7E5E0] bg-white">
@@ -667,6 +682,9 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
             </span>
           </div>
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+            <Link href="/states" className="transition hover:text-slate-900">All states</Link>
+            <Link href="/blog" className="transition hover:text-slate-900">Blog</Link>
+            <Link href="/about" className="transition hover:text-slate-900">About</Link>
             <Link href="/terms" className="transition hover:text-slate-900">Terms</Link>
             <Link href="/privacy" className="transition hover:text-slate-900">Privacy</Link>
             <Link href="/refund" className="transition hover:text-slate-900">Refund Policy</Link>
