@@ -27,57 +27,57 @@ Some states only require one of these; a few also factor in the date the lease o
 
 | State | Return Deadline | Penalty for Non-Compliance | Statute |
 |---|---|---|---|
-| Alabama | 60 days | 2x deposit (failure to timely refund) | Ala. Code § 35-9A-201 |
-| Alaska | 14 days (proper notice given, no deductions) / 30 days (otherwise) | 2x wrongfully withheld (willful) | AS § 34.03.070 |
-| Arizona | 14 days | 2x wrongfully withheld amount | A.R.S. § 33-1321 |
-| Arkansas | 60 days | 2x + fees (landlords with 6+ units) | A.C.A. § 18-16-305 |
-| California | 21 days | 2x bad-faith withholding (see AB 2801/AB 414 note below) | Cal. Civ. Code § 1950.5 |
-| Colorado | 30 days (60 days if specified in lease) | 3x + attorney's fees (see HB25-1249 note below) | C.R.S. § 38-12-103 |
-| Connecticut | 21 days | 2x | C.G.S. § 47a-21 |
-| Delaware | 20 days | 2x wrongfully withheld | 25 Del. C. § 5514 |
-| DC | 45 days | 3x (bad faith) + attorney's fees | 14 DCMR § 309 |
-| Florida | 15 days (no deductions) / 30 days (with deductions) | Forfeiture of right to deductions | Fla. Stat. § 83.49 |
-| Georgia | 30 days | 3x + attorney's fees | O.C.G.A. § 44-7-34 |
-| Hawaii | 14 days | 3x | HRS § 521-44 |
-| Idaho | 21 days (default) / up to 30 days if the lease specifies | 3x (willful/bad faith) | Idaho Code § 6-321 |
-| Illinois | 30 days (itemized statement) / 45 days (return); 5+ unit landlords | 2x + fees (Chicago RLTO: automatic 2x) | 765 ILCS 710; Chicago RLTO § 5-12-080 |
-| Indiana | 45 days | Forfeiture of deposit + attorney's fees | Ind. Code § 32-31-3-12 |
-| Iowa | 30 days | Up to 2x | Iowa Code § 562A.12 |
-| Kansas | 14 days after deductions determined / 30 days max | 1.5x | K.S.A. § 58-2550 |
-| Kentucky | 30 days (60 days if itemization needed) | — | KRS § 383.580 |
-| Louisiana | 1 month | Greater of $300 or 2x wrongfully withheld + fees (bad faith) | La. R.S. 9:3251 |
-| Maine | 30 days (21 days for at-will tenancy) | 2x | 14 M.R.S.A. § 6033 |
-| Maryland | 45 days | 3x + attorney's fees | Md. Code, Real Prop. § 8-203 |
-| Massachusetts | 30 days | 3x + attorney's fees + interest | Mass. Gen. Laws ch. 186, § 15B |
-| Michigan | 30 days | 2x | MCL § 554.609 |
-| Minnesota | 21 days | 2x + $500 penalty | Minn. Stat. § 504B.178 |
-| Mississippi | 45 days | — | Miss. Code § 89-8-21 |
-| Missouri | 30 days | 2x | Mo. Rev. Stat. § 535.300 |
-| Montana | 10 days (no deductions) / 30 days (with deductions) | — | Mont. Code § 70-25-202 |
-| Nebraska | 14 days | Up to 2x | Neb. Rev. Stat. § 76-1416 |
-| Nevada | 30 days | 2x | NRS § 118A.242 |
-| New Hampshire | 30 days | 2x | N.H. Rev. Stat. § 540-A:7 |
-| New Jersey | 30 days (5 days if fire/flood displacement) | 2x + attorney's fees | N.J.S.A. § 46:8-21.1 |
-| New Mexico | 30 days | Forfeiture + $250 civil penalty + fees | N.M. Stat. § 47-8-18 |
-| New York | 14 days | 2x (see § 7-107 note below) | N.Y. Gen. Oblig. Law § 7-108 |
-| North Carolina | 30 days | — | N.C. Gen. Stat. § 42-52 |
-| North Dakota | 30 days | Up to 3x | N.D. Cent. Code § 47-16-07.1 |
-| Ohio | 30 days | 2x + attorney's fees | Ohio Rev. Code § 5321.16 |
-| Oklahoma | 45 days | — | 41 Okl. St. § 115 |
-| Oregon | 31 days | 2x + attorney's fees | ORS § 90.300 |
-| Pennsylvania | 30 days | 2x | 68 Pa. Stat. § 250.512 |
-| Rhode Island | 20 days | 2x | R.I. Gen. Laws § 34-18-19 |
-| South Carolina | 30 days | — | S.C. Code § 27-40-410 |
-| South Dakota | 14 days (return) / 45 days (full itemization on request) | — | SDCL § 43-32-24 |
-| Tennessee | 30 days | 2x amount wrongfully withheld | Tenn. Code § 66-28-301 |
-| Texas | 30 days | $100 + 3x + attorney's fees (bad faith) | Tex. Prop. Code § 92.103, § 92.109 |
-| Utah | 30 days | $100 civil penalty + deposit + fees | Utah Code § 57-17-3 |
-| Vermont | 14 days | Forfeiture; 2x if willful + fees | 9 V.S.A. § 4461 |
-| Virginia | 45 days | — | Va. Code § 55.1-1226 |
-| Washington | 30 days | 2x + attorney's fees | RCW § 59.18.280 |
-| West Virginia | 60 days | — | W. Va. Code § 37-6A-2 |
-| Wisconsin | 21 days | 2x | Wis. Stat. § 704.28 |
-| Wyoming | 30 days | Full deposit + court costs | Wyo. Stat. § 1-21-1208 |
+| [Alabama](/states/alabama) | 60 days | 2x deposit (failure to timely refund) | Ala. Code § 35-9A-201 |
+| [Alaska](/states/alaska) | 14 days (proper notice given, no deductions) / 30 days (otherwise) | 2x wrongfully withheld (willful) | AS § 34.03.070 |
+| [Arizona](/states/arizona) | 14 days | 2x wrongfully withheld amount | A.R.S. § 33-1321 |
+| [Arkansas](/states/arkansas) | 60 days | 2x + fees (landlords with 6+ units) | A.C.A. § 18-16-305 |
+| [California](/states/california) | 21 days | 2x bad-faith withholding (see AB 2801/AB 414 note below) | Cal. Civ. Code § 1950.5 |
+| [Colorado](/states/colorado) | 30 days (60 days if specified in lease) | 3x + attorney's fees (see HB25-1249 note below) | C.R.S. § 38-12-103 |
+| [Connecticut](/states/connecticut) | 21 days | 2x | C.G.S. § 47a-21 |
+| [Delaware](/states/delaware) | 20 days | 2x wrongfully withheld | 25 Del. C. § 5514 |
+| [DC](/states/district-of-columbia) | 45 days | 3x (bad faith) + attorney's fees | 14 DCMR § 309 |
+| [Florida](/states/florida) | 15 days (no deductions) / 30 days (with deductions) | Forfeiture of right to deductions | Fla. Stat. § 83.49 |
+| [Georgia](/states/georgia) | 30 days | 3x + attorney's fees | O.C.G.A. § 44-7-34 |
+| [Hawaii](/states/hawaii) | 14 days | 3x | HRS § 521-44 |
+| [Idaho](/states/idaho) | 21 days (default) / up to 30 days if the lease specifies | 3x (willful/bad faith) | Idaho Code § 6-321 |
+| [Illinois](/states/illinois) | 30 days (itemized statement) / 45 days (return); 5+ unit landlords | 2x + fees (Chicago RLTO: automatic 2x) | 765 ILCS 710; Chicago RLTO § 5-12-080 |
+| [Indiana](/states/indiana) | 45 days | Forfeiture of deposit + attorney's fees | Ind. Code § 32-31-3-12 |
+| [Iowa](/states/iowa) | 30 days | Up to 2x | Iowa Code § 562A.12 |
+| [Kansas](/states/kansas) | 14 days after deductions determined / 30 days max | 1.5x | K.S.A. § 58-2550 |
+| [Kentucky](/states/kentucky) | 30 days (60 days if itemization needed) | — | KRS § 383.580 |
+| [Louisiana](/states/louisiana) | 1 month | Greater of $300 or 2x wrongfully withheld + fees (bad faith) | La. R.S. 9:3251 |
+| [Maine](/states/maine) | 30 days (21 days for at-will tenancy) | 2x | 14 M.R.S.A. § 6033 |
+| [Maryland](/states/maryland) | 45 days | 3x + attorney's fees | Md. Code, Real Prop. § 8-203 |
+| [Massachusetts](/states/massachusetts) | 30 days | 3x + attorney's fees + interest | Mass. Gen. Laws ch. 186, § 15B |
+| [Michigan](/states/michigan) | 30 days | 2x | MCL § 554.609 |
+| [Minnesota](/states/minnesota) | 21 days | 2x + $500 penalty | Minn. Stat. § 504B.178 |
+| [Mississippi](/states/mississippi) | 45 days | — | Miss. Code § 89-8-21 |
+| [Missouri](/states/missouri) | 30 days | 2x | Mo. Rev. Stat. § 535.300 |
+| [Montana](/states/montana) | 10 days (no deductions) / 30 days (with deductions) | — | Mont. Code § 70-25-202 |
+| [Nebraska](/states/nebraska) | 14 days | Up to 2x | Neb. Rev. Stat. § 76-1416 |
+| [Nevada](/states/nevada) | 30 days | 2x | NRS § 118A.242 |
+| [New Hampshire](/states/new-hampshire) | 30 days | 2x | N.H. Rev. Stat. § 540-A:7 |
+| [New Jersey](/states/new-jersey) | 30 days (5 days if fire/flood displacement) | 2x + attorney's fees | N.J.S.A. § 46:8-21.1 |
+| [New Mexico](/states/new-mexico) | 30 days | Forfeiture + $250 civil penalty + fees | N.M. Stat. § 47-8-18 |
+| [New York](/states/new-york) | 14 days | 2x (see § 7-107 note below) | N.Y. Gen. Oblig. Law § 7-108 |
+| [North Carolina](/states/north-carolina) | 30 days | — | N.C. Gen. Stat. § 42-52 |
+| [North Dakota](/states/north-dakota) | 30 days | Up to 3x | N.D. Cent. Code § 47-16-07.1 |
+| [Ohio](/states/ohio) | 30 days | 2x + attorney's fees | Ohio Rev. Code § 5321.16 |
+| [Oklahoma](/states/oklahoma) | 45 days | — | 41 Okl. St. § 115 |
+| [Oregon](/states/oregon) | 31 days | 2x + attorney's fees | ORS § 90.300 |
+| [Pennsylvania](/states/pennsylvania) | 30 days | 2x | 68 Pa. Stat. § 250.512 |
+| [Rhode Island](/states/rhode-island) | 20 days | 2x | R.I. Gen. Laws § 34-18-19 |
+| [South Carolina](/states/south-carolina) | 30 days | — | S.C. Code § 27-40-410 |
+| [South Dakota](/states/south-dakota) | 14 days (return) / 45 days (full itemization on request) | — | SDCL § 43-32-24 |
+| [Tennessee](/states/tennessee) | 30 days | 2x amount wrongfully withheld | Tenn. Code § 66-28-301 |
+| [Texas](/states/texas) | 30 days | $100 + 3x + attorney's fees (bad faith) | Tex. Prop. Code § 92.103, § 92.109 |
+| [Utah](/states/utah) | 30 days | $100 civil penalty + deposit + fees | Utah Code § 57-17-3 |
+| [Vermont](/states/vermont) | 14 days | Forfeiture; 2x if willful + fees | 9 V.S.A. § 4461 |
+| [Virginia](/states/virginia) | 45 days | — | Va. Code § 55.1-1226 |
+| [Washington](/states/washington) | 30 days | 2x + attorney's fees | RCW § 59.18.280 |
+| [West Virginia](/states/west-virginia) | 60 days | — | W. Va. Code § 37-6A-2 |
+| [Wisconsin](/states/wisconsin) | 21 days | 2x | Wis. Stat. § 704.28 |
+| [Wyoming](/states/wyoming) | 30 days | Full deposit + court costs | Wyo. Stat. § 1-21-1208 |
 
 *Note: This table reflects general state law as of 2026. Local ordinances (Chicago, San Francisco, Seattle, and others) may apply additional protections. Always verify your current state statute.*
 

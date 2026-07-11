@@ -6,6 +6,7 @@ import Link from 'next/link'
 import type { Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '@/lib/auth'
 import type { HomepageStateRow, HomepageCityRow } from '@/lib/stateLawData'
+import SiteFooter from './components/SiteFooter'
 
 const Check = ({ className = '' }: { className?: string }) => (
   <svg className={className} viewBox="0 0 20 20" fill="none" aria-hidden>
@@ -654,32 +655,9 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
         </div>
       </section>
 
-      {/* ==================== FOOTER ==================== */}
-      <footer className="border-t border-[#E7E5E0] bg-[#FAFAF7]">
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <div className="flex items-center gap-2">
-            <ShieldMark className="h-5 w-5 text-slate-900" />
-            <span className="font-semibold tracking-tight text-slate-900" style={{ fontFamily: 'var(--font-display)' }}>
-              TenantShield
-            </span>
-          </div>
-          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
-            <Link href="/states" className="transition hover:text-slate-900">All states</Link>
-            <Link href="/blog" className="transition hover:text-slate-900">Blog</Link>
-            <Link href="/about" className="transition hover:text-slate-900">About</Link>
-            <Link href="/terms" className="transition hover:text-slate-900">Terms</Link>
-            <Link href="/privacy" className="transition hover:text-slate-900">Privacy</Link>
-            <Link href="/refund" className="transition hover:text-slate-900">Refund Policy</Link>
-            <a href="mailto:support@gettenantshield.com" className="transition hover:text-slate-900">Contact</a>
-          </nav>
-        </div>
-        <div className="border-t border-[#E7E5E0]">
-          <div className="mx-auto max-w-6xl px-5 py-5 text-xs text-slate-500 sm:px-8 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <span>© {new Date().getFullYear()} TenantShield LLC. Not legal advice. The information provided does not, and is not intended to, constitute legal advice. For case-specific advice, consult a licensed attorney in your state.</span>
-            <span className="shrink-0 text-slate-400">7901 4th St N Ste 300, St. Petersburg, FL 33702</span>
-          </div>
-        </div>
-      </footer>
+
+
+      <SiteFooter />
     </div>
   )
 }

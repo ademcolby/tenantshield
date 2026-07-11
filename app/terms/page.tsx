@@ -1,6 +1,7 @@
 // app/terms/page.tsx
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import SiteFooter from '@/app/components/SiteFooter'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -276,45 +277,9 @@ export default function TermsPage() {
         </p>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-[#E7E5E0] bg-[#FAFAF7]">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-5 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <div className="flex items-center gap-2">
-            <ShieldMark className="h-5 w-5 text-slate-900" />
-            <span
-              className="font-semibold tracking-tight text-slate-900"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              TenantShield
-            </span>
-          </div>
-          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
-            <Link href="/states" className="transition hover:text-slate-900">
-              All states
-            </Link>
-            <Link href="/blog" className="transition hover:text-slate-900">
-              Blog
-            </Link>
-            <Link href="/about" className="transition hover:text-slate-900">
-              About
-            </Link>
-            <Link href="/terms" className="transition hover:text-slate-900">
-              Terms
-            </Link>
-            <Link href="/privacy" className="transition hover:text-slate-900">
-              Privacy
-            </Link>
-            <Link href="/refund" className="transition hover:text-slate-900">
-              Refund Policy
-            </Link>
-          </nav>
-        </div>
-        <div className="border-t border-[#E7E5E0]">
-          <div className="mx-auto max-w-3xl px-5 py-5 text-xs text-slate-500 sm:px-8">
-            © {new Date().getFullYear()} {ENTITY}. Not legal advice.
-          </div>
-        </div>
-      </footer>
+
+
+      <SiteFooter width="narrow" />
     </div>
   )
 }

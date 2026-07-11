@@ -3,6 +3,7 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getPostBySlug, getAllPosts } from '@/lib/posts'
+import SiteFooter from '@/app/components/SiteFooter'
 
 export async function generateStaticParams() {
   const posts = getAllPosts()
@@ -354,57 +355,9 @@ export default async function BlogPostPage({
         </div>
       </article>
 
-      {/* Footer */}
-      <footer
-        style={{
-          borderTop: '1px solid #E7E5E0',
-          padding: '32px 24px',
-          background: '#FAFAF7',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '720px',
-            margin: '0 auto',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              color: '#94A3B8',
-            }}
-          >
-            © {new Date().getFullYear()} TenantShield LLC. For informational
-            purposes only. Not legal advice.
-          </p>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            {[
-              { label: 'Terms', href: '/terms' },
-              { label: 'Privacy', href: '/privacy' },
-              { label: 'Refund Policy', href: '/refund' },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  color: '#94A3B8',
-                  textDecoration: 'none',
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </footer>
+
+
+      <SiteFooter />
     </div>
   )
 }
