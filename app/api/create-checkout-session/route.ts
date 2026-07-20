@@ -84,6 +84,21 @@ function validatePayload(p: Record<string, unknown>): { field: string; message: 
   // --- Presence (BLOCK) ---
   if (!state) errs.push({ field: 'state', message: 'State is required.' });
   if (!str(p.city)) errs.push({ field: 'city', message: 'City is required.' });
+
+  // --- C0 (correction batch, July 2026): Evanston, IL coverage block (BLOCK) ---
+  // Evanston's city overlay is unverified, so the client blocks the letter
+  // path pre-payment with a "we don't cover this city yet" screen. Re-checked
+  // here so a bypassed client can never create a checkout session for an
+  // Evanston letter. Keep this predicate byte-for-byte equivalent to the
+  // client's isUncoveredCity() (state-gated on Illinois; normalized so a typed
+  // "evanston" via the Other-city write-in is caught too).
+  if (state === 'Illinois' && str(p.city).trim().toLowerCase() === 'evanston') {
+    errs.push({
+      field: 'city',
+      message:
+        'We don\u2019t cover Evanston yet \u2014 Evanston has its own security deposit ordinance and our verification of it isn\u2019t complete. No charge has been made.',
+    });
+  }
   if (!str(p.tenantName)) errs.push({ field: 'tenantName', message: 'Your name is required.' });
 
   // --- Email required + valid format (BLOCK) — mirrors the client EMAIL_RE

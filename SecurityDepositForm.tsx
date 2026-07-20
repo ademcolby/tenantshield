@@ -98,6 +98,19 @@ const CITIES_BY_STATE: { [key: string]: string[] } = {
 
 const OTHER_CITY = 'Other city';
 
+// --- C0 (correction batch, July 2026): Evanston, IL coverage block. ---
+// Evanston has its own security-deposit ordinance that governs INSTEAD of the
+// Illinois state default, and the legal audit could not verify the numbers our
+// Evanston overlay carries against primary sources. Until that verification is
+// complete, the letter path is blocked for Evanston with an honest "we don't
+// cover this city yet" screen — no charge is ever made. The same rule is
+// mirrored server-side in create-checkout-session so a bypassed client can
+// never pay. Keep this predicate byte-for-byte equivalent to the server's.
+// (State-gated on Illinois so Evanston, WY etc. are unaffected; normalized so
+// a typed "evanston" via the Other-city write-in is caught too.)
+const isUncoveredCity = (state: string, city: string) =>
+  state === 'Illinois' && city.trim().toLowerCase() === 'evanston';
+
 // States whose statutory return clock is triggered by (or measured from) the
 // date the tenant provided a forwarding/new mailing address.
 const FORWARDING_ADDRESS_STATES = [
@@ -264,6 +277,11 @@ const InfoTip = ({ text }: { text: string }) => (
 
 export default function SecurityDepositForm() {
   const [viewState, setViewState] = useState<ViewState>('form');
+  // Why the 'blocked' screen is showing. 'offsets' = the Project I scope block
+  // (admitted offsets >= deposit); 'coverage' = the C0 Evanston coverage block.
+  // Set immediately before every setViewState('blocked') so the render branch
+  // can never show stale copy.
+  const [blockReason, setBlockReason] = useState<'offsets' | 'coverage'>('offsets');
   const [generatedLetter, setGeneratedLetter] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [copied, setCopied] = useState(false);
@@ -768,6 +786,17 @@ export default function SecurityDepositForm() {
       return;
     }
 
+    // --- C0 (correction batch): Evanston coverage block. Evanston's overlay
+    // data is unverified, so the letter path is blocked pre-payment with an
+    // honest "we don't cover this city yet" screen. Mirrored server-side in
+    // create-checkout-session. Runs before the offsets check — coverage is an
+    // absolute gate, and its copy should win if both would fire.
+    if (isUncoveredCity(formData.state, composedCity)) {
+      setBlockReason('coverage');
+      setViewState('blocked');
+      return;
+    }
+
     // --- Project I: pre-payment scope block. If the tenant's own admitted
     // offsets (damage estimate + unpaid rent/fees) meet or exceed the deposit,
     // there is nothing viable to demand — a paid letter would only come back
@@ -780,6 +809,7 @@ export default function SecurityDepositForm() {
         (formData.unitCondition === 'damage' ? parseMoney(formData.damageEstimate) : 0) +
         (formData.unpaidRent === 'yes' ? parseMoney(formData.unpaidRentAmount) : 0);
       if (depositVal > 0 && offsets >= depositVal) {
+        setBlockReason('offsets');
         setViewState('blocked');
         return;
       }
@@ -1031,7 +1061,48 @@ export default function SecurityDepositForm() {
     );
   }
 
-  // ---------- Blocked (Project I: admitted offsets >= deposit — no charge) ----------
+  // ---------- Blocked (two reasons share this screen; see blockReason) ----------
+  // 'coverage' — C0 Evanston block: we don't cover the city yet, no charge.
+  if (viewState === 'blocked' && blockReason === 'coverage') {
+    return (
+      <div className={`${fontVars} bg-[#FAFAF7] flex items-center justify-center px-4 py-24`}
+        style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}>
+        <div className="max-w-lg w-full rounded-2xl border border-[#E7E5E0] bg-white p-8 shadow-sm">
+          <div className="text-[#B45309] text-3xl mb-4">⚖️</div>
+          <h2 className="text-2xl font-medium tracking-tight text-slate-900 mb-3" style={display}>
+            We don&apos;t cover Evanston yet
+          </h2>
+          <p className="text-slate-700 text-sm leading-relaxed mb-4">
+            Evanston has its own security deposit ordinance that applies <strong>instead of</strong> the
+            standard Illinois rules, and we haven&apos;t finished verifying it against the ordinance text
+            itself. Rather than generate a letter we can&apos;t fully stand behind, we don&apos;t offer
+            Evanston letters yet. <strong>You have not been charged anything.</strong>
+          </p>
+          <div className="rounded-xl border border-[#E7E5E0] bg-slate-50/70 p-4 mb-6">
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">What you can do instead</h3>
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li className="flex gap-2"><span className="text-[#B45309]">•</span>
+                <span><strong>Look up Evanston&apos;s own rules.</strong> The City of Evanston publishes its
+                Residential Landlord and Tenant Ordinance, and the city&apos;s housing office can point you
+                to the deposit provisions that apply to your tenancy.</span></li>
+              <li className="flex gap-2"><span className="text-[#B45309]">•</span>
+                <span><strong>Contact local legal aid or a tenant organization.</strong> Free and low-cost
+                help is available in the Chicago area for security deposit disputes.</span></li>
+              <li className="flex gap-2"><span className="text-[#B45309]">•</span>
+                <span><strong>Check back with us.</strong> Once our verification of the Evanston ordinance
+                is complete, we&apos;ll open letters for Evanston tenants.</span></li>
+            </ul>
+          </div>
+          <button onClick={handleStartOver}
+            className="w-full rounded-full bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800">
+            Go back to the form
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 'offsets' — Project I: admitted offsets >= deposit — no charge.
   if (viewState === 'blocked') {
     return (
       <div className={`${fontVars} bg-[#FAFAF7] flex items-center justify-center px-4 py-24`}
