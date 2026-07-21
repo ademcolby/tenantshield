@@ -290,7 +290,7 @@ const TEXAS: SimpleJurisdiction = {
       'circumstances — not generic legalese.',
   },
   notes: [],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource: 'Tex. Prop. Code §§ 92.103, 92.109 (verified against statute text; Phase 1 audit confirmed)',
 };
 
@@ -310,12 +310,12 @@ const FLORIDA: ConditionalJurisdiction = {
   statutes: [{ label: '§ 83.49', full: 'Florida Statutes § 83.49' }],
   penalty: {
     kind: 'forfeiture',
-    attorneyFees: true,
-    short: 'Forfeiture + fees',
+    attorneyFees: false,
+    short: 'Forfeiture',
     long:
       'A landlord who fails to send the required notice of claim within 30 days ' +
-      'forfeits the right to impose any claim on the deposit, and the tenant may ' +
-      'recover court costs and attorney fees.',
+      'forfeits the right to impose any claim on the deposit under § 83.49(3)(a), ' +
+      'and the tenant may recover the deposit in full.',
   },
   statuteCardLabel: '§ 83.49',
   statuteCardSubtext: 'Florida Statutes',
@@ -336,7 +336,7 @@ const FLORIDA: ConditionalJurisdiction = {
       'days, the consequences are significant:',
     penaltyBullets: [
       'The landlord forfeits the right to impose any claim on the deposit',
-      'You may recover the deposit in full, plus court costs and attorney fees',
+      'You may recover the deposit in full',
     ],
     penaltyExample:
       'A landlord who stays silent past the deadline generally cannot later ' +
@@ -356,7 +356,7 @@ const FLORIDA: ConditionalJurisdiction = {
         'path, not the 15-day path.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource: 'Fla. Stat. § 83.49 (verified against statute text; Phase 1 audit confirmed)',
 };
 
@@ -428,7 +428,7 @@ const ARKANSAS: ScopeGatedJurisdiction = {
         'rights instead — it reflects whichever applies to your situation.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource: 'Ark. Code §§ 18-16-305, 18-16-306 (verified against statute text; Phase 1 audit confirmed 6+ unit scope gate)',
 };
 
@@ -445,9 +445,9 @@ const ALABAMA: SimpleJurisdiction = {
     attorneyFees: false,
     short: '2× deposit',
     long:
-      'If the landlord fails to comply within the 60-day window, you may recover ' +
-      'double the amount of the deposit wrongfully withheld, plus any actual ' +
-      'damages and court costs.',
+      'If the landlord fails to mail a timely refund or itemized accounting ' +
+      'within the 60-day window, you may recover double the amount of your ' +
+      'original deposit under § 35-9A-201(f).',
   },
   statuteCardLabel: '§ 35-9A-201',
   statuteCardSubtext: 'Code of Alabama',
@@ -463,14 +463,15 @@ const ALABAMA: SimpleJurisdiction = {
       'ends to return your security deposit or provide a written, itemized list ' +
       'of deductions. (Many outdated sources still cite an old 35-day figure — a ' +
       '2014 amendment changed it to 60.)',
-    penaltyLeadIn: 'If the landlord fails to comply within the 60-day window, you may recover:',
+    penaltyLeadIn:
+      'If the landlord fails to mail a timely refund or itemized accounting within the 60-day window, you may recover:',
     penaltyBullets: [
-      'Double the amount of the deposit wrongfully withheld',
-      'Any actual damages, plus court costs',
+      'Double the amount of your original security deposit \u2014 the penalty is keyed to the whole deposit, not just the portion withheld',
     ],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000. Most landlords settle quickly once they realize you know the law.',
+      'So on a $1,500 deposit, a landlord who misses the 60-day mailing deadline ' +
+      'can owe a $3,000 penalty \u2014 even if only part of the deposit was in ' +
+      'dispute. Most landlords settle quickly once they realize you know the law.',
     statuteLine:
       'Ala. Code § 35-9A-201 and any others triggered by your circumstances — ' +
       'not generic legalese.',
@@ -491,7 +492,7 @@ const ALABAMA: SimpleJurisdiction = {
         'moved it to 60 days.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource: 'Ala. Code § 35-9A-201 (verified against statute text; Phase 1 audit confirmed 60-day deadline + 1-mo cap)',
 };
 
@@ -551,7 +552,7 @@ const ALASKA: ConditionalJurisdiction = {
         'letter applies the correct deadline for your situation.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource: 'AS § 34.03.070 (verified against statute text; Phase 1 audit confirmed 14/30-day trigger + 2× willful)',
 };
 
@@ -608,8 +609,17 @@ const ARIZONA: SimpleJurisdiction = {
         'The 14-business-day clock only starts once you have made a written ' +
         'demand — which your letter provides.',
     },
+    {
+      kind: 'trigger_condition',
+      heading: 'Act within 60 days of the itemized statement:',
+      body:
+        'Under ARS § 33-1321(D), if your landlord sent you an itemized list of ' +
+        'deductions and you do not dispute it in writing within 60 days, you ' +
+        'waive any further claim to the amounts withheld. If you received an ' +
+        'itemization, send your written objection before that window closes.',
+    },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource: 'ARS § 33-1321 (verified against statute text; Phase 1 audit confirmed)',
 };
 
@@ -688,7 +698,7 @@ const CALIFORNIA: SimpleJurisdiction = {
         'charge up to two months\u2019 rent.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Cal. Civ. Code § 1950.5 (verified against statute text); AB 12, AB 2801, AB 414 confirmed in force (Phase 1 audit)',
 };
@@ -766,7 +776,7 @@ const COLORADO: SimpleJurisdiction = {
         'claiming a new one-month Colorado cap are mistaken.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'C.R.S. §§ 38-12-103, 38-12-104 (verified against statute text); SB23-184 cap + HB25-1249 confirmed (Phase 1 audit)',
 };
@@ -842,8 +852,18 @@ const NEW_YORK: SimpleJurisdiction = {
         'York City. A narrow exception exists for owner-occupied buildings with ' +
         'fewer than three units.',
     },
+    {
+      kind: 'scope_threshold',
+      heading: 'Housing types § 7-108 does not cover:',
+      body:
+        'The 14-day rules of § 7-108(1-a) do not apply to rent-controlled ' +
+        'tenancies or to units in continuing-care retirement communities, ' +
+        'assisted-living facilities, adult-care facilities, or certain senior ' +
+        'residences for tenants 55 and older. If your unit is one of these, ' +
+        'different rules govern your deposit.',
+    },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'NY Gen. Oblig. Law §§ 7-108, 7-103, 7-107 (verified against statute text); HSTPA cap + § 7-107 carve-out confirmed (Phase 1 audit)',
 };
@@ -865,12 +885,12 @@ const CONNECTICUT: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
+    attorneyFees: false,
     short: '2× + interest',
     long:
       'A landlord who violates the return-and-statement requirements is liable ' +
-      'for twice the amount of the security deposit; court costs and attorney ' +
-      'fees are available under § 47a-21(d).',
+      'under § 47a-21(d)(2) for twice the amount of the full security deposit ' +
+      'you paid \u2014 not merely the portion withheld \u2014 plus accrued interest.',
   },
   statuteCardLabel: '§ 47a-21',
   statuteCardSubtext: 'Connecticut General Statutes',
@@ -889,13 +909,13 @@ const CONNECTICUT: SimpleJurisdiction = {
     penaltyLeadIn:
       'If the landlord wrongfully withholds your deposit, you may recover:',
     penaltyBullets: [
-      'Twice the amount wrongfully withheld',
-      'Your deposit plus all accrued interest',
+      'Twice the amount of the security deposit paid, under § 47a-21(d)(2)',
+      'All accrued interest on the deposit',
     ],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000 plus interest. Most landlords settle quickly once they realize you ' +
-      'know the law.',
+      'So on a $1,500 deposit, a wrongful withholding can support a court ' +
+      'judgment of $3,000 plus interest. Most landlords settle quickly once ' +
+      'they realize you know the law.',
     statuteLine:
       'Conn. Gen. Stat. \u00a7 47a-21 and any others triggered by your ' +
       'circumstances \u2014 not generic legalese.',
@@ -919,7 +939,7 @@ const CONNECTICUT: SimpleJurisdiction = {
         'dates above.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Conn. Gen. Stat. § 47a-21 (verified against statute text); 21-day deadline (eff. 10/1/2023) confirmed (Phase 1 audit)',
 };
@@ -937,18 +957,18 @@ const DELAWARE: SimpleJurisdiction = {
     attorneyFees: false,
     short: '2× damages',
     long:
-      'A landlord who fails to remit the deposit or itemized statement within 20 ' +
-      'days is liable for DOUBLE THE SECURITY DEPOSIT under § 5514(g)(1) (the ' +
-      'penalty base is the deposit itself, not merely the withheld portion); ' +
-      'failing to provide an itemized list forfeits the right to withhold. A ' +
-      'tenant who fails to provide a forwarding address relieves the landlord of ' +
-      'double-damages liability under § 5514(h), though a one-year claim window ' +
-      'remains.',
+      'A landlord who wrongfully withholds any part of the deposit is liable for ' +
+      'double the amount wrongfully withheld under § 5514(g)(1); failing to ' +
+      'provide an itemized list forfeits the right to withhold. Separately, a ' +
+      'landlord who failed to disclose the account holding your deposit can owe ' +
+      'double the full deposit under § 5514(g)(2). A tenant who fails to provide ' +
+      'a forwarding address relieves the landlord of double-damages liability ' +
+      'under § 5514(h), though a one-year claim window remains.',
   },
   statuteCardLabel: '§ 5514',
   statuteCardSubtext: 'Delaware Code, Title 25',
-  penaltyCardLabel: '2× deposit',
-  penaltyCardSubtext: 'double the deposit, for missing the 20-day deadline',
+  penaltyCardLabel: '2× damages',
+  penaltyCardSubtext: 'double the amount wrongfully withheld, § 5514(g)(1)',
   copy: {
     heroSummary:
       "A professional demand letter citing Delaware's security deposit statute " +
@@ -961,11 +981,14 @@ const DELAWARE: SimpleJurisdiction = {
     penaltyLeadIn:
       'If the landlord fails to return your deposit or provide the itemized list ' +
       'within 20 days, you may recover:',
-    penaltyBullets: ['Double the amount of the security deposit under § 5514(g)(1)'],
+    penaltyBullets: [
+      'Double the amount wrongfully withheld under § 5514(g)(1)',
+      'Double the full deposit under § 5514(g)(2) where the landlord failed to disclose the account holding your deposit',
+    ],
     penaltyExample:
-      'So a $1,500 deposit not returned on time can support a court judgment of ' +
-      '$3,000 (twice the deposit). Most landlords settle quickly once they ' +
-      'realize you know the law.',
+      'So a $1,500 deposit wrongfully withheld in full can support a court ' +
+      'judgment of $3,000 (twice the amount withheld). Most landlords settle ' +
+      'quickly once they realize you know the law.',
     statuteLine:
       '25 Del. C. \u00a7 5514 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -991,9 +1014,9 @@ const DELAWARE: SimpleJurisdiction = {
         'writing, which protects that remedy.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    '25 Del. C. § 5514 (verified against statute text); penalty = 2× the DEPOSIT per §5514(g)(1) + §5514(h) address gate + 1-mo cap (≥1-yr leases) confirmed (Phase 1 audit)',
+    '25 Del. C. § 5514 (verified against statute text); §5514(g)(1) = 2× withheld portion, §5514(g)(2) = 2× deposit (escrow/disclosure failures), §5514(h) address gate + 1-mo cap (≥1-yr leases) confirmed (legal audit, July 2026)',
 };
 
 const GEORGIA: SimpleJurisdiction = {
@@ -1009,17 +1032,21 @@ const GEORGIA: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 3,
-    attorneyFees: true,
-    short: '3× + fees',
+    attorneyFees: false,
+    short: '3× (bad faith)',
     long:
-      'A landlord who withholds the deposit in bad faith is liable for three ' +
-      'times the sum wrongfully withheld plus reasonable attorney\u2019s fees ' +
-      'under § 44-7-35(a).',
+      'A landlord who withholds the deposit in bad faith can be liable for three ' +
+      'times the sum improperly withheld under § 44-7-35(c). The treble penalty ' +
+      'is not automatic: a landlord who proves the withholding was unintentional ' +
+      'and the result of a bona fide error despite reasonable procedures is ' +
+      'liable only for the amount withheld, and landlords who own ten or fewer ' +
+      'rental units and manage them personally are exempt from the treble ' +
+      'penalty under § 44-7-36.',
   },
   statuteCardLabel: '§ 44-7-35',
   statuteCardSubtext: 'Official Code of Georgia Annotated',
-  penaltyCardLabel: '3× damages',
-  penaltyCardSubtext: 'for bad-faith withholding, plus fees',
+  penaltyCardLabel: 'up to 3×',
+  penaltyCardSubtext: 'for bad-faith withholding under § 44-7-35(c)',
   copy: {
     heroSummary:
       "A professional demand letter citing Georgia's security deposit statutes " +
@@ -1034,12 +1061,12 @@ const GEORGIA: SimpleJurisdiction = {
       'refusing to return it, providing no itemization, or making clearly ' +
       'improper deductions \u2014 O.C.G.A. \u00a7 44-7-35 allows you to recover:',
     penaltyBullets: [
-      'Three times the amount wrongfully withheld',
-      "Reasonable attorney's fees",
+      'Three times the amount improperly withheld, where the withholding was in bad faith',
+      'The full forfeiture of any right to withhold (and to sue you for damages) where the landlord missed the § 44-7-34 timelines',
     ],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$4,500 plus fees. Most landlords settle quickly once they realize you know ' +
+      'So a $1,500 deposit withheld in bad faith can support a court judgment of ' +
+      'up to $4,500. Most landlords settle quickly once they realize you know ' +
       'the law.',
     statuteLine:
       'O.C.G.A. \u00a7 44-7-34, \u00a7 44-7-35, and any others triggered by your ' +
@@ -1054,10 +1081,20 @@ const GEORGIA: SimpleJurisdiction = {
         'rent (for leases entered or renewed on or after that date). If you were ' +
         'charged more, your letter can raise it. Georgia had no cap before this.',
     },
+    {
+      kind: 'scope_threshold',
+      heading: 'Small-landlord exemption from the treble penalty:',
+      body:
+        'Under O.C.G.A. \u00a7 44-7-36, a landlord who owns ten or fewer rental ' +
+        'units and manages them personally (without a management agent) is not ' +
+        'subject to the 3\u00d7 penalty. The 30-day return duty and the ' +
+        'forfeiture rule still apply \u2014 your letter reflects whichever ' +
+        'applies to your landlord.',
+    },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'O.C.G.A. §§ 44-7-34, 44-7-35 (verified against statute text); 2-mo cap (HB 404, eff. 7/1/2024) confirmed (Phase 1 audit)',
+    'O.C.G.A. §§ 44-7-33, 44-7-34, 44-7-35, 44-7-36 (verified against versioned statute text); 2-mo cap (HB 404, eff. 7/1/2024) + §44-7-36 exemption + §44-7-35(c) good-faith escape confirmed (legal audit, July 2026)',
 };
 
 const HAWAII: SimpleJurisdiction = {
@@ -1124,7 +1161,7 @@ const HAWAII: SimpleJurisdiction = {
         'service animal).',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'HRS § 521-44 (verified against statute text); treble-requires-willful + no-attorney-fees confirmed (Phase 1 audit)',
 };
@@ -1142,17 +1179,18 @@ const IDAHO: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 3,
-    attorneyFees: true,
-    short: 'up to 3× + fees',
+    attorneyFees: false,
+    short: 'up to 3× + costs',
     long:
-      'A landlord who wrongfully retains the deposit is liable for up to treble ' +
-      '(three times) the amount wrongfully withheld, together with court costs ' +
-      'and reasonable attorney\u2019s fees, under § 6-320.',
+      'A tenant suing over a wrongfully retained deposit proceeds under ' +
+      '\u00a7 6-320, which allows recovery of damages and costs; under ' +
+      '\u00a7 6-317 the court may, in its discretion, award up to three times ' +
+      'the actual damages.',
   },
   statuteCardLabel: '§ 6-321',
   statuteCardSubtext: 'Idaho Code',
   penaltyCardLabel: 'up to 3×',
-  penaltyCardSubtext: 'plus costs and fees, for wrongful withholding',
+  penaltyCardSubtext: 'discretionary treble under § 6-317, plus costs',
   copy: {
     heroSummary:
       "A professional demand letter citing Idaho's security deposit statute " +
@@ -1166,13 +1204,12 @@ const IDAHO: SimpleJurisdiction = {
     penaltyLeadIn:
       'If the landlord retains your deposit in bad faith, you may recover:',
     penaltyBullets: [
-      'Up to three times (treble) the amount wrongfully withheld',
-      "Court costs and reasonable attorney's fees",
+      'Your actual damages, plus up to three times that amount at the court\u2019s discretion under § 6-317',
+      'Court costs and disbursements under § 6-320(c)',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of up ' +
-      'to $4,500 plus fees. Most landlords settle quickly once they realize you ' +
-      'know the law.',
+      'to $4,500. Most landlords settle quickly once they realize you know the law.',
     statuteLine:
       'Idaho Code \u00a7 6-321, \u00a7 6-320, and any others triggered by your ' +
       'circumstances \u2014 not generic legalese.',
@@ -1182,19 +1219,19 @@ const IDAHO: SimpleJurisdiction = {
       kind: 'general',
       heading: 'Good to know:',
       body:
-        'Idaho\u2019s treble-damages remedy comes together with court costs and ' +
-        'attorney\u2019s fees \u2014 not one or the other. Idaho sets no statewide ' +
-        'deposit cap; a landlord using a management agent must hold the deposit in ' +
-        'a separate insured account.',
+        'The treble remedy is discretionary \u2014 the court \u201cmay\u201d ' +
+        'award up to 3\u00d7 under \u00a7 6-317; it is not automatic. Idaho sets ' +
+        'no statewide deposit cap; a landlord using a management agent must hold ' +
+        'the deposit in a separate insured account.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Idaho Code §§ 6-321, 6-320 + official Idaho Courts self-help form H-3 (treble AND costs AND fees confirmed) (Phase 1 audit)',
+    'Idaho Code §§ 6-321, 6-320, 6-317, 12-120(3) (verified against official statute text; treble = §6-317 discretionary on actual damages; §6-320(c) costs only; no reliable residential fee statute — Treasure Valley v. Chason) (legal audit, July 2026)',
 };
 
-const ILLINOIS: ScopeGatedJurisdiction = {
-  type: 'scope_gated',
+const ILLINOIS: SimpleJurisdiction = {
+  type: 'simple',
   slug: 'illinois',
   name: 'Illinois',
   homepageDeadlineNote:
@@ -1210,38 +1247,26 @@ const ILLINOIS: ScopeGatedJurisdiction = {
     attorneyFees: true,
     short: '2× + fees (bad faith)',
     long:
-      'Where the Act applies, a landlord who acts in bad faith is liable for ' +
-      'twice the amount of the deposit due, plus court costs and reasonable ' +
-      'attorney\u2019s fees. Unlike the Chicago ordinance, the state Act\u2019s ' +
-      'penalty is not automatic \u2014 it requires a finding of bad faith.',
-  },
-  unitThreshold: {
-    minUnits: 5,
-    description:
-      'The state Security Deposit Return Act applies only to buildings with 5 or more units.',
-  },
-  scope: {
-    appliesTo:
-      'Landlords who own buildings with five or more units.',
-    exemptFallback:
-      'If your building has four or fewer units, the state Act does not apply \u2014 ' +
-      'your demand rests on your lease and common-law contract rights, or a local ' +
-      'ordinance such as Chicago, Cook County, or Evanston.',
+      'A landlord who acts in bad faith is liable for twice the amount of the ' +
+      'deposit due, plus court costs and reasonable attorney\u2019s fees. Unlike ' +
+      'the Chicago ordinance, the state Act\u2019s penalty is not automatic ' +
+      '\u2014 it requires a finding of bad faith.',
   },
   statuteCardLabel: '765 ILCS 710',
   statuteCardSubtext: 'Security Deposit Return Act',
   penaltyCardLabel: '2× + fees',
-  penaltyCardSubtext: 'on a bad-faith finding (5+ unit buildings)',
+  penaltyCardSubtext: 'on a bad-faith finding',
   copy: {
     heroSummary:
       "A professional demand letter citing Illinois's Security Deposit Return Act " +
       '(765 ILCS 710), the 30-day itemization and 45-day return deadlines, and ' +
       'the double-damages penalty for bad-faith withholding. Ready in minutes.',
     lawSummary:
-      'Under the Illinois Security Deposit Return Act (765 ILCS 710), a covered ' +
+      'Under the Illinois Security Deposit Return Act (765 ILCS 710), your ' +
       'landlord must give you an itemized statement of any damages within 30 days ' +
       'of move-out, and return your deposit (or the balance) within 45 days of ' +
-      'move-out.',
+      'move-out. Since January 1, 2024, the Act applies to residential rentals ' +
+      'statewide regardless of building size.',
     penaltyLeadIn:
       'If the landlord withholds your deposit in bad faith \u2014 for example, ' +
       'refusing to return it, providing no itemization, or making clearly ' +
@@ -1261,19 +1286,20 @@ const ILLINOIS: ScopeGatedJurisdiction = {
   },
   notes: [
     {
-      kind: 'scope_threshold',
-      heading: 'Important scope note:',
+      kind: 'recent_amendment',
+      heading: 'The old 5-unit threshold is gone:',
       body:
-        'The state Security Deposit Return Act applies only to landlords who own ' +
-        'buildings with 5 or more units. If your building has 4 or fewer units, ' +
-        'your demand rests on your lease and common-law contract rights (or a ' +
-        'local ordinance such as Chicago, Cook County, or Evanston). Your letter ' +
-        'reflects whichever applies to your situation.',
+        'Public Act 103-224 (effective January 1, 2024) removed the Act\u2019s ' +
+        'old five-unit building threshold. The Security Deposit Return Act now ' +
+        'covers Illinois residential rentals regardless of how many units your ' +
+        'building has \u2014 sources still describing a \u201c5+ units only\u201d ' +
+        'rule are out of date. Local ordinances (Chicago, Cook County) can add ' +
+        'further protections on top.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    '765 ILCS 710 + 715 (verified against statute text); 5+ unit scope + bad-faith-finding requirement confirmed (Phase 1 audit)',
+    '765 ILCS 710 + P.A. 103-224 (verified against statute text; 5-unit gate repealed eff. 1/1/2024; bad-faith-finding requirement confirmed) (legal audit, July 2026)',
 };
 
 const INDIANA: SimpleJurisdiction = {
@@ -1335,7 +1361,7 @@ const INDIANA: SimpleJurisdiction = {
         'statewide deposit cap.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Ind. Code §§ 32-31-3-12, -14, -15, -16 (verified against statute text); forfeiture/no-multiplier + fee-address gate confirmed (Phase 1 audit)',
 };
@@ -1358,18 +1384,17 @@ const IOWA: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
+    attorneyFees: false,
     short: 'up to 2× monthly rent',
     long:
       'Bad-faith retention exposes the landlord to punitive damages not to ' +
-      'exceed twice the MONTHLY RENT (not twice the deposit), plus the tenant\u2019s ' +
-      'actual damages and, at the court\u2019s discretion, attorney\u2019s fees, ' +
-      'under § 562A.12(7)\u2013(8).',
+      'exceed twice the MONTHLY RENT (not twice the deposit), plus the ' +
+      'tenant\u2019s actual damages, under § 562A.12(7)\u2013(8).',
   },
   statuteCardLabel: '§ 562A.12',
   statuteCardSubtext: 'Iowa Code',
   penaltyCardLabel: 'up to 2× rent',
-  penaltyCardSubtext: 'measured against monthly rent, plus fees',
+  penaltyCardSubtext: 'measured against monthly rent, for bad faith',
   copy: {
     heroSummary:
       "A professional demand letter citing Iowa's security deposit statute " +
@@ -1384,12 +1409,11 @@ const IOWA: SimpleJurisdiction = {
     penaltyBullets: [
       'Punitive damages of up to twice your monthly rent',
       'Your actual damages',
-      "Reasonable attorney's fees",
     ],
     penaltyExample:
       'So beyond the return of your deposit, bad-faith withholding exposes the ' +
-      'landlord to punitive damages of up to twice your monthly rent, plus fees. ' +
-      'Most landlords settle quickly once they realize you know the law.',
+      'landlord to punitive damages of up to twice your monthly rent. Most ' +
+      'landlords settle quickly once they realize you know the law.',
     statuteLine:
       'Iowa Code \u00a7 562A.12 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -1411,7 +1435,7 @@ const IOWA: SimpleJurisdiction = {
       body: 'Iowa caps security deposits at two months\u2019 rent.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Iowa Code § 562A.12 (verified against statute text); 2×-monthly-rent penalty + 2-mo cap confirmed (Phase 1 audit)',
 };
@@ -1426,13 +1450,13 @@ const KANSAS: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 1.5,
-    attorneyFees: true,
+    attorneyFees: false,
     short: '1.5× damages',
     long:
-      'A landlord who fails to comply is liable for the portion of the deposit ' +
-      'due plus damages equal to one and one-half (1.5) times the amount ' +
-      'wrongfully withheld, under § 58-2550(c); court costs and attorney fees ' +
-      'are available.',
+      'A landlord who fails to comply is liable under § 58-2550(c) for the ' +
+      'portion of the deposit due PLUS damages equal to one and one-half (1.5) ' +
+      'times the amount wrongfully withheld \u2014 the 1.5\u00d7 is added on top ' +
+      'of the deposit itself, and Kansas courts treat it as non-discretionary.',
   },
   statuteCardLabel: '§ 58-2550',
   statuteCardSubtext: 'Kansas Statutes Annotated',
@@ -1451,11 +1475,13 @@ const KANSAS: SimpleJurisdiction = {
     penaltyLeadIn:
       'If the landlord wrongfully withholds your deposit, you may recover:',
     penaltyBullets: [
-      'Damages equal to one and one-half times the amount wrongfully withheld',
+      'The portion of the deposit wrongfully withheld, plus',
+      'Damages equal to one and one-half times that amount, on top',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$2,250. Most landlords settle quickly once they realize you know the law.',
+      '$3,750 \u2014 the $1,500 back plus $2,250 in damages. Most landlords ' +
+      'settle quickly once they realize you know the law.',
     statuteLine:
       'K.S.A. \u00a7 58-2550 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -1470,9 +1496,9 @@ const KANSAS: SimpleJurisdiction = {
         'half a month\u2019s rent.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'K.S.A. § 58-2550 (verified against statute text); 1.5× penalty + tiered caps confirmed (Phase 1 audit)',
+    'K.S.A. §§ 58-2550, 58-2547 (verified against statute text); deposit-due + 1.5× (Geiger v. Wallace), non-discretionary (Love v. Monarch), no fee provision — §58-2547(a)(3) bars rental-agreement fee-shifting (legal audit, July 2026)',
 };
 
 const KENTUCKY: ScopeGatedJurisdiction = {
@@ -1549,7 +1575,7 @@ const KENTUCKY: ScopeGatedJurisdiction = {
         'promptly. Your letter is built to be that timely response.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'KRS § 383.580, § 383.500 (verified against statute text; MEDIUM confidence — URLTA-gated, forfeiture remedy, no clean 30/60 rule) (Phase 1 audit)',
 };
@@ -1568,18 +1594,19 @@ const LOUISIANA: SimpleJurisdiction = {
     kind: 'greater_of',
     multiplier: 2,
     fixedAmount: 300,
-    attorneyFees: true,
+    attorneyFees: false,
     short: 'greater of $300 or 2×',
     long:
-      'Willful failure to return the deposit after written demand exposes the ' +
-      'landlord to the wrongfully retained portion plus the GREATER of $300 or ' +
-      'twice the amount wrongfully retained, under § 9:3252, together with court ' +
-      'costs and attorney fees at the court\u2019s discretion.',
+      'Willful failure to return the deposit exposes the landlord, under ' +
+      '\u00a7 9:3252, to the wrongfully retained portion PLUS the greater of ' +
+      '$300 or twice the amount wrongfully retained. Failure to remit within 30 ' +
+      'days after your written demand is itself deemed willful \u2014 which is ' +
+      'exactly what this letter establishes.',
   },
   statuteCardLabel: '§ 9:3251',
   statuteCardSubtext: 'Louisiana Revised Statutes',
   penaltyCardLabel: '$300 or 2×',
-  penaltyCardSubtext: 'greater of, for willful withholding, plus fees',
+  penaltyCardSubtext: 'greater of, on top of the retained portion',
   copy: {
     heroSummary:
       "A professional demand letter citing Louisiana's Lessee's Deposit Act " +
@@ -1594,13 +1621,14 @@ const LOUISIANA: SimpleJurisdiction = {
       'If the landlord willfully fails to return your deposit after written ' +
       'demand, La. R.S. \u00a7 9:3252 allows you to recover:',
     penaltyBullets: [
-      'The greater of $300 or two times the amount wrongfully withheld',
-      "Reasonable attorney's fees and court costs",
+      'The portion of the deposit wrongfully retained, plus',
+      'The greater of $300 or two times the amount wrongfully retained, on top',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000 plus fees (the 2\u00d7 figure, since it exceeds $300). Most ' +
-      'landlords settle quickly once they realize you know the law.',
+      '$4,500 \u2014 the $1,500 back plus $3,000 in damages (the 2\u00d7 figure, ' +
+      'since it exceeds $300). Most landlords settle quickly once they realize ' +
+      'you know the law.',
     statuteLine:
       'La. R.S. \u00a7 9:3251, \u00a7 9:3252, and any others triggered by your ' +
       'circumstances \u2014 not generic legalese.',
@@ -1614,10 +1642,30 @@ const LOUISIANA: SimpleJurisdiction = {
         'an old $200 figure. The current floor is $300, or double the amount ' +
         'withheld if that is greater. Louisiana sets no statewide deposit cap.',
     },
+    {
+      kind: 'trigger_condition',
+      heading: 'When the return duty does not apply (§ 9:3251(C)):',
+      body:
+        'The one-month return duty does not apply if you abandoned the premises ' +
+        'without giving notice as required by your lease, or left before the ' +
+        'lease ended. In those situations your demand rests on your lease and ' +
+        'general contract rights instead \u2014 your letter reflects whichever ' +
+        'applies.',
+    },
+    {
+      kind: 'recent_amendment',
+      heading: 'Act 63 (effective August 1, 2026):',
+      body:
+        'For a landlord who retains any part of the deposit, Act 63 of 2026 ' +
+        'allows the itemized statement to be sent within one month after the ' +
+        'tenancy ends or up to fifteen days after that one-month date. The ' +
+        'deadline to RETURN the deposit itself is unchanged \u2014 one month ' +
+        'after the lease terminates.',
+    },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'La. R.S. §§ 9:3251, 9:3252, 9:3253 (verified against statute text); $300 floor (2018/2019 amend.) confirmed (Phase 1 audit)',
+    'La. R.S. §§ 9:3251, 9:3252 + 2026 Act 63/HB292 engrossed-and-enacted text (verified against legis.la.gov; §3251(C) exclusion + retained-portion-plus-greater-of penalty + Act 63 itemization window, eff. 8/1/2026) (legal audit, July 2026)',
 };
 
 const MAINE: ConditionalJurisdiction = {
@@ -1693,7 +1741,7 @@ const MAINE: ConditionalJurisdiction = {
         'apply to your building.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     '14 M.R.S. §§ 6031\u20136038 (verified against statute text); at-will/lease branch + owner-occ ≤5 exemption confirmed (Phase 1 audit)',
 };
@@ -1750,24 +1798,36 @@ const MARYLAND: SimpleJurisdiction = {
       kind: 'deposit_cap',
       heading: 'Deposit cap (updated):',
       body:
-        'For leases entered on or after October 1, 2024, Maryland caps deposits ' +
+        'For leases signed on or after October 1, 2024, Maryland caps deposits ' +
         'at one month\u2019s rent (down from two months). Leases signed before ' +
-        'that date remain subject to the two-month maximum. Charging more than the ' +
-        'cap exposes the landlord to up to threefold the excess plus fees.',
+        'that date remain subject to the two-month maximum, and where the tenant ' +
+        'uses a utility- or housing-assistance program the cap can be up to two ' +
+        'months\u2019 rent. Charging more than the applicable cap exposes the ' +
+        'landlord to up to threefold the excess plus fees.',
     },
     {
       kind: 'general',
       heading: 'Interest:',
       body:
         'Deposits must earn simple interest at the greater of the daily U.S. ' +
-        'Treasury one-year rate or 1.5% per year, accruing monthly, for deposits ' +
-        'of $50 or more held at least six months. (Older sources citing a flat 3% ' +
-        'figure are stale.)',
+        'Treasury one-year yield curve rate or 1.5% per year, accruing monthly, ' +
+        'for deposits of $50 or more held at least six months. (Older sources ' +
+        'citing a flat 3% figure are stale.)',
+    },
+    {
+      kind: 'trigger_condition',
+      heading: 'If you were evicted or abandoned the unit:',
+      body:
+        'Under \u00a7 8-203(h), the ordinary return rules do not apply to a ' +
+        'tenant who was evicted or abandoned the premises. In that situation you ' +
+        'must send the landlord a written demand for the deposit within 45 days ' +
+        '\u2014 which this letter can serve as \u2014 and the landlord\u2019s ' +
+        'obligations then run from your demand.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Md. Code, Real Prop. § 8-203 (verified against statute text); 1-mo cap (leases ≥10/1/2024) + interest rate confirmed (Phase 1 audit)',
+    'Md. Code, Real Prop. §§ 8-203, 8-203.1 (verified at T1 via mgaleg Statute_Web PDFs); 1-mo cap = HB 693/Ch. 124 (2024), eff. 10/1/2024, lease-date applicability from session law; Treasury/1.5% interest; §8-203(h) evicted/abandoned 45-day demand (legal audit, July 2026)',
 };
 
 const MASSACHUSETTS: SimpleJurisdiction = {
@@ -1785,9 +1845,13 @@ const MASSACHUSETTS: SimpleJurisdiction = {
     long:
       'Certain (common) violations trigger MANDATORY treble (3×) damages plus ' +
       'interest, court costs, and attorney fees under § 15B(7) \u2014 no ' +
-      'bad-faith proof needed. The triggers include failing to hold the deposit ' +
-      'in a separate interest-bearing Massachusetts account, failing to return ' +
-      'within 30 days, and improper deductions or a missing sworn itemized list.',
+      'bad-faith proof needed. The treble triggers are the violations in ' +
+      '§ 15B(6)(a), (d), and (e): failing to hold the deposit in a separate ' +
+      'interest-bearing Massachusetts account, failing to return the deposit ' +
+      'within 30 days, and failing to transfer the deposit properly when the ' +
+      'property is sold. A missing sworn itemized list forfeits the right to ' +
+      'withhold \u2014 the full deposit comes back \u2014 but is not itself a ' +
+      'treble trigger.',
   },
   statuteCardLabel: 'c. 186 § 15B',
   statuteCardSubtext: 'Massachusetts General Laws',
@@ -1805,12 +1869,14 @@ const MASSACHUSETTS: SimpleJurisdiction = {
       'damages, the landlord must provide a sworn, itemized statement within that ' +
       '30-day window.',
     penaltyLeadIn:
-      'Massachusetts provides triple damages, but they are not automatic \u2014 ' +
-      'they attach to specific violations under \u00a7 15B(7), including: failing ' +
-      'to hold the deposit in a proper interest-bearing escrow account and return ' +
-      'it on demand, failing to provide the sworn itemized statement within 30 ' +
-      'days, or deducting for items the statute does not allow (such as normal ' +
-      'wear and tear). When one of these triggers applies, you may recover:',
+      'Massachusetts provides triple damages, but only for the specific ' +
+      'violations listed in \u00a7 15B(6)(a), (d), and (e): failing to hold the ' +
+      'deposit in a proper interest-bearing escrow account, failing to return ' +
+      'the deposit within 30 days, or failing to transfer it properly when the ' +
+      'property is sold. (Skipping the sworn itemized statement forfeits the ' +
+      'landlord\u2019s right to withhold anything \u2014 the whole deposit comes ' +
+      'back \u2014 though that failure alone does not treble.) When a treble ' +
+      'trigger applies, you may recover:',
     penaltyBullets: [
       'Three times the deposit amount',
       '5% interest',
@@ -1835,9 +1901,9 @@ const MASSACHUSETTS: SimpleJurisdiction = {
         'interest-bearing Massachusetts account.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'M.G.L. c. 186, § 15B (verified against statute text; Mellor v. Berman on mandatory treble); confirmed no exceeding statewide add-on (Phase 1 audit)',
+    'M.G.L. c. 186, § 15B (verified against statute text; §15B(7) treble runs on §15B(6)(a),(d),(e) only; Mellor v. Berman on mandatory treble) (legal audit, July 2026)',
 };
 
 const MICHIGAN: SimpleJurisdiction = {
@@ -1853,18 +1919,18 @@ const MICHIGAN: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
+    attorneyFees: false,
     short: '2× (process-gated)',
     long:
       'A landlord retaining the deposit for contested damages must file suit for ' +
       'a money judgment within 45 days of termination; failure both waives all ' +
       'claimed damages AND makes the landlord liable for double the amount ' +
-      'wrongfully retained under § 554.613, plus attorney fees and costs.',
+      'wrongfully retained under § 554.613.',
   },
   statuteCardLabel: '§ 554.613',
   statuteCardSubtext: 'Michigan Compiled Laws',
   penaltyCardLabel: '2× damages',
-  penaltyCardSubtext: 'if the landlord skips the 45-day suit, plus fees',
+  penaltyCardSubtext: 'if the landlord skips the 45-day suit',
   copy: {
     heroSummary:
       "A professional demand letter citing Michigan's security deposit statute " +
@@ -1882,12 +1948,10 @@ const MICHIGAN: SimpleJurisdiction = {
       'allows you to recover:',
     penaltyBullets: [
       'Two times the amount wrongfully withheld',
-      "Reasonable attorney's fees and court costs",
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000 plus fees. Most landlords settle quickly once they realize you know ' +
-      'the law.',
+      '$3,000. Most landlords settle quickly once they realize you know the law.',
     statuteLine:
       'MCL \u00a7 554.609, \u00a7 554.613, and any others triggered by your ' +
       'circumstances \u2014 not generic legalese.',
@@ -1903,9 +1967,9 @@ const MICHIGAN: SimpleJurisdiction = {
         'rent.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'MCL §§ 554.601\u2013616 (verified against statute text); process-gated 2× + 4-day address + 1.5-mo cap confirmed (Phase 1 audit)',
+    'MCL §§ 554.601\u2013616 (verified against statute text; §554.613 read in full — no attorney-fee provision exists); process-gated 2× + 4-day address + 1.5-mo cap confirmed (legal audit, July 2026)',
 };
 
 const MINNESOTA: SimpleJurisdiction = {
@@ -1918,7 +1982,7 @@ const MINNESOTA: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
+    attorneyFees: false,
     short: '2× + $500',
     long:
       'Noncompliance makes the landlord liable for the withheld amount plus an ' +
@@ -1943,13 +2007,12 @@ const MINNESOTA: SimpleJurisdiction = {
       'If the landlord withholds your deposit in bad faith, you may recover:',
     penaltyBullets: [
       'Two times the amount wrongfully withheld',
-      'An additional $500 statutory penalty',
-      "Reasonable attorney's fees",
+      'An additional $500 statutory penalty for bad-faith retention',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,500 plus fees \u2014 $3,000 in double damages plus the $500 penalty. ' +
-      'Most landlords settle quickly once they realize you know the law.',
+      '$3,500 \u2014 $3,000 in double damages plus the $500 penalty. Most ' +
+      'landlords settle quickly once they realize you know the law.',
     statuteLine:
       'Minn. Stat. \u00a7 504B.178 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -1964,9 +2027,9 @@ const MINNESOTA: SimpleJurisdiction = {
         'local caps.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Minn. Stat. § 504B.178 (verified against statute text); effective-double + $500 punitive confirmed (Phase 1 audit)',
+    'Minn. Stat. § 504B.178 (verified against complete section text — no attorney-fee provision exists); effective-double + $500 punitive confirmed (legal audit, July 2026)',
 };
 
 const MISSISSIPPI: SimpleJurisdiction = {
@@ -1979,18 +2042,18 @@ const MISSISSIPPI: SimpleJurisdiction = {
   penalty: {
     kind: 'fixed',
     fixedAmount: 200,
-    attorneyFees: true,
+    attorneyFees: false,
     short: 'up to $200 + actual',
     long:
       'Retention in the absence of good faith exposes the landlord to statutory ' +
-      'damages not to exceed $200 in addition to the tenant\u2019s actual damages ' +
-      'and court costs under § 89-8-21(4); attorney fees are available. Failure to ' +
-      'provide an itemized list within 45 days can be evidence of bad faith.',
+      'damages not to exceed $200 in addition to the tenant\u2019s actual ' +
+      'damages under § 89-8-21(4). Failure to provide an itemized list within 45 ' +
+      'days can be evidence of bad faith.',
   },
   statuteCardLabel: '§ 89-8-21',
   statuteCardSubtext: 'Mississippi Code',
   penaltyCardLabel: 'up to $200',
-  penaltyCardSubtext: 'statutory damages, plus actual damages and costs',
+  penaltyCardSubtext: 'statutory damages, plus actual damages',
   copy: {
     heroSummary:
       "A professional demand letter citing Mississippi's security deposit statute " +
@@ -2005,11 +2068,11 @@ const MISSISSIPPI: SimpleJurisdiction = {
       'recover:',
     penaltyBullets: [
       'Up to $200 in statutory damages',
-      'Your actual damages and court costs',
+      'Your actual damages',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a judgment for the ' +
-      'deposit plus up to $200 in damages and costs. Most landlords settle ' +
+      'deposit plus up to $200 in statutory damages. Most landlords settle ' +
       'quickly once they realize you know the law.',
     statuteLine:
       'Miss. Code \u00a7 89-8-21 and any others triggered by your circumstances ' +
@@ -2025,9 +2088,9 @@ const MISSISSIPPI: SimpleJurisdiction = {
         'Mississippi has no deposit cap and no interest or escrow requirement.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Miss. Code § 89-8-21 (verified against statute text); $200 statutory cap + demand trigger confirmed (Phase 1 audit)',
+    'Miss. Code § 89-8-21 (verified against complete section text — runs (1)–(4); no attorney-fee or court-cost provision anywhere in the RLTA); $200 statutory cap + demand trigger confirmed (legal audit, July 2026)',
 };
 
 // ===========================================================================
@@ -2048,17 +2111,17 @@ const MISSOURI: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
-    short: 'up to 2×',
+    attorneyFees: false,
+    short: '2× damages',
     long:
-      'Wrongful withholding makes the landlord liable for up to twice the amount ' +
-      'wrongfully withheld under § 535.300.6 \u2014 a non-discretionary remedy ' +
-      'that applies even where the landlord had some legitimate damages but ' +
-      'withheld improperly. Court costs and fees are available.',
+      'Wrongful withholding makes the landlord liable for twice the amount ' +
+      'wrongfully withheld under § 535.300.6 \u2014 a flat, non-discretionary ' +
+      'remedy that applies even where the landlord had some legitimate damages ' +
+      'but withheld improperly.',
   },
   statuteCardLabel: '§ 535.300',
   statuteCardSubtext: 'Missouri Revised Statutes',
-  penaltyCardLabel: 'up to 2×',
+  penaltyCardLabel: '2× damages',
   penaltyCardSubtext: 'for wrongful withholding',
   copy: {
     heroSummary:
@@ -2072,10 +2135,10 @@ const MISSOURI: SimpleJurisdiction = {
     penaltyLeadIn:
       'If the landlord wrongfully withholds any part of your deposit, you may ' +
       'recover:',
-    penaltyBullets: ['Up to twice the amount wrongfully withheld'],
+    penaltyBullets: ['Twice the amount wrongfully withheld \u2014 the doubling is mandatory, not discretionary'],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of up ' +
-      'to $3,000. Missouri courts enforce \u00a7 535.300 strictly as a ' +
+      'So a $1,500 deposit wrongfully withheld supports a court judgment of ' +
+      '$3,000. Missouri courts enforce \u00a7 535.300 strictly as a ' +
       'consumer-protection statute \u2014 lease clauses that try to waive these ' +
       'rights are unenforceable \u2014 so most landlords settle quickly once they ' +
       'realize you know the law.',
@@ -2093,9 +2156,9 @@ const MISSOURI: SimpleJurisdiction = {
         'at the move-out inspection.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'RSMo § 535.300 (verified against statute text); non-discretionary 2× + 2-mo cap confirmed (Phase 1 audit)',
+    'RSMo § 535.300 (verified against complete section text (1)–(8) — flat mandatory 2× per subsec. 6; no fee/cost provision, American rule); 2-mo cap confirmed (legal audit, July 2026)',
 };
 
 const MONTANA: ConditionalJurisdiction = {
@@ -2116,40 +2179,41 @@ const MONTANA: ConditionalJurisdiction = {
     { label: '§ 70-25-204', full: 'Mont. Code Ann. § 70-25-204' },
   ],
   penalty: {
-    kind: 'multiplier',
-    multiplier: 2,
-    attorneyFees: true,
-    short: '2× + fees',
+    kind: 'forfeiture',
+    attorneyFees: false,
+    short: 'Forfeiture + recovery',
     long:
-      'Wrongful withholding makes the landlord liable for the withheld amount ' +
-      'plus an equal amount as a penalty (effectively 2×) plus attorney fees ' +
-      'under § 70-25-204; bad faith is presumed on a missed deadline, and failure ' +
-      'to send an itemized list within 30 days forfeits the right to withhold.',
+      'A landlord who misses the deadline or skips the required itemized list ' +
+      'forfeits all rights to withhold any portion of the deposit under ' +
+      '\u00a7 70-25-203, and is liable under \u00a7 70-25-204 for the full ' +
+      'amount wrongfully withheld or deducted. Montana\u2019s statute has no ' +
+      'damages multiplier \u2014 sources claiming a 2\u00d7 penalty are wrong.',
   },
   statuteCardLabel: '§ 70-25-202',
   statuteCardSubtext: 'Montana Code Annotated',
-  penaltyCardLabel: '2× damages',
-  penaltyCardSubtext: 'for wrongful withholding, plus fees',
+  penaltyCardLabel: 'Forfeiture',
+  penaltyCardSubtext: 'of the right to withhold, under § 70-25-203',
   copy: {
     heroSummary:
       "A professional demand letter citing Montana's security deposit statute " +
-      '(Mont. Code \u00a7 70-25-202), the return deadline, and the double-damages ' +
-      'penalty for bad-faith withholding. Ready in minutes.',
+      '(Mont. Code \u00a7 70-25-202), the return deadline, and the forfeiture ' +
+      'rule when a landlord misses it. Ready in minutes.',
     lawSummary:
       'Under Mont. Code \u00a7 70-25-202, your landlord must return your deposit ' +
       'within 10 days if there are no deductions, or within 30 days with a ' +
       'written, itemized statement if any deductions are claimed.',
     penaltyLeadIn:
-      'If the landlord withholds your deposit in bad faith, you may recover under ' +
-      '\u00a7 70-25-204:',
+      'If the landlord misses the deadline or withholds improperly, Montana law ' +
+      'provides:',
     penaltyBullets: [
-      'The amount wrongfully withheld plus an equal amount as a penalty (effectively 2×)',
-      "Reasonable attorney's fees and court costs",
+      'Forfeiture of all rights to withhold any portion of the deposit (§ 70-25-203) where the deadline or itemized-list duty was missed',
+      'Recovery of the full amount wrongfully withheld or deducted (§ 70-25-204)',
     ],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000 plus fees. Most landlords settle quickly once they realize you know ' +
-      'the law.',
+      'So a landlord who misses Montana\u2019s deadline loses the right to keep ' +
+      'any of a $1,500 deposit \u2014 the entire amount comes back. Most ' +
+      'landlords return it quickly once they realize their right to withhold is ' +
+      'gone.',
     statuteLine:
       'Mont. Code \u00a7 70-25-202, \u00a7 70-25-204, and any others triggered by ' +
       'your circumstances \u2014 not generic legalese.',
@@ -2164,9 +2228,9 @@ const MONTANA: ConditionalJurisdiction = {
         'cap and requires no interest.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Mont. Code §§ 70-25-201, 202, 203, 204 (verified against statute text); 10/30 branch + effective-2× confirmed (Phase 1 audit)',
+    'Mont. Code §§ 70-25-202, 203, 204 (verified verbatim on mca.legmt.gov); §70-25-204(1) = amount wrongfully withheld, NO multiplier; §70-25-203 forfeiture T1-verified (legal audit, July 2026)',
 };
 
 const NEBRASKA: SimpleJurisdiction = {
@@ -2226,7 +2290,7 @@ const NEBRASKA: SimpleJurisdiction = {
         'month.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Neb. Rev. Stat. § 76-1416 (verified against statute text); LESSER-OF penalty structure + 1-mo cap confirmed (Phase 1 audit)',
 };
@@ -2266,8 +2330,8 @@ const NEVADA: SimpleJurisdiction = {
       'If the landlord wrongfully withholds your deposit, you may recover your ' +
       'deposit plus damages of up to an equal amount:',
     penaltyBullets: [
-      'The full amount wrongfully withheld, plus',
-      'An additional sum up to that amount (effectively up to 2× total)',
+      'An amount equal to your entire security deposit (§ 118A.242(6)(a)), plus',
+      'A court-fixed additional sum of up to another full deposit (§ 118A.242(6)(b)) \u2014 up to 2\u00d7 the deposit in total',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of up ' +
@@ -2287,7 +2351,7 @@ const NEVADA: SimpleJurisdiction = {
         'with any prepaid rent).',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'NRS § 118A.242 (verified against statute text); up-to-2×-NOT-3× + 3-mo cap confirmed (Phase 1 audit)',
 };
@@ -2305,13 +2369,13 @@ const NEW_HAMPSHIRE: ScopeGatedJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
-    short: 'up to 2× + fees',
+    attorneyFees: false,
+    short: '2× damages',
     long:
-      'A bad-faith violation exposes the landlord to up to twice the amount of ' +
-      'the deposit wrongfully withheld, plus interest, costs, and attorney fees ' +
-      'under RSA 540-A:8; the conduct is also a "prohibited practice" and may ' +
-      'support a Consumer Protection Act claim.',
+      'A landlord who wrongfully retains any part of the deposit is liable for ' +
+      'twice the amount wrongfully withheld, plus any interest due, under RSA ' +
+      '540-A:8 \u2014 the doubling is mandatory under the statute\u2019s text, ' +
+      'not discretionary.',
   },
   scope: {
     appliesTo:
@@ -2325,21 +2389,21 @@ const NEW_HAMPSHIRE: ScopeGatedJurisdiction = {
   },
   statuteCardLabel: 'RSA 540-A:7',
   statuteCardSubtext: 'New Hampshire Revised Statutes',
-  penaltyCardLabel: 'up to 2×',
-  penaltyCardSubtext: 'plus interest and fees, for bad-faith violation',
+  penaltyCardLabel: '2× damages',
+  penaltyCardSubtext: 'mandatory, for wrongful retention under RSA 540-A:8',
   copy: {
     heroSummary:
       "A professional demand letter citing New Hampshire's security deposit law " +
-      '(RSA 540-A:7), the 30-day return deadline, and the double-damages penalty ' +
-      'for a bad-faith violation. Ready in minutes.',
+      '(RSA 540-A:7), the 30-day return deadline, and the mandatory ' +
+      'double-damages penalty for wrongful retention. Ready in minutes.',
     lawSummary:
       'Under RSA 540-A:7, your landlord has 30 days after your tenancy ends to ' +
       'return your security deposit, with interest, along with a written, ' +
       'itemized statement of any deductions.',
     penaltyLeadIn:
-      'If the landlord violates the statute in bad faith, you may recover under ' +
-      'RSA 540-A:8:',
-    penaltyBullets: ['Double the amount of the deposit wrongfully withheld'],
+      'If the landlord wrongfully retains any part of your deposit, you may ' +
+      'recover under RSA 540-A:8:',
+    penaltyBullets: ['Double the amount of the deposit wrongfully withheld \u2014 mandatory under the statute'],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
       '$3,000. Most landlords settle quickly once they realize you know the law.',
@@ -2367,9 +2431,9 @@ const NEW_HAMPSHIRE: ScopeGatedJurisdiction = {
         'held one year or longer.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'N.H. RSA 540-A:5\u20138 (verified against statute text); single-family/owner-occ ≤5 exemption + 60+ carve-out confirmed (Phase 1 audit)',
+    'N.H. RSA 540-A:5\u20138 (verified against statute text; §540-A:8 I(b) flat mandatory 2×, no bad-faith element; no fee provision at the deposit remedy — CPA fees run only via RSA 358-A:10 on §540-A:6 procedural violations); scope exemptions + 60+ carve-out confirmed (legal audit, July 2026)',
 };
 
 const NEW_JERSEY: SimpleJurisdiction = {
@@ -2382,18 +2446,17 @@ const NEW_JERSEY: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
-    short: '2× + fees (mandatory)',
+    attorneyFees: false,
+    short: '2× (mandatory)',
     long:
       'Wrongful withholding requires the court to award ("shall") double the ' +
-      'amount wrongfully withheld plus attorney fees and court costs under ' +
-      '§ 46:8-21.1; a special $500\u2013$2,000 penalty applies where the deposit ' +
-      'came from a government agency.',
+      'amount wrongfully withheld under § 46:8-21.1; a special $500\u2013$2,000 ' +
+      'penalty applies where the deposit came from a government agency.',
   },
   statuteCardLabel: '§ 46:8-21.1',
   statuteCardSubtext: 'New Jersey Statutes Annotated',
   penaltyCardLabel: '2× damages',
-  penaltyCardSubtext: 'mandatory, plus court costs and fees',
+  penaltyCardSubtext: 'mandatory, for wrongful withholding',
   copy: {
     heroSummary:
       "A professional demand letter citing New Jersey's security deposit statute " +
@@ -2407,15 +2470,12 @@ const NEW_JERSEY: SimpleJurisdiction = {
       'If the landlord wrongfully withholds any part of your deposit, the court ' +
       'must award you:',
     penaltyBullets: [
-      'Double the amount wrongfully withheld',
-      'Court costs',
-      "Reasonable attorney's fees",
+      'Double the amount wrongfully withheld \u2014 the doubling itself is mandatory',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      "$3,000 plus court costs and fees. New Jersey's double-damages award is " +
-      'mandatory, not discretionary \u2014 most landlords settle quickly once ' +
-      'they realize that.',
+      "$3,000. New Jersey's double-damages award is mandatory, not discretionary " +
+      '\u2014 most landlords settle quickly once they realize that.',
     statuteLine:
       'N.J.S.A. \u00a7 46:8-21.1 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -2438,10 +2498,21 @@ const NEW_JERSEY: SimpleJurisdiction = {
         'condemnation, or evacuation, and to 15 business days following a ' +
         'domestic-violence lease termination.',
     },
+    {
+      kind: 'scope_threshold',
+      heading: 'Owner-occupied buildings with 2 or fewer rental units:',
+      body:
+        'Under \u00a7 46:8-26, the Security Deposit Act does not apply to an ' +
+        'owner-occupied building with two or fewer rental units \u2014 unless ' +
+        'the tenant sends the landlord a written notice invoking the Act, which ' +
+        'takes effect 30 days later. If that describes your building, your ' +
+        'letter can serve as that notice, and your immediate demand rests on ' +
+        'your lease and contract rights.',
+    },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'N.J.S.A. §§ 46:8-19 to 46:8-26 (verified against statute text); mandatory 2× + 1.5-mo cap + interest-on-all confirmed (Phase 1 audit)',
+    'N.J.S.A. §§ 46:8-19 to 46:8-26 (verified against statute text); mandatory 2× (fees discretionary, not asserted) + §46:8-26 owner-occupied ≤2-unit gate + 1.5-mo cap + interest confirmed (legal audit, July 2026)',
 };
 
 const NEW_MEXICO: SimpleJurisdiction = {
@@ -2501,7 +2572,7 @@ const NEW_MEXICO: SimpleJurisdiction = {
         'year the deposit is capped at one month\u2019s rent.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'NMSA § 47-8-18 (verified against statute text); 4-part forfeiture + $250 + no-multiplier confirmed (Phase 1 audit)',
 };
@@ -2518,19 +2589,18 @@ const NORTH_CAROLINA: SimpleJurisdiction = {
   ],
   penalty: {
     kind: 'forfeiture',
-    attorneyFees: true,
-    short: 'Forfeiture + fees',
+    attorneyFees: false,
+    short: 'Forfeiture',
     long:
-      'Willful failure to comply with the deposit, accounting, or notice ' +
-      'requirements voids the landlord\u2019s right to retain any portion of the ' +
-      'deposit under § 42-55; the tenant recovers the balance plus damages, and ' +
-      'willful noncompliance may support attorney fees. North Carolina uses no ' +
-      'damages multiplier.',
+      'Willful failure to comply with the deposit, bond, or notice requirements ' +
+      'of the Article voids the landlord\u2019s right to retain any portion of ' +
+      'the deposit under § 42-55, and the tenant may recover the deposit due ' +
+      'along with any damages. North Carolina uses no damages multiplier.',
   },
   statuteCardLabel: '§ 42-55',
   statuteCardSubtext: 'North Carolina General Statutes',
   penaltyCardLabel: 'Forfeiture',
-  penaltyCardSubtext: 'of the right to withhold, plus fees',
+  penaltyCardSubtext: 'of the right to withhold, for willful violations',
   copy: {
     heroSummary:
       "A professional demand letter citing North Carolina's security deposit " +
@@ -2545,19 +2615,20 @@ const NORTH_CAROLINA: SimpleJurisdiction = {
       'final accounting within 60 days.',
     penaltyLeadIn:
       'North Carolina does not use a 2\u00d7 or 3\u00d7 multiplier. Instead, the ' +
-      'remedy under N.C.G.S. \u00a7 42-55 is strong in its own way: a landlord ' +
-      'who willfully fails to comply with the deposit, accounting, or notice ' +
-      'requirements forfeits the right to keep any portion of your deposit, and ' +
-      'you may also recover:',
+      'remedy under N.C.G.S. \u00a7 42-55 works like this: a landlord who ' +
+      'willfully fails to comply with the deposit, bond, or notice requirements ' +
+      'of the Article forfeits the right to keep any portion of your deposit, ' +
+      'and you may recover:',
     penaltyBullets: [
-      'The full deposit back, regardless of any claimed deductions',
-      "Reasonable attorney's fees",
+      'The full deposit back, regardless of any claimed deductions, where a willful violation is shown',
+      'Your damages for the wrongful withholding',
     ],
     penaltyExample:
-      'So if your landlord blows the deadline or skips the required accounting, ' +
-      'the deductions they tried to claim collapse \u2014 you are owed the entire ' +
-      'deposit. Most landlords return it quickly once they realize their right to ' +
-      'withhold has been forfeited.',
+      'So a landlord who willfully mishandles the deposit \u2014 for example, ' +
+      'never placing it in the required trust account or bond, or withholding it ' +
+      'for charges the statute does not permit \u2014 loses the right to keep ' +
+      'any of it. Most landlords return it quickly once they realize their right ' +
+      'to withhold is at risk.',
     statuteLine:
       'N.C.G.S. \u00a7 42-52, \u00a7 42-55, and any others triggered by your ' +
       'circumstances \u2014 not generic legalese.',
@@ -2574,9 +2645,9 @@ const NORTH_CAROLINA: SimpleJurisdiction = {
         'the landlord must disclose the location within 30 days.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'N.C.G.S. §§ 42-50 to 42-56 (verified against statute text); forfeiture/no-multiplier + tiered caps confirmed (Phase 1 audit)',
+    'N.C.G.S. §§ 42-50 to 42-56 (verified against statute text; §42-55 forfeiture scoped to deposit/bond/notice requirements — a missed deadline alone is not a listed trigger; fees discretionary and willfulness-gated, not asserted); tiered caps confirmed (legal audit, July 2026)',
 };
 
 const NORTH_DAKOTA: SimpleJurisdiction = {
@@ -2589,12 +2660,11 @@ const NORTH_DAKOTA: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 3,
-    attorneyFees: true,
+    attorneyFees: false,
     short: 'up to 3×',
     long:
       'Deposit money withheld without reasonable justification exposes the ' +
-      'landlord to treble (three times) damages plus attorney fees under ' +
-      '§ 47-16-07.1(4).',
+      'landlord to treble (three times) damages under § 47-16-07.1(4).',
   },
   statuteCardLabel: '§ 47-16-07.1',
   statuteCardSubtext: 'North Dakota Century Code',
@@ -2630,9 +2700,9 @@ const NORTH_DAKOTA: SimpleJurisdiction = {
         'required if occupancy lasts nine months or longer.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'N.D.C.C. § 47-16-07.1 (verified against statute text); treble + 1-mo cap + 9-mo interest trigger confirmed (Phase 1 audit)',
+    'N.D.C.C. § 47-16-07.1 (verified against full Ch. 47-16 codified text — §47-16-07.1(4) grants treble only, no fee provision reaches a deposit claim); 1-mo cap + 9-mo interest trigger confirmed (legal audit, July 2026)',
 };
 
 const OHIO: SimpleJurisdiction = {
@@ -2693,7 +2763,7 @@ const OHIO: SimpleJurisdiction = {
         'right. Ohio sets no deposit cap.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Ohio Rev. Code § 5321.16 (verified against statute text); effective-2× + forwarding-address forfeiture gate confirmed (Phase 1 audit)',
 };
@@ -2716,15 +2786,14 @@ const OKLAHOMA: SimpleJurisdiction = {
   statutes: [{ label: '41 O.S. § 115', full: 'Okla. Stat. tit. 41, § 115' }],
   penalty: {
     kind: 'forfeiture',
-    attorneyFees: true,
+    attorneyFees: false,
     short: 'Full deposit + costs',
     long:
       'A landlord who in bad faith retains the deposit must return it in full and ' +
       'is liable for court costs; escrow is mandatory, and actual misappropriation ' +
-      'can trigger criminal liability under § 115(A). The exact civil damages ' +
-      'multiplier is not clearly settled across sources \u2014 the reliable civil ' +
-      'floor is the full deposit plus costs (and fees/additional damages where ' +
-      'willfulness is shown).',
+      'can trigger criminal liability under § 115(A). Oklahoma\u2019s statute ' +
+      'carries no damages multiplier \u2014 the civil remedy is the full deposit ' +
+      'plus costs.',
   },
   statuteCardLabel: '41 O.S. § 115',
   statuteCardSubtext: 'Oklahoma Statutes, Title 41',
@@ -2768,9 +2837,9 @@ const OKLAHOMA: SimpleJurisdiction = {
         'your letter provides. Oklahoma sets no deposit cap.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Okla. Stat. tit. 41, § 115 (verified against statute text; MEDIUM confidence on civil multiplier — § 115(C)/(E) ambiguous, pin at a later direct statute read) (Phase 1 audit)',
+    'Okla. Stat. tit. 41, §§ 115, 105 (verified against statute text; no multiplier exists; §105(B) fee route is two-way prevailing-party and is not asserted) (legal audit, July 2026)',
 };
 
 const OREGON: SimpleJurisdiction = {
@@ -2783,18 +2852,18 @@ const OREGON: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
-    short: '2× + fees',
+    attorneyFees: false,
+    short: '2× damages',
     long:
-      'A landlord who wrongfully withholds is liable for up to twice the amount ' +
-      'wrongfully withheld under ORS 90.300; failure to give the itemized ' +
-      'accounting forfeits the right to withhold, and attorney fees and costs are ' +
-      'available.',
+      'A landlord who wrongfully withholds is liable for twice the amount ' +
+      'wrongfully withheld under ORS 90.300(16) \u2014 Oregon courts treat the ' +
+      'doubling as flat and non-discretionary \u2014 and failure to give the ' +
+      'itemized accounting forfeits the right to withhold.',
   },
   statuteCardLabel: '§ 90.300',
   statuteCardSubtext: 'Oregon Revised Statutes',
   penaltyCardLabel: '2× damages',
-  penaltyCardSubtext: 'for wrongful withholding, plus fees',
+  penaltyCardSubtext: 'flat, for wrongful withholding under ORS 90.300(16)',
   copy: {
     heroSummary:
       "A professional demand letter citing Oregon's security deposit statute " +
@@ -2826,9 +2895,9 @@ const OREGON: SimpleJurisdiction = {
         'letter applies both layers when they fit your situation.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'ORS § 90.300 + Portland PCC 30.01.087 (verified against text); state-2× vs. city-$250/violation two-layer confirmed distinct (Phase 1 audit)',
+    'ORS § 90.300 + Portland PCC 30.01.087 (verified against text; 90.300(16) flat 2× per Beckett/Waldvogel; fee route is ORS 90.255, discretionary two-way, not asserted); two-layer state/city distinction confirmed (legal audit, July 2026)',
 };
 
 const PENNSYLVANIA: SimpleJurisdiction = {
@@ -2885,14 +2954,23 @@ const PENNSYLVANIA: SimpleJurisdiction = {
       heading: 'Good to know:',
       body:
         'Pennsylvania caps deposits at two months\u2019 rent in the first year ' +
-        'and one month\u2019s rent thereafter (no increase after five years). To ' +
-        'preserve the double-damages right, you must give the landlord a written ' +
-        'forwarding address \u2014 which your letter provides.',
+        'and one month\u2019s rent thereafter (no increase after five years).',
+    },
+    {
+      kind: 'trigger_condition',
+      heading: 'The forwarding-address rule is strict (§ 250.512(e)):',
+      body:
+        'A tenant who fails to provide the landlord with a new address in ' +
+        'writing upon moving out is relieved from ALL liability under the ' +
+        'section \u2014 meaning the landlord owes neither the list, the refund, ' +
+        'nor the double-damages penalty. Your demand letter supplies your ' +
+        'forwarding address in writing, which is essential to preserving these ' +
+        'rights.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    '68 P.S. §§ 250.511a, 250.512 (verified against statute text); 2×-of-excess + forwarding-address gate + tiered cap confirmed (Phase 1 audit)',
+    '68 P.S. §§ 250.511a, 250.512 (verified against statute text; §250.512(e) address failure relieves the landlord of all §250.512 liability); 2×-of-excess + tiered cap confirmed (legal audit, July 2026)',
 };
 
 const RHODE_ISLAND: SimpleJurisdiction = {
@@ -2908,10 +2986,10 @@ const RHODE_ISLAND: SimpleJurisdiction = {
     attorneyFees: true,
     short: '2× + fees',
     long:
-      'A landlord who fails to comply owes the amount due plus twice the amount ' +
-      'wrongfully withheld under § 34-18-19(c); bad faith is presumed on a missed ' +
-      'deadline, and failure to provide an itemized statement forfeits the right ' +
-      'to withhold.',
+      'A landlord who fails to comply with the return-and-itemization duty owes ' +
+      'the amount due plus twice the amount wrongfully withheld, plus reasonable ' +
+      'attorney fees, under § 34-18-19(c). The trigger is non-compliance itself ' +
+      '\u2014 the statute requires no showing of bad faith.',
   },
   statuteCardLabel: '§ 34-18-19',
   statuteCardSubtext: 'Rhode Island General Laws',
@@ -2921,17 +2999,17 @@ const RHODE_ISLAND: SimpleJurisdiction = {
     heroSummary:
       "A professional demand letter citing Rhode Island's security deposit " +
       'statute (R.I. Gen. Laws \u00a7 34-18-19), the 20-day return deadline, and ' +
-      'the double-damages penalty for bad-faith withholding. Ready in minutes.',
+      'the double-damages penalty for non-compliance. Ready in minutes.',
     lawSummary:
       'Under R.I. Gen. Laws \u00a7 34-18-19, your landlord has 20 days after your ' +
       'tenancy ends and you provide a forwarding address to return your security ' +
       'deposit or provide a written, itemized statement of any deductions.',
     penaltyLeadIn:
-      'If the landlord wrongfully withholds your deposit in bad faith, you may ' +
-      'recover:',
+      'If the landlord fails to comply with the return-and-itemization duty, you ' +
+      'may recover:',
     penaltyBullets: [
-      'Twice the amount wrongfully withheld',
-      "Plus your reasonable attorney's fees",
+      'The amount due, plus twice the amount wrongfully withheld',
+      "Your reasonable attorney's fees",
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
@@ -2951,9 +3029,9 @@ const RHODE_ISLAND: SimpleJurisdiction = {
         'furnished units where the furnishings exceed $5,000 in value.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'R.I. Gen. Laws § 34-18-19 (verified against statute text); 2× + 1-mo cap confirmed (Phase 1 audit)',
+    'R.I. Gen. Laws § 34-18-19 (verified against statute text; §34-18-19(c) strict trigger — no bad-faith element; fees in-statute one-way) (legal audit, July 2026)',
 };
 
 const SOUTH_CAROLINA: SimpleJurisdiction = {
@@ -2990,12 +3068,12 @@ const SOUTH_CAROLINA: SimpleJurisdiction = {
       'If the landlord wrongfully withholds your deposit or fails to provide the ' +
       'required written notice, you may recover:',
     penaltyBullets: [
-      'Up to three times the amount wrongfully withheld',
+      'Three times the amount wrongfully withheld',
       "Reasonable attorney's fees",
     ],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of up ' +
-      'to $4,500 plus fees. Most landlords settle quickly once they realize you ' +
+      'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
+      '$4,500 plus fees. Most landlords settle quickly once they realize you ' +
       'know the law.',
     statuteLine:
       'S.C. Code \u00a7 27-40-410 and any others triggered by your circumstances ' +
@@ -3012,7 +3090,7 @@ const SOUTH_CAROLINA: SimpleJurisdiction = {
         'last known address \u2014 so your letter supplies your address in writing.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'S.C. Code Ann. § 27-40-410 (verified against statute text; resolves checklist "verify"); treble + fees + address gate confirmed (Phase 1 audit)',
 };
@@ -3077,7 +3155,7 @@ const SOUTH_DAKOTA: SimpleJurisdiction = {
         'agreement.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'SDCL §§ 43-32-24, 43-32-6.1 (verified against statute text); $200-cap-NOT-2× (residential) + 1-mo cap confirmed (Phase 1 audit)',
 };
@@ -3155,7 +3233,7 @@ const TENNESSEE: ScopeGatedJurisdiction = {
         'whichever applies to you.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Tenn. Code Ann. § 66-28-301 (verified against statute text); forfeiture-NO-multiplier (Phase 5 flag #4 — checklist "2×" wrong) + county-pop gate confirmed (Phase 1 audit)',
 };
@@ -3173,15 +3251,14 @@ const UTAH: SimpleJurisdiction = {
   penalty: {
     kind: 'fixed',
     fixedAmount: 100,
-    attorneyFees: true,
+    attorneyFees: false,
     short: 'Deposit + $100',
     long:
       'Utah uses a notice-first mechanic: if the deposit is not returned within ' +
       '30 days, the tenant serves a statutorily formatted notice and the landlord ' +
       'has 5 business days to comply. Continued failure forfeits the deposit and ' +
-      'makes the landlord liable for the full deposit, any prepaid rent, a fixed ' +
-      '$100 civil penalty, and attorney fees and costs under § 57-17-5. There is ' +
-      'no damages multiplier.',
+      'makes the landlord liable for the full deposit, any prepaid rent, and a ' +
+      'fixed $100 civil penalty under § 57-17-5. There is no damages multiplier.',
   },
   statuteCardLabel: '§ 57-17-5',
   statuteCardSubtext: 'Utah Code',
@@ -3193,21 +3270,19 @@ const UTAH: SimpleJurisdiction = {
       '(Utah Code \u00a7 57-17-5), the 30-day return deadline, and the ' +
       'notice-first remedy that adds a $100 civil penalty. Ready in minutes.',
     lawSummary:
-      'Under Utah Code \u00a7 57-17-5, your landlord must return your deposit ' +
-      'within 30 days after your tenancy ends, or within 15 days after you ' +
-      'provide a forwarding address if that is later, along with a written, ' +
-      'itemized statement of any deductions.',
+      'Under Utah Code \u00a7 57-17-3, your landlord must return your deposit ' +
+      'within 30 days after your tenancy ends, delivered or mailed to your last ' +
+      'known address, along with a written, itemized statement of any deductions.',
     penaltyLeadIn:
       'If the landlord fails to comply or acts in bad faith, you may recover:',
     penaltyBullets: [
       'Your full deposit and any prepaid rent',
       'A $100 civil penalty',
-      "Court costs and, where applicable, attorney's fees",
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a judgment of $1,600 ' +
-      'plus prepaid rent and costs. Most landlords settle quickly once they ' +
-      'realize you know the law.',
+      'plus prepaid rent. Most landlords settle quickly once they realize you ' +
+      'know the law.',
     statuteLine:
       'Utah Code \u00a7 57-17-5, \u00a7 57-17-3, and any others triggered by ' +
       'your circumstances \u2014 not generic legalese.',
@@ -3223,9 +3298,9 @@ const UTAH: SimpleJurisdiction = {
         'within five days of your moving out before deducting for damages.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Utah Code §§ 57-17-3, 57-17-5 (verified against statute text); notice-first + $100-NOT-3× confirmed (Phase 1 audit)',
+    'Utah Code §§ 57-17-3, 57-17-5 (verified against statute text; §57-17-3(2) = flat 30 days to last known address — no forwarding-address extension; §57-17-5(2) fee route two-way prevailing-party, not asserted); notice-first + $100-NOT-3× confirmed (legal audit, July 2026)',
 };
 
 const VERMONT: SimpleJurisdiction = {
@@ -3284,7 +3359,7 @@ const VERMONT: SimpleJurisdiction = {
         'municipalities (such as Burlington) add their own ordinances.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     '9 V.S.A. § 4461 (verified against statute text); forfeiture + willful-2× + 60-day seasonal confirmed (Phase 1 audit)',
 };
@@ -3297,45 +3372,45 @@ const VIRGINIA: SimpleJurisdiction = {
   deadlineLabel: '45 days',
   statutes: [{ label: '§ 55.1-1226', full: 'Va. Code § 55.1-1226' }],
   penalty: {
-    kind: 'forfeiture',
-    attorneyFees: true,
-    short: 'Forfeiture + actual damages',
+    kind: 'none',
+    attorneyFees: false,
+    short: 'Return + actual damages',
     long:
-      'A landlord who misses the deadline forfeits the right to withhold; a ' +
-      'willful failure requires the court to order return of the deposit plus ' +
-      'ACTUAL damages, reasonable attorney fees, and court costs under ' +
-      '§ 55.1-1226(E). There is no statutory multiplier \u2014 sources citing ' +
-      '"double the deposit" are mistaken.',
+      'On a willful failure to comply, the court is required ("shall") to order ' +
+      'return of the deposit plus your actual damages under § 55.1-1226(E) ' +
+      '\u2014 unless you owe the landlord rent, in which case the court instead ' +
+      'credits the deposit against the rent due. There is no statutory ' +
+      'multiplier \u2014 sources citing "double the deposit" are mistaken.',
   },
   statuteCardLabel: '§ 55.1-1226',
   statuteCardSubtext: 'Virginia Code (VRLTA)',
-  penaltyCardLabel: 'Forfeiture',
-  penaltyCardSubtext: 'plus actual damages and fees; no multiplier',
+  penaltyCardLabel: 'Actual damages',
+  penaltyCardSubtext: 'plus mandatory return, for willful failure; no multiplier',
   copy: {
     heroSummary:
       "A professional demand letter citing Virginia's security deposit statute " +
       '(Va. Code \u00a7 55.1-1226), the 45-day return deadline, and the ' +
-      'forfeiture-plus-actual-damages remedy for willful failure. Ready in ' +
+      'mandatory return-plus-actual-damages remedy for willful failure. Ready in ' +
       'minutes.',
     lawSummary:
-      'Under Va. Code \u00a7 55.1-1226, your landlord has 45 days after your ' +
-      'tenancy ends to return your security deposit along with a written, ' +
-      'itemized statement of any deductions. (If a third-party contractor is ' +
-      'needed to assess damage, the landlord gets an additional 15 days, but must ' +
-      'notify you in writing.)',
+      'Under Va. Code \u00a7 55.1-1226, your landlord has 45 days \u2014 ' +
+      'measured from the later of the termination of your tenancy or the date ' +
+      'you vacate \u2014 to return your security deposit along with a written, ' +
+      'itemized statement of any deductions. (A narrow 15-day extension exists, ' +
+      'but only where the damages exceed the amount of the deposit AND require a ' +
+      'third-party contractor, and the landlord notifies you in writing within ' +
+      'the 45 days.)',
     penaltyLeadIn:
-      'Virginia does not apply a flat 2\u00d7 or 3\u00d7 multiplier. Instead, a ' +
-      'landlord who fails to meet the deadline forfeits the right to withhold any ' +
-      'part of your deposit, and where the withholding is willful you may recover:',
+      'Virginia does not apply a flat 2\u00d7 or 3\u00d7 multiplier. Where the ' +
+      'failure to comply is willful, the court must order:',
     penaltyBullets: [
-      'The full deposit back, plus any actual damages you suffered',
-      "Reasonable attorney's fees and court costs",
+      'Return of the security deposit to you',
+      'Your actual damages on top',
     ],
     penaltyExample:
-      'So if your landlord misses the 45-day deadline or skips the required ' +
-      'accounting, the deductions they tried to claim collapse and you are owed ' +
-      'the entire deposit. Most landlords return it quickly once they realize ' +
-      'their right to withhold is gone.',
+      'So a landlord who willfully sits on your deposit past the 45-day deadline ' +
+      'faces a mandatory order to return it, plus your actual damages. Most ' +
+      'landlords return it quickly once they realize the exposure.',
     statuteLine:
       'Va. Code \u00a7 55.1-1226 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -3350,10 +3425,22 @@ const VIRGINIA: SimpleJurisdiction = {
         'longer than 13 months. Unclaimed deposits pass to the State Treasurer ' +
         'after one year.',
     },
+    {
+      kind: 'trigger_condition',
+      heading: 'If you owe rent:',
+      body:
+        'Under \u00a7 55.1-1226(E), where the tenant owes rent, the court ' +
+        'credits the deposit against the rent due instead of ordering it ' +
+        'returned \u2014 so unpaid rent changes what a Virginia deposit claim ' +
+        'can recover. Provide your forwarding address in writing (your letter ' +
+        'does): without one, the landlord may simply continue holding the ' +
+        'deposit in escrow, and after a year may remit it to the State Treasurer ' +
+        'as unclaimed property.',
+    },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Va. Code § 55.1-1226 (verified against statute text); actual-damages-NOT-double + 2-mo cap confirmed (Phase 1 audit)',
+    'Va. Code §§ 55.1-1226, 55.1-1201 (verified against statute text at law.lis.virginia.gov; §(E) willful remedy + rent-credit carve-out + 15-day-extension preconditions + later-of anchor; no express forfeiture provision found in (A)–(J), not asserted; fees willful-gated with rent carve-out, not asserted) (legal audit, July 2026)',
 };
 
 // ===========================================================================
@@ -3374,41 +3461,42 @@ const WASHINGTON: SimpleJurisdiction = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
-    short: 'up to 2× + fees',
+    attorneyFees: false,
+    short: 'up to 2× the deposit',
     long:
       'Missing the 30-day deadline makes the landlord liable for the full deposit ' +
-      'and bars any retention claim or defense; a court may award up to twice the ' +
-      'deposit for an intentional refusal under § 59.18.280(2), and the ' +
-      'prevailing party recovers costs and attorney fees.',
+      'and bars any retention claim or defense; for an intentional refusal, a ' +
+      'court may additionally award up to twice the amount of the DEPOSIT itself ' +
+      '\u2014 not merely the portion withheld \u2014 under § 59.18.280(2).',
   },
   statuteCardLabel: '§ 59.18.280',
   statuteCardSubtext: 'Revised Code of Washington',
   penaltyCardLabel: 'up to 2×',
-  penaltyCardSubtext: 'for intentional refusal, plus costs and fees',
+  penaltyCardSubtext: 'the deposit, for intentional refusal',
   copy: {
     heroSummary:
       "A professional demand letter citing Washington's security deposit statute " +
       '(RCW \u00a7 59.18.280), the 30-day return deadline, and the double-damages ' +
       'penalty for intentional refusal. Ready in minutes.',
     lawSummary:
-      'Under RCW \u00a7 59.18.280, your landlord has 30 days from the date you ' +
-      'move out to return your security deposit or provide a written, itemized ' +
-      'statement of any deductions. (This deadline was extended from 21 to 30 ' +
-      'days by a 2023 amendment \u2014 many outdated sources still cite the old ' +
-      'figure.)',
+      'Under RCW \u00a7 59.18.280, your landlord has 30 days after the ' +
+      'termination of your rental agreement AND your vacating the premises ' +
+      '\u2014 both events \u2014 to return your security deposit or provide a ' +
+      'written, itemized statement of any deductions. (This deadline was ' +
+      'extended from 21 to 30 days by a 2023 amendment \u2014 many outdated ' +
+      'sources still cite the old figure.)',
     penaltyLeadIn:
       'If the landlord fails to meet the deadline or withholds your deposit ' +
       'improperly, you may recover:',
     penaltyBullets: [
-      'Up to two times the amount wrongfully withheld',
-      'Court costs',
-      "Reasonable attorney's fees",
+      'The full deposit back \u2014 a landlord who misses the deadline is barred from asserting any claim or defense to keep it',
+      'Up to two times the amount of the deposit itself, for an intentional refusal',
     ],
     penaltyExample:
-      'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000 plus court costs and fees. Most landlords settle quickly once they ' +
-      'realize you know the law.',
+      'So a $1,500 deposit intentionally withheld can support a court judgment ' +
+      'of up to $3,000 \u2014 and the 2\u00d7 is measured against the whole ' +
+      'deposit even if only part was withheld. Most landlords settle quickly ' +
+      'once they realize you know the law.',
     statuteLine:
       'RCW \u00a7 59.18.280 and any others triggered by your circumstances ' +
       '\u2014 not generic legalese.',
@@ -3433,9 +3521,9 @@ const WASHINGTON: SimpleJurisdiction = {
         'account.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'RCW § 59.18.280 (verified against statute text; resolves checklist "was 21"); 30-day deadline (HB 1074, eff. 7/23/2023) + up-to-2× confirmed (Phase 1 audit)',
+    'RCW §§ 59.18.280, 59.18.260 (verified against statute text; two-event trigger; 2× base = the deposit; fee provision is two-way prevailing-party, not asserted); 30-day deadline (HB 1074, eff. 7/23/2023) confirmed (legal audit, July 2026)',
 };
 
 const WEST_VIRGINIA: SimpleJurisdiction = {
@@ -3448,24 +3536,23 @@ const WEST_VIRGINIA: SimpleJurisdiction = {
   deadlineLabel: '60 days',
   statutes: [
     { label: '§ 37-6A-1', full: 'W. Va. Code § 37-6A-1' },
-    { label: '§ 37-6A-3', full: 'W. Va. Code § 37-6A-3' },
+    { label: '§ 37-6A-5', full: 'W. Va. Code § 37-6A-5' },
   ],
   penalty: {
     kind: 'multiplier',
     multiplier: 1.5,
-    attorneyFees: true,
-    short: '1.5× + fees',
+    attorneyFees: false,
+    short: 'Deposit + 1.5×',
     long:
-      'Willful or not-good-faith noncompliance exposes the landlord to the ' +
-      'unreturned deposit plus damages for annoyance and inconvenience equal to ' +
-      'one and one-half (1.5) times the amount wrongfully withheld, plus court ' +
-      'costs and reasonable attorney fees, under § 37-6A-3. The "double damages" ' +
-      'some sources cite is wrong \u2014 the statute says 1.5×.',
+      'Willful or not-good-faith noncompliance exposes the landlord, under ' +
+      '§ 37-6A-5(a), to the unreturned portion of the deposit PLUS damages equal ' +
+      'to one and one-half (1.5) times the amount wrongfully withheld. The ' +
+      '"double damages" some sources cite is wrong \u2014 the statute says 1.5×.',
   },
-  statuteCardLabel: '§ 37-6A-3',
+  statuteCardLabel: '§ 37-6A-5',
   statuteCardSubtext: 'West Virginia Code',
   penaltyCardLabel: '1.5× damages',
-  penaltyCardSubtext: 'for willful noncompliance, plus costs and fees',
+  penaltyCardSubtext: 'on top of the deposit due, for willful noncompliance',
   copy: {
     heroSummary:
       "A professional demand letter citing West Virginia's security deposit law " +
@@ -3479,15 +3566,15 @@ const WEST_VIRGINIA: SimpleJurisdiction = {
     penaltyLeadIn:
       'If the landlord deliberately fails to comply, you may recover:',
     penaltyBullets: [
-      'Damages equal to one and one-half times the amount wrongfully withheld',
-      "Court costs and reasonable attorney's fees",
+      'The portion of the deposit wrongfully withheld (§ 37-6A-5(a)(1)), plus',
+      'Damages equal to one and one-half times that amount, on top (§ 37-6A-5(a)(2))',
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$2,250 plus fees. Most landlords settle quickly once they realize you know ' +
-      'the law.',
+      '$3,750 \u2014 the $1,500 back plus $2,250 in damages. Most landlords ' +
+      'settle quickly once they realize you know the law.',
     statuteLine:
-      'W. Va. Code \u00a7 37-6A-1, \u00a7 37-6A-3, and any others triggered by ' +
+      'W. Va. Code \u00a7 37-6A-1, \u00a7 37-6A-5, and any others triggered by ' +
       'your circumstances \u2014 not generic legalese.',
   },
   notes: [
@@ -3501,9 +3588,9 @@ const WEST_VIRGINIA: SimpleJurisdiction = {
         'sets no deposit cap and requires no interest.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'W. Va. Code §§ 37-6A-1 to 37-6A-6 (verified against statute text; resolves checklist "verify"); 1.5×-NOT-double confirmed (Phase 1 audit)',
+    'W. Va. Code §§ 37-6A-1 to 37-6A-6 (full article fetched T1; remedies = §37-6A-5, which grants NO fees or costs — the only fee provision, §37-6A-4, runs in the landlord-enforcement posture); 1.5×-NOT-double + shorter-of-60/45 + 15-day extension confirmed (legal audit, July 2026)',
 };
 
 const WISCONSIN: SimpleJurisdiction = {
@@ -3568,7 +3655,7 @@ const WISCONSIN: SimpleJurisdiction = {
         'the right to make deductions. There is no statewide cap.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Wis. Stat. §§ 704.28, 100.20(5) + ATCP 134.06 (verified against text; Paulik v. Coombs); 2× via §100.20(5) confirmed (Phase 1 audit)',
 };
@@ -3631,7 +3718,7 @@ const WYOMING: SimpleJurisdiction = {
         'nonrefundable portion; Wyoming sets no deposit cap.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Wyo. Stat. § 1-21-1208 (verified against statute text); full-deposit + costs, NO multiplier confirmed (Phase 1 audit)',
 };
@@ -3697,7 +3784,7 @@ const DISTRICT_OF_COLUMBIA: SimpleJurisdiction = {
         'failure to pay owed interest can itself support treble damages.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     '14 DCMR §§ 308\u2013311 (D.C. Code § 42-3502.17) (verified against text); two-step deadline + treble-for-bad-faith + 1-mo cap confirmed (Phase 1 audit)',
 };
@@ -3788,13 +3875,14 @@ const PORTLAND_OR: AugmentingCity = {
     attorneyFees: true,
     short: '$250 per violation',
     long:
-      'Under PCC § 30.01.087 (Ordinance 190905, eff. July 29, 2022), a landlord ' +
-      'who violates any of the section\u2019s procedural duties is liable for up ' +
-      'to $250 per violation, plus actual damages and reasonable attorney fees ' +
-      'and costs.',
+      'Under PCC § 30.01.087 (amended through Ordinance 191973, eff. January 1, ' +
+      '2025), a landlord who violates any of the section\u2019s duties is liable ' +
+      'for up to $250 per violation, plus actual damages and reasonable attorney ' +
+      'fees and costs.',
   },
   cityDuties: [
-    'Caps the deposit at half a month\u2019s rent if last month\u2019s rent was collected',
+    'Caps the deposit: one full month\u2019s rent if last month\u2019s rent was NOT collected (§ A.2), or half a month\u2019s rent additional if last month\u2019s rent WAS collected (§ A.1)',
+    'Where the tenant was conditionally approved under the screening ordinance, permits an additional deposit of up to half a month\u2019s rent \u2014 but the landlord MUST offer to accept it in installments over up to three months (§ A.3, added eff. 1/1/2025)',
     'Requires a separate financial-institution account within two weeks of receipt (interest to the tenant)',
     'Requires a signed condition report at move-in',
     'Requires a notice of rights with the final accounting and a rent-payment-history form on request',
@@ -3820,8 +3908,8 @@ const PORTLAND_OR: AugmentingCity = {
       body: 'These Oregon rules do not apply to Portland, Maine \u2014 Maine tenants follow Maine state law only.',
     },
   ],
-  lastVerified: '2026-07-05',
-  primarySource: 'PCC § 30.01.087 (Ord. 190905); ORS 90.300 (verified against text); two-layer confirmed distinct (Phase 1 audit)',
+  lastVerified: '2026-07-20',
+  primarySource: 'PCC § 30.01.087 fetched T1 in full (A–G; history through Ord. 191973, eff. 1/1/2025 — all three cap branches); ORS 90.300 re-verified; two-layer confirmed distinct (legal audit, July 2026)',
 };
 
 /** REPLACES — Evanston's own ordinance governs the timeline/penalty; the
@@ -3917,7 +4005,7 @@ const CHICAGO_IL: ReplacingCity = {
   slug: 'chicago-il',
   name: 'Chicago, Illinois',
   homepageSummary:
-    'The Chicago RLTO supersedes Illinois state law \u2014 deposit plus interest due within 45 days of vacating (itemized statement with receipts within 30 days when deducting), with a strict-liability 2\u00d7 penalty plus interest, fees, and costs. Owner-occupied buildings of six or fewer units are exempt.',
+    'The Chicago RLTO governs covered Chicago rentals \u2014 deposit plus interest due within 45 days of vacating (itemized statement with receipts within 30 days when deducting), with a strict-liability 2\u00d7 penalty plus interest. Owner-occupied buildings of six or fewer units are exempt.',
   parentStateSlug: 'illinois',
   deadlineDays: 45,
   deadlineLabel: '30 / 45 days',
@@ -3928,18 +4016,23 @@ const CHICAGO_IL: ReplacingCity = {
   penalty: {
     kind: 'multiplier',
     multiplier: 2,
-    attorneyFees: true,
+    attorneyFees: false,
     short: '2× (strict liability)',
     long:
       'A violation of § 5-12-080 makes the landlord liable for twice the deposit ' +
-      'amount plus interest, attorney fees, and costs under § 5-12-180 \u2014 ' +
-      'strict liability, with no good-faith defense (a limited cure provision ' +
-      'exists only for a merely-deficient interest payment).',
+      'amount plus interest under § 5-12-180 \u2014 strict liability, with no ' +
+      'good-faith defense (a limited cure provision exists only for a ' +
+      'merely-deficient interest payment). Fee-shifting exists under § 5-12-180 ' +
+      'but carries a carve-out for forcible entry and detainer actions, so it is ' +
+      'not asserted here.',
   },
   displaces:
-    'The Illinois Security Deposit Return Act (765 ILCS 710) does NOT govern in ' +
-    'Chicago \u2014 the RLTO supersedes it, with a stricter timeline and ' +
-    'automatic (strict-liability) 2\u00d7 penalty. Lead with the RLTO.',
+    'For covered Chicago units, the RLTO \u2014 not the state default \u2014 ' +
+    'sets the deposit timeline and the automatic (strict-liability) 2\u00d7 ' +
+    'penalty; it is stricter than the Illinois Security Deposit Return Act (765 ' +
+    'ILCS 710) on both. State-law rights remain available in parallel where they ' +
+    'apply \u2014 the ordinance adds protection rather than erasing state law. ' +
+    'Lead with the RLTO.',
   notes: [
     {
       kind: 'scope_threshold',
@@ -3962,7 +4055,7 @@ const CHICAGO_IL: ReplacingCity = {
         'stale figure.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'Chicago RLTO §§ 5-12-080, 5-12-180 (verified against ordinance text); strict-liability 2× + 45-day + owner-occ ≤6 carve-out confirmed (Phase 1 audit)',
 };
@@ -3979,7 +4072,7 @@ const COOK_COUNTY_IL: ReplacingCity = {
   deadlineDays: 30,
   deadlineLabel: '30 days',
   statutes: [
-    { label: 'RTLO § 42-811', full: 'Cook County Residential Tenant and Landlord Ordinance § 42-811' },
+    { label: 'RTLO § 42-111', full: 'Cook County Residential Tenant and Landlord Ordinance § 42-111 (adopted as § 42-811, Ord. 20-3562)' },
   ],
   penalty: {
     kind: 'multiplier',
@@ -3987,15 +4080,21 @@ const COOK_COUNTY_IL: ReplacingCity = {
     attorneyFees: true,
     short: '2× + fees',
     long:
-      'A violation of the RTLO\u2019s key deposit obligations makes the landlord ' +
-      'liable for twice the deposit amount plus attorney fees \u2014 built around ' +
-      'three strict-liability duties (separate account, written disclosure, and ' +
-      'timely return).',
+      'The tenant \u201cshall be awarded\u201d twice the security deposit plus ' +
+      'reasonable attorney\u2019s fees for a violation of the deposit cap, the ' +
+      'installment right, or the 30-day return-and-itemization duty \u2014 the ' +
+      'three strict-liability duties under § 42-111(M)(1). The separate-account ' +
+      'and bank-disclosure duties are enforceable too, but only after the tenant ' +
+      'serves written notice and the landlord fails to cure within two business ' +
+      'days (§ 42-111(M)(2)).',
   },
   displaces:
-    'The Illinois Security Deposit Return Act (765 ILCS 710) does NOT govern ' +
-    'where the Cook County RTLO applies \u2014 lead with the RTLO and its 30-day ' +
-    'deadline.',
+    'For units the RTLO covers, its own 30-day deadline and automatic 2\u00d7 ' +
+    'penalty govern the deposit \u2014 lead with the RTLO. The ordinance ' +
+    'expressly preserves rights under Illinois state law and other local ' +
+    'ordinances (§ 42-115), so state-law claims remain available in parallel; ' +
+    'the only state provision it supersedes outright is § 18 of the Mobile Home ' +
+    'Landlord and Tenant Rights Act.',
   notes: [
     {
       kind: 'scope_threshold',
@@ -4008,9 +4107,9 @@ const COOK_COUNTY_IL: ReplacingCity = {
         'Illinois account, written bank disclosure, and a signed receipt.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Cook County RTLO § 42-800 series (§ 42-811) (verified against ordinance text); 30-day + 2× + 1.5-mo cap + scope carve-outs confirmed (Phase 1 audit)',
+    'Cook County RTLO Art. IV, adopted §§ 42-801–816 (Ord. 20-3562, full Board text) — codified §§ 42-101–116, live deposit section § 42-111; (M)(1) strict trio = cap/installments/30-day return, (M)(2) notice + 2-business-day cure for account/disclosure duties; § 42-115 preservation + § 42-103(A)(1) MHLTRA-§18-only supersession (legal audit, July 2026)',
 };
 
 /** AUGMENTS — San Francisco layers a deposit-interest requirement on top of
@@ -4028,18 +4127,20 @@ const SAN_FRANCISCO_CA: AugmentingCity = {
   cityPenalty: {
     kind: 'none',
     attorneyFees: false,
-    short: 'Interest + 10% (unpaid)',
+    short: 'Interest owed',
     long:
       'San Francisco\u2019s overlay is a deposit-interest requirement rather than ' +
-      'a separate withholding multiplier: a landlord who fails to pay the required ' +
-      'annual interest owes that interest, and the tenant may pursue it directly ' +
-      '(the state § 1950.5 penalties remain the route for wrongful withholding of ' +
-      'the deposit itself).',
+      'a separate withholding penalty: Chapter 49 imposes no multiplier or late ' +
+      'fee of its own \u2014 its remedies section (§ 49.3) simply applies the ' +
+      'state remedies of Civil Code § 1950.5. A landlord who fails to pay the ' +
+      'required interest owes that interest, and the tenant may pursue it ' +
+      'directly.',
   },
   cityDuties: [
     'Pay annual interest on deposits held longer than one year, for ALL residential units except government-subsidized ones',
     'Use the interest rate published annually by the SF Rent Board (rate year runs March 1\u2013February 28)',
-    'Pay the interest on the tenant\u2019s annual due date, by direct payment or rent credit',
+    'Pay the interest on the tenant\u2019s annual due date, by direct payment or rent credit (the landlord chooses the method)',
+    'On move-out, pay any unpaid accrued interest pro-rata no later than two weeks after the tenant vacates (§ 49.2(c)) \u2014 a city clock shorter than the state\u2019s 21 days',
   ],
   stateStillApplies:
     'California Civil Code § 1950.5 applies in full: a 21-day return deadline, up ' +
@@ -4057,9 +4158,9 @@ const SAN_FRANCISCO_CA: AugmentingCity = {
         'a landlord may deduct 50% of the annual Rent Board fee from the interest.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'SF Admin Code Ch. 49 (overlay on Cal. Civ. Code § 1950.5) (verified); annual-interest-all-units + Rent-Board-published rate confirmed (Phase 1 audit)',
+    'SF Admin Code Ch. 49 read in full (§§ 49.1–49.5; codified current); § 49.3 imports Civ. Code § 1950.5 remedies — NO city penalty exists; § 49.2(c) 14-day post-vacancy interest clock; § 49.4 waiver void (legal audit, July 2026)',
 };
 
 /** AUGMENTS — Berkeley layers a deposit-interest requirement on § 1950.5. */
@@ -4068,26 +4169,34 @@ const BERKELEY_CA: AugmentingCity = {
   slug: 'berkeley-ca',
   name: 'Berkeley, California',
   homepageSummary:
-    'Berkeley requires annual deposit interest at the city-published Berkeley Bank Rate (10% penalty if unpaid by Jan 31) \u2014 on top of California\'s \u00a7 1950.5 rules.',
+    'Berkeley requires annual deposit interest at the city-published Berkeley Bank Rate \u2014 and if last year\u2019s interest is unpaid by Jan 31, it is recomputed at a 10% rate and deductible from rent \u2014 on top of California\'s \u00a7 1950.5 rules.',
   parentStateSlug: 'california',
   statutes: [
     { label: 'BMC § 13.76', full: 'Berkeley Municipal Code § 13.76' },
   ],
   cityPenalty: {
-    kind: 'none',
+    kind: 'fixed',
+    fixedAmount: 750,
     attorneyFees: false,
-    short: 'Interest + 10% (unpaid)',
+    short: '10% rate + overcharge route',
     long:
-      'Berkeley\u2019s overlay is a deposit-interest requirement: if the annual ' +
-      'interest is not paid by January 31, the tenant may recover a 10% penalty ' +
-      '(Regulation 704), and a landlord\u2019s failure to return the interest also ' +
-      'bars the annual general adjustment (AGA) rent increase. The state ' +
-      '§ 1950.5 penalties govern wrongful withholding of the deposit itself.',
+      'Two city-level mechanisms exist. First, deposit interest: if the annual ' +
+      'interest has not been refunded by January 31, the tenant may recover it ' +
+      'by deducting it from rent \u2014 automatically, with no notice required ' +
+      '\u2014 and the immediately preceding year\u2019s interest is recomputed ' +
+      'at a 10% rate instead of the published Berkeley rate (Regulation 704; ' +
+      'earlier years use the published table rates). Second, wrongful retention ' +
+      'of the deposit itself: Regulation 706(A) deems a deposit retained in ' +
+      'violation of Civil Code § 1950.5 a rent overcharge, recoverable through ' +
+      'the Rent Board\u2019s petition process within three years \u2014 with ' +
+      'remedies including recovery of the overcharge and, on a bad-faith claim ' +
+      'or retention, up to $750 in addition to actual damages. State § 1950.5 ' +
+      'remedies also remain fully available.',
   },
   cityDuties: [
     'Pay annual security-deposit interest, due by December each year',
     'Use the annually-published Berkeley Bank Rate',
-    'Pay any unpaid interest by January 31 or face a 10% penalty (Reg. 704)',
+    'Refund any unpaid interest by January 31 \u2014 after that date the tenant may deduct it from rent, with the preceding year\u2019s interest recomputed at a 10% rate (Reg. 704)',
   ],
   stateStillApplies:
     'California Civil Code § 1950.5 applies in full: a 21-day return deadline, up ' +
@@ -4100,14 +4209,16 @@ const BERKELEY_CA: AugmentingCity = {
       heading: 'Interest rate — published annually:',
       body:
         'Berkeley sets a "Berkeley Bank Rate" each year; your letter references ' +
-        'the current published rate rather than a hardcoded number. Unpaid ' +
-        'interest carries a 10% penalty and blocks the landlord\u2019s AGA rent ' +
-        'increase.',
+        'the current published rate rather than a hardcoded number. The 10% in ' +
+        'Regulation 704 is a substitute RATE for the immediately preceding ' +
+        'year\u2019s unpaid interest \u2014 not a 10%-of-deposit penalty added ' +
+        'on top \u2014 and it attaches automatically after January 31 with no ' +
+        'notice required.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Berkeley Municipal Code § 13.76 + Reg. 704 (overlay on § 1950.5) (verified); annually-published rate + 10% unpaid-interest penalty confirmed (Phase 1 audit)',
+    'Berkeley Rent Board Regs. 704/705/706 re-fetched T1 (Batch 30; Reg. 704 as amended 9/19/2019 — substitute rate, automatic, rent-deduction self-help; Reg. 706(A) overcharge route → Reg. 1271, unchanged since 1999) + BMC § 13.76.150(A) (Board petition, up to $750 bad-faith, 3-yr window) (legal audit, July 2026)',
 };
 
 /** AUGMENTS — Los Angeles layers a deposit-interest requirement on § 1950.5. */
@@ -4152,7 +4263,7 @@ const LOS_ANGELES_CA: AugmentingCity = {
         'hardcoded number.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'LAMC § 151.06.02 (RSO; overlay on § 1950.5) (verified); RAC-published annual interest confirmed (Phase 1 audit)',
 };
@@ -4170,13 +4281,20 @@ const WEST_HOLLYWOOD_CA: AugmentingCity = {
     { label: 'WHMC RSO', full: 'West Hollywood Municipal Code, Rent Stabilization Ordinance' },
   ],
   cityPenalty: {
-    kind: 'none',
+    kind: 'multiplier',
+    multiplier: 3,
     attorneyFees: false,
-    short: 'Interest layer',
+    short: 'Treble (willful) + $1,000 route',
     long:
-      'West Hollywood\u2019s overlay is a deposit-interest requirement for ' +
-      'rent-stabilized units rather than a separate withholding multiplier. The ' +
-      'state § 1950.5 penalties govern wrongful withholding of the deposit itself.',
+      'West Hollywood\u2019s general-remedies chapter reaches the deposit rules. ' +
+      'Under WHMC § 17.68.010(c), a person who willfully demands, accepts, or ' +
+      'retains any payment in violation of Title 17 is liable for three times ' +
+      'the unlawful excess, with attorney\u2019s fees and costs available to the ' +
+      'tenant, and retention is a continuing violation until refunded. Under ' +
+      '§ 17.68.010(d), any Title 17 violation \u2014 including failure to pay ' +
+      'the required deposit interest \u2014 separately supports actual damages ' +
+      'or $1,000 (whichever is greater) plus potential punitive damages. State ' +
+      '§ 1950.5 remedies also remain fully available.',
   },
   cityDuties: [
     'Pay annual security-deposit interest on rent-stabilized units',
@@ -4197,9 +4315,9 @@ const WEST_HOLLYWOOD_CA: AugmentingCity = {
         'rather than a hardcoded number.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'West Hollywood MC RSO (overlay on § 1950.5) (verified); annually-published rate for rent-stabilized units confirmed (Phase 1 audit)',
+    'WHMC Ch. 17.32 (§§ 17.32.010–.100) + § 17.24.010 exemptions + § 17.68.010 remedies (a)–(l), all fetched T1 (ecode360); §17.68.010(c) treble + fees on willful unlawful payments, (d) $1,000-or-actual + punitive + fees for any Title 17 violation (legal audit, July 2026)',
 };
 
 /** AUGMENTS — Seattle layers cap and fee rules on top of RCW 59.18.280. */
@@ -4214,13 +4332,19 @@ const SEATTLE_WA: AugmentingCity = {
     { label: 'SMC 7.24', full: 'Seattle Municipal Code Chapter 7.24' },
   ],
   cityPenalty: {
-    kind: 'none',
-    attorneyFees: false,
-    short: 'Cap + fee limits',
+    kind: 'multiplier',
+    multiplier: 2,
+    attorneyFees: true,
+    short: '2× unlawful charge + fees',
     long:
-      'Seattle\u2019s overlay imposes deposit and move-in-fee caps and payment-' +
-      'plan requirements rather than a separate withholding multiplier. The state ' +
-      'RCW 59.18.280 penalties govern wrongful withholding of the deposit itself.',
+      'Seattle\u2019s ordinance carries its own private right of action: a ' +
+      'landlord who violates the deposit, fee-cap, or installment requirements ' +
+      'is liable to the tenant under SMC 7.24.060 for actual damages plus ' +
+      'interest, double any penalties imposed by the City, DOUBLE the amount of ' +
+      'any prohibited fee or security deposit unlawfully charged or withheld, ' +
+      'and reasonable attorney fees and costs. This city remedy is separate ' +
+      'from \u2014 and stacks with \u2014 the state RCW 59.18.280 remedies for ' +
+      'wrongful withholding.',
   },
   cityDuties: [
     'Cap the deposit plus nonrefundable move-in fees at one month\u2019s rent',
@@ -4242,9 +4366,9 @@ const SEATTLE_WA: AugmentingCity = {
         'penalty, which remains the state\u2019s.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Seattle SMC 7.24 (overlay on RCW 59.18.280) (verified); 1-mo deposit+fee cap + 25% pet limit + installment plans confirmed (Phase 1 audit)',
+    'Seattle SMC 7.24 — Ord. 125222 §§ 1–14 fetched in full (seattle.legistar.com); § 7.24.060 current text confirmed against the City\'s own 2026 redline baseline (last amended Ord. 125334): actual damages + interest, 2× City penalties, 2× unlawful fee/deposit, mandatory fees; § 7.24.050 separate fee award; caps + installment plans verified (legal audit, July 2026)',
 };
 
 /** DEFERS — New York City's deposit framework IS the New York State framework;
@@ -4279,7 +4403,7 @@ const NEW_YORK_CITY_NY: DeferringCity = {
         'framework.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     'NY Gen. Oblig. Law §§ 7-108, 7-103, 7-107 (verified in Batch 1); confirmed no separate NYC deposit-return ordinance (Phase 1 audit)',
 };
@@ -4306,16 +4430,21 @@ const BALTIMORE_MD: DeferringCity = {
   notes: [
     {
       kind: 'general',
-      heading: 'No separate Baltimore deposit ordinance:',
+      heading: 'No separate Baltimore deposit-return ordinance:',
       body:
-        'Baltimore\u2019s distinctive local law is the Rent Escrow Law ' +
-        '(§ 8-211, habitability) \u2014 not a separate deposit-return ordinance. ' +
-        'Deposit returns follow Maryland state law.',
+        'Baltimore adds no deposit-return timeline or penalty of its own \u2014 ' +
+        'deposit returns follow Maryland state law. Baltimore\u2019s distinctive ' +
+        'local layers are the Rent Escrow Law (§ 8-211, habitability) and one ' +
+        'narrow city remedy: under Balt. City Public Local Laws § 9-14.1(a)(2), ' +
+        'a tenant whose dwelling was unfit for habitation at the start of ' +
+        'occupancy may rescind the lease within 30 days of moving in and recover ' +
+        'all deposits \u2014 a non-waivable right, though it does not reach the ' +
+        'ordinary end-of-tenancy withheld-deposit dispute.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
-    'Md. Real Prop. § 8-203 (verified in Batch 3); confirmed Baltimore defers to state law for deposit return (Phase 1 audit)',
+    'Baltimore City Code/Charter/PLL corpus read in full off the publisher\'s canonical mirror (baltimore-legref/law-xml, 2026-07-17); defers verified; PLL § 9-14.1(a)(2) rescission remedy noted; Md. Real Prop. § 8-203 state layer re-verified (legal audit, July 2026)',
 };
 
 /** DEFERS — Philadelphia: no distinct city deposit-return ordinance surfaced in
@@ -4347,7 +4476,7 @@ const PHILADELPHIA_PA: DeferringCity = {
         'local overlay is later identified, this entry should be revisited.',
     },
   ],
-  lastVerified: '2026-07-05',
+  lastVerified: '2026-07-20',
   primarySource:
     '68 P.S. § 250.512 (verified in Batch 5); MEDIUM confidence — no distinct Philadelphia ordinance surfaced, likely defers to state (Phase 1 audit)',
 };
@@ -4369,7 +4498,7 @@ const SANTA_MONICA_CA: AugmentingCity = {
   slug: 'santa-monica-ca',
   name: 'Santa Monica, California',
   homepageSummary:
-    'Santa Monica\'s rent-control charter (\u00a7 1803(s)) adds an interest/escrow layer at the Rent Control Board\'s published rate \u2014 on top of California\'s \u00a7 1950.5 rules.',
+    'Santa Monica\'s rent-control charter (\u00a7 1803(s)) requires deposits for controlled units to sit in an interest-bearing account, and Board Reg. \u00a7 14002 adds a city deposit ceiling \u2014 on top of California\'s \u00a7 1950.5 rules.',
   parentStateSlug: 'california',
   statutes: [
     { label: 'SM Charter § 1803(s)', full: 'Santa Monica Rent Control Charter Amendment § 1803(s)' },
@@ -4377,34 +4506,38 @@ const SANTA_MONICA_CA: AugmentingCity = {
   cityPenalty: {
     kind: 'none',
     attorneyFees: false,
-    short: 'Interest/escrow layer',
+    short: 'Escrow + city ceiling',
     long:
-      'Santa Monica\u2019s overlay is a deposit-interest and escrow requirement ' +
-      'rather than a separate withholding multiplier: deposits must be held in an ' +
-      'interest-bearing account at a federally insured institution, and the Rent ' +
-      'Control Board may regulate the amount and use of deposits consistent with ' +
-      'the Charter and state law. The state § 1950.5 penalties remain the route ' +
-      'for wrongful withholding of the deposit itself.',
+      'Santa Monica\u2019s overlay is an escrow-and-ceiling layer rather than a ' +
+      'separate withholding multiplier: deposits for controlled units must be ' +
+      'held in an interest-bearing account at a federally insured institution ' +
+      '(Charter \u00a7 1803(s) / Reg. \u00a7 14001(a)), and Board Reg. ' +
+      '\u00a7 14002 caps the deposit itself. The state \u00a7 1950.5 penalties ' +
+      'remain the route for wrongful withholding of the deposit.',
   },
   cityDuties: [
-    'Hold the deposit in an interest-bearing account at a federally insured financial institution (\u00a7 1803(s))',
-    'Pay or credit deposit interest at the rate set/published by the Santa Monica Rent Control Board',
+    'Hold the deposit in an interest-bearing account at a federally insured financial institution (\u00a7 1803(s) / Reg. \u00a7 14001(a))',
+    'Keep the deposit within the city ceiling of Reg. \u00a7 14002 (roughly one month\u2019s maximum-allowable rent, with a small-landlord exception of up to two months)',
+    'Do not raise an established deposit during the tenancy (Reg. \u00a7 14002(c)) \u2014 a Santa Monica protection with no state-law counterpart',
   ],
   stateStillApplies:
     'California Civil Code § 1950.5 applies in full: a 21-day return deadline, up ' +
     'to 2\u00d7 the deposit for bad-faith withholding plus actual damages, the ' +
-    'one-month cap (the statewide AB 12 cap, NOT a Santa Monica-specific limit), ' +
-    'and the AB 2801 photo-evidence rules. The city layer adds interest/escrow on ' +
-    'top \u2014 it does not replace the state remedy.',
+    'statewide AB 12 cap, and the AB 2801 photo-evidence rules. For controlled ' +
+    'units Santa Monica adds its own, separate deposit ceiling (Reg. § 14002) ' +
+    'and escrow rule on top \u2014 it does not replace the state remedy.',
   notes: [
     {
       kind: 'general',
-      heading: 'Interest rate — never hardcode:',
+      heading: 'Interest payment is not currently required:',
       body:
-        'Santa Monica\u2019s former flat 3% deposit-interest rate was struck down ' +
-        'as an unconstitutional taking (Action Apartment Assn. v. Santa Monica ' +
-        'Rent Control Bd., 2001). Reference the current rate set/published by the ' +
-        'Rent Control Board rather than stating a number.',
+        'The Board regulation that once set an interest-payment mechanic (Reg. ' +
+        '\u00a7 14001(b)\u2013(f)) has been suspended since 2002, and under ' +
+        'Charter \u00a7 1803(s) paying the account\u2019s interest to the ' +
+        'tenant is at the landlord\u2019s option. What remains mandatory is the ' +
+        'interest-bearing-account placement itself. (Santa Monica\u2019s former ' +
+        'flat 3% rate was struck down in Action Apartment Assn. v. Santa Monica ' +
+        'Rent Control Bd. (2001) \u2014 no published city rate currently exists.)',
     },
     {
       kind: 'general',
@@ -4415,9 +4548,9 @@ const SANTA_MONICA_CA: AugmentingCity = {
         '(and an earlier draft) cited in error.',
     },
   ],
-  lastVerified: '2026-07-07',
+  lastVerified: '2026-07-20',
   primarySource:
-    'SM Rent Control Charter § 1803(s) (verified against current codified text + Action Apartment Assn. v. SMRCB (2001)); overlay on Cal. Civ. Code § 1950.5; §1803(f) cite corrected to §1803(s) (Phase 1b audit)',
+    'SM Charter Art. XVIII (§§ 1800–1821) + Rent Control Board Regs. Ch. 14 (§§ 14000–14003, amendments eff. 8/17/24) fetched T1; Reg. §14001(b)–(f) suspended since 6/22/02 (payment landlord-optional per §1803(s)); Reg. §14002 city ceiling + small-landlord 2-mo exception + no-mid-tenancy-increase (legal audit, July 2026)',
 };
 
 /** DEFERS — Boston applies Massachusetts state law; it has NO separate
@@ -4452,7 +4585,7 @@ const BOSTON_MA: DeferringCity = {
         'Deposit returns follow MGL c.186 § 15B.',
     },
   ],
-  lastVerified: '2026-07-07',
+  lastVerified: '2026-07-20',
   primarySource:
     'MGL c.186 § 15B (verified against mass.gov + MassLegalHelp + MassLandlords); confirmed Boston has NO separate municipal deposit ordinance (Phase 1b audit)',
 };
