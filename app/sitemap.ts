@@ -34,8 +34,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  // Only the 10 cities that HAVE pages (7 augments + 3 replaces). The 5 'defers'
-  // cities have no page by design — see the eligibility rule in lib/cityHelpers.ts.
+  // Only the 11 cities that HAVE pages (9 augments + 2 replaces, post-correction
+  // batch). The 'defers' cities (incl. Evanston, retired to 'Not yet covered')
+  // have no page by design — see the eligibility rule in lib/cityHelpers.ts.
   const cityPages: MetadataRoute.Sitemap = getPageCities().map((c) => ({
     url: `${baseUrl}/states/${c.parentStateSlug}/${toCitySegment(c.slug)}`,
     lastModified: asDate(c.lastVerified),

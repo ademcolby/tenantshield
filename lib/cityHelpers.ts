@@ -17,11 +17,16 @@
 //                that, and it would undercut the credibility the /about page is
 //                built on.
 //
-//   The 5 'defers' cities (Boston, Cambridge, NYC, Philadelphia, Baltimore) are
-//   NOT dropped — they render in the "Local ordinances" section of their PARENT
-//   STATE page, which is honest and useful without shipping a stub.
+//   The 'defers' cities (Boston, Cambridge, Baltimore — plus Evanston, which is
+//   typed 'defers' with a 'Not yet covered' cardLabel because its own ordinance
+//   is unverified and letters are blocked) are NOT dropped — they render in the
+//   "Local ordinances" section of their PARENT STATE page, which is honest and
+//   useful without shipping a stub. NYC and Philadelphia were RETYPED to
+//   'augments' in the July 2026 correction batch after the legal audit falsified
+//   their 'defers' tags (register rows 47–48) — they now have pages with real,
+//   audited overlay content, which is exactly the bar this rule set.
 //
-//   Yes, those five happen to be the highest-search-volume names in the set.
+//   The remaining defers names still carry search volume.
 //   That does not change the analysis: a thin page cannot win those queries
 //   anyway. Winning them needs genuinely unique local content (small-claims
 //   process, filing fees, legal aid, the NY rent-stabilized carve-out) — that is
@@ -77,7 +82,8 @@ export function cityShortName(c: CityOverlay): string {
   return c.name.split(',')[0].trim();
 }
 
-/** The 10 overlays that get pages (7 augments + 3 replaces). */
+/** The 11 overlays that get pages (9 augments + 2 replaces, post-correction-batch:
+ *  NYC + Philadelphia retyped IN as augments; Evanston retyped OUT to defers). */
 export function getPageCities(): PageCity[] {
   return CITY_OVERLAYS.filter(cityHasPage);
 }

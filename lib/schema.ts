@@ -123,11 +123,19 @@ export function buildStateFaqs(j: Jurisdiction): Faq[] {
     a: `${j.statutes.map((s) => s.full).join(' and ')}. We verify these against the statute text itself; the date we last checked is shown on this page.`,
   });
 
-  // 4. City overlays, if any — includes 'defers' cities, honestly.
+  // 4. City overlays, if any — includes 'defers' cities, honestly. A 'defers'
+  //    city carrying a cardLabel (Evanston: 'Not yet covered') is NOT a genuine
+  //    state-law-applies city — it has its own ordinance we haven't verified —
+  //    so it gets its own honest sentence rather than the defers one.
   const cities = getCitiesForState(j.slug);
   if (cities.length > 0) {
     const withRules = cities.filter((c) => c.type !== 'defers').map(cityShortName);
-    const deferring = cities.filter((c) => c.type === 'defers').map(cityShortName);
+    const deferring = cities
+      .filter((c) => c.type === 'defers' && !c.cardLabel)
+      .map(cityShortName);
+    const notCovered = cities
+      .filter((c) => c.type === 'defers' && c.cardLabel)
+      .map(cityShortName);
     const parts: string[] = [];
     if (withRules.length) {
       parts.push(
@@ -137,6 +145,11 @@ export function buildStateFaqs(j: Jurisdiction): Faq[] {
     if (deferring.length) {
       parts.push(
         `${deferring.join(', ')} ${deferring.length === 1 ? 'has' : 'have'} no separate deposit ordinance — ${j.name} state law applies.`
+      );
+    }
+    if (notCovered.length) {
+      parts.push(
+        `${notCovered.join(', ')} ${notCovered.length === 1 ? 'has its' : 'have their'} own ordinance that we haven't finished verifying — we don't publish ${notCovered.length === 1 ? 'its' : 'their'} deadlines or offer letters there yet.`
       );
     }
     faqs.push({

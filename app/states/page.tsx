@@ -34,12 +34,12 @@ const SITE_URL = 'https://gettenantshield.com';
 export const metadata: Metadata = {
   title: 'Security Deposit Laws by State — All 50 States + DC',
   description:
-    'Security deposit return deadlines, penalties, and statutes for all 50 states and Washington DC, plus 10 city ordinances. Every jurisdiction verified against primary sources.',
+    'Security deposit return deadlines, penalties, and statutes for all 50 states and Washington DC, plus 11 city ordinances. Every jurisdiction verified against primary sources.',
   alternates: { canonical: `${SITE_URL}/states` },
   openGraph: {
     title: 'Security Deposit Laws by State — All 50 States + DC',
     description:
-      'Security deposit return deadlines, penalties, and statutes for all 50 states and Washington DC, plus 10 city ordinances.',
+      'Security deposit return deadlines, penalties, and statutes for all 50 states and Washington DC, plus 11 city ordinances.',
     url: `${SITE_URL}/states`,
     siteName: 'TenantShield',
     type: 'website',

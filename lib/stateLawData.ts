@@ -193,6 +193,10 @@ interface BaseCityOverlay {
    *  consistent with this entry's audited facts — it renders on the homepage
    *  lookup with no surrounding prose. */
   homepageSummary: string;
+  /** optional label for the state-page "Local ordinances" card when the city
+   *  has no page of its own. Defaults to 'State law applies' — set only where
+   *  that default would be misleading (Evanston: 'Not yet covered'). */
+  cardLabel?: string;
   statutes: StatuteCitation[];
   notes: NuanceNote[];
   lastVerified: string;
@@ -3914,45 +3918,47 @@ const PORTLAND_OR: AugmentingCity = {
 
 /** REPLACES — Evanston's own ordinance governs the timeline/penalty; the
  *  Illinois 765 ILCS 710 timeline does NOT apply here. */
-const EVANSTON_IL: ReplacingCity = {
-  type: 'replaces',
+/** NOT YET COVERED — Evanston has its own security-deposit ordinance that
+ *  applies instead of the Illinois default, and our verification of it against
+ *  the ordinance text is not complete. By product decision (July 2026), no
+ *  Evanston letters are offered (the letter path is blocked client- and
+ *  server-side) and the site carries an honest note instead of unverified
+ *  numbers. Typed 'defers' so no city page is generated; the `apply` field is
+ *  inert while the letter block stands. Do NOT re-publish the old 21-day /
+ *  1.5×-cap / 2×-penalty figures — they were never verified. */
+const EVANSTON_IL: DeferringCity = {
+  type: 'defers',
   slug: 'evanston-il',
   name: 'Evanston, Illinois',
+  cardLabel: 'Not yet covered',
   homepageSummary:
-    'Evanston\'s own ordinance supersedes Illinois state law \u2014 21-day return, deposit capped at 1.5\u00d7 monthly rent, up to 2\u00d7 the amount wrongfully withheld plus attorney fees.',
+    'We don\u2019t cover Evanston yet \u2014 Evanston has its own security deposit ordinance that applies instead of the standard Illinois rules, and our verification of it against the ordinance text isn\u2019t complete. Evanston letters aren\u2019t offered until it is.',
   parentStateSlug: 'illinois',
-  deadlineDays: 21,
-  deadlineLabel: '21 days',
   statutes: [
     { label: 'City Code Title 5, Ch. 3', full: 'Evanston Residential Landlord and Tenant Ordinance (City Code Title 5, Chapter 3)' },
   ],
-  penalty: {
-    kind: 'multiplier',
-    multiplier: 2,
-    attorneyFees: true,
-    short: 'up to 2× + fees',
-    long:
-      'Under the Evanston Residential Landlord and Tenant Ordinance (amended eff. ' +
-      'Jan 1, 2025), a tenant may recover up to twice the amount wrongfully ' +
-      'withheld plus attorney fees.',
-  },
-  displaces:
-    'The Illinois Security Deposit Return Act (765 ILCS 710) 30/45-day timeline ' +
-    'does NOT apply in Evanston \u2014 lead with the Evanston ordinance and its ' +
-    '21-day deadline instead.',
+  apply:
+    'Do not generate Evanston letters \u2014 the letter path is blocked. ' +
+    'Evanston has its own Residential Landlord and Tenant Ordinance that ' +
+    'applies instead of the standard Illinois rules, and it has not been ' +
+    'verified against the ordinance text.',
   notes: [
     {
       kind: 'general',
-      heading: 'Evanston has its own ordinance:',
+      heading: 'Why Evanston is different:',
       body:
-        'It does not follow either the Chicago RLTO or default Illinois state law ' +
-        'for deposits. Deposit capped at 1.5\u00d7 monthly rent, held in a separate ' +
-        'account, and returned within 21 days with an itemized list. (The ' +
-        'former deposit-interest requirement was removed effective Jan 1, 2025.)',
+        'Evanston maintains its own Residential Landlord and Tenant Ordinance ' +
+        'covering security deposits \u2014 it follows neither the Chicago RLTO ' +
+        'nor the default Illinois state rules. Until our verification of the ' +
+        'ordinance text is complete, we don\u2019t publish Evanston deadlines ' +
+        'or penalties and don\u2019t offer Evanston letters. Evanston tenants ' +
+        'can consult the City of Evanston\u2019s housing office or local legal ' +
+        'aid in the meantime.',
     },
   ],
   lastVerified: '2026-07-05',
-  primarySource: 'Evanston City Code Title 5, Ch. 3 (amended eff. 1/1/2025); 1.5× cap + interest-removed + 21-day + 2× confirmed (Phase 1 audit)',
+  primarySource:
+    'RESOLVED BY DECISION, not by statutory read (Batch 27–28, July 2026) — municode publisher wall never cleared; no Evanston provision is on file. Prior 21-day/1.5×/2× figures were unverified Phase-1 claims and are retired.',
 };
 
 /** DEFERS — Cambridge has no exceeding ordinance; Massachusetts state law
@@ -4374,38 +4380,67 @@ const SEATTLE_WA: AugmentingCity = {
 /** DEFERS — New York City's deposit framework IS the New York State framework;
  *  the distinctive NYC layer (the § 7-107 rent-stabilized carve-out) is already
  *  carried in the New York state entry. */
-const NEW_YORK_CITY_NY: DeferringCity = {
-  type: 'defers',
+/** AUGMENTS — New York City adds no deposit-RETURN ordinance of its own (the
+ *  state 14-day rules govern the ordinary withheld-deposit case), but for
+ *  rent-stabilized units an EXCESS deposit at collection is a rent overcharge
+ *  under the Rent Stabilization Code, reaching the DHCR overcharge machinery —
+ *  a real, NYC-specific remedy channel. Bounded per the CC-35 decision: site
+ *  content + DHCR Form RA-89 pointer only; nothing letter-facing. */
+const NEW_YORK_CITY_NY: AugmentingCity = {
+  type: 'augments',
   slug: 'new-york-city-ny',
   name: 'New York City, New York',
   homepageSummary:
-    'No separate NYC deposit ordinance \u2014 New York State law applies: 14-day return, up to 2\u00d7 for a willful violation, and a one-month deposit cap.',
+    'NYC adds no separate deposit-return ordinance \u2014 the state 14-day rules govern \u2014 but for rent-stabilized units an excess deposit above the one-month cap is a rent overcharge recoverable through DHCR (Form RA-89), with treble damages for willful overcharges.',
   parentStateSlug: 'new-york',
   statutes: [
     { label: 'GOL § 7-108', full: 'New York General Obligations Law § 7-108' },
-    { label: 'GOL § 7-107', full: 'New York General Obligations Law § 7-107' },
+    { label: '9 NYCRR § 2520.6(c)', full: 'Rent Stabilization Code, 9 NYCRR § 2520.6(c)' },
+    { label: 'Admin Code § 26-516', full: 'NYC Administrative Code § 26-516' },
   ],
-  apply:
-    'Apply New York State law: GOL § 7-108 (14-day return, up to 2\u00d7 for a ' +
-    'willful violation, one-month cap under the HSTPA), § 7-103 (interest and ' +
-    'trust-account rules for buildings of six or more units, statewide), and the ' +
-    '§ 7-107 rent-stabilized carve-out (effective Nov 15, 2025) \u2014 the ' +
-    'distinctive NYC-relevant layer, extending the 14-day return, itemization, ' +
-    'and inspection rights to rent-stabilized tenants.',
+  cityPenalty: {
+    kind: 'multiplier',
+    multiplier: 3,
+    attorneyFees: false,
+    short: 'Overcharge route (rent-stabilized)',
+    long:
+      'For rent-stabilized units, the Rent Stabilization Code folds an excess ' +
+      'security deposit into the definition of \u201crent,\u201d so a deposit ' +
+      'collected above the one-month cap can be pursued as a rent overcharge ' +
+      '(9 NYCRR \u00a7 2520.6(c)) \u2014 filed with DHCR on Form RA-89, with ' +
+      'treble damages where the overcharge was willful (willfulness is ' +
+      'presumed and the owner bears the burden of rebutting it), a six-year ' +
+      'recovery window, and costs in that proceeding (Admin Code ' +
+      '\u00a7 26-516). Important limit: this channel attaches to an EXCESS ' +
+      'deposit at collection \u2014 it is not a remedy for the ordinary ' +
+      'failure to return a lawful one-month deposit at move-out, which the ' +
+      'state \u00a7 7-108 rules govern.',
+  },
+  cityDuties: [
+    'For rent-stabilized units, treat any deposit demanded above one month\u2019s rent as a rent overcharge under the Rent Stabilization Code \u2014 the tenant can file DHCR Form RA-89',
+  ],
+  stateStillApplies:
+    'New York State law governs the deposit itself throughout the city: GOL ' +
+    '\u00a7 7-108\u2019s 14-day return-or-itemize deadline (missing it ' +
+    'forfeits any right to retain), up to 2\u00d7 the deposit for a willful ' +
+    'violation, the statewide one-month cap, \u00a7 7-103\u2019s ' +
+    'interest/trust-account rules for six-plus-unit buildings, and the ' +
+    '\u00a7 7-107 rent-stabilized carve-out (eff. Nov 15, 2025).',
   notes: [
     {
-      kind: 'general',
-      heading: 'No separate NYC deposit ordinance:',
+      kind: 'scope_threshold',
+      heading: 'A narrow legacy exception:',
       body:
-        'New York City does not have a deposit-return ordinance beyond state law. ' +
-        'The § 7-107 rent-stabilized carve-out is the piece most likely to matter ' +
-        'for NYC tenants, and it is already applied through the New York State ' +
-        'framework.',
+        'Under Admin Code \u00a7 26-511(c)(5), certain legacy rent-stabilized ' +
+        'tenancies involving tenants 62 and older or SSI/SSDI recipients may ' +
+        'lawfully retain a pre-existing two-month deposit \u2014 so an ' +
+        'above-one-month deposit is not automatically an overcharge in every ' +
+        'case.',
     },
   ],
   lastVerified: '2026-07-20',
   primarySource:
-    'NY Gen. Oblig. Law §§ 7-108, 7-103, 7-107 (verified in Batch 1); confirmed no separate NYC deposit-return ordinance (Phase 1 audit)',
+    'NYC Admin Code §§ 26-511, 26-516 fetched in full T1 (codelibrary.amlegal.com); 9 NYCRR § 2520.6(c) T1 off DHCR\u2019s own rule-text PDF; mechanism confirmed by four DHCR-published documents incl. Fact Sheet #9 / Form RA-89 (legal audit, July 2026)',
 };
 
 /** DEFERS — Baltimore applies Maryland state law; its distinctive local law is
@@ -4449,36 +4484,59 @@ const BALTIMORE_MD: DeferringCity = {
 
 /** DEFERS — Philadelphia: no distinct city deposit-return ordinance surfaced in
  *  the Phase 1 pass; medium confidence. Applies Pennsylvania state law. */
-const PHILADELPHIA_PA: DeferringCity = {
-  type: 'defers',
+/** AUGMENTS — Philadelphia's Unfair Rental Practices code (§ 9-804) layers a
+ *  city retention prohibition, cap prohibition, installment right, and a city
+ *  damages remedy on top of Pennsylvania law, which still fully applies. */
+const PHILADELPHIA_PA: AugmentingCity = {
+  type: 'augments',
   slug: 'philadelphia-pa',
   name: 'Philadelphia, Pennsylvania',
   homepageSummary:
-    'No distinct Philadelphia deposit ordinance \u2014 Pennsylvania state law applies: 30-day return, with double damages on amounts wrongfully withheld.',
+    'Philadelphia\u2019s Unfair Rental Practices code (\u00a7 9-804) bars unlawfully retaining any security deposit \u2014 with a city remedy of actual damages or one month\u2019s rent \u2014 on top of Pennsylvania\u2019s 30-day / double-damages rules, which still fully apply.',
   parentStateSlug: 'pennsylvania',
   statutes: [
-    { label: '68 P.S. § 250.512', full: 'Pennsylvania Landlord and Tenant Act, 68 P.S. § 250.512' },
+    { label: 'Phila. Code § 9-804', full: 'Philadelphia Code § 9-804 (Unfair Rental Practices)' },
   ],
-  apply:
-    'Apply Pennsylvania state law (68 P.S. § 250.512): a 30-day return, double ' +
-    'the amount by which the deposit exceeds actual damages, a two-month cap in ' +
-    'the first year (one month thereafter), escrow for deposits over $100 with ' +
-    'interest after two years, and a forwarding-address gate on the ' +
-    'double-damages remedy.',
+  cityPenalty: {
+    kind: 'fixed',
+    attorneyFees: false,
+    short: "1 month's rent (elected)",
+    long:
+      'Under Phila. Code \u00a7 9-804(4)(c), no landlord may \u201cunlawfully ' +
+      'retain any security deposit, however styled in a lease\u201d \u2014 the ' +
+      'prohibition reaches deposits relabelled as non-refundable fees. A person ' +
+      'aggrieved by a violation of subsection (4) may recover, under ' +
+      '\u00a7 9-804(16), actual damages or \u2014 at the tenant\u2019s ' +
+      'election before judgment \u2014 statutory damages equal to one ' +
+      'month\u2019s rent. These rights cannot be waived by lease (\u00a7 ' +
+      '9-804(15)), and a tenant may complain to the Fair Housing Commission or ' +
+      'plead the violation in court (\u00a7 9-804(14)).',
+  },
+  cityDuties: [
+    'No security deposit may exceed what 68 P.S. \u00a7 250.511a permits \u2014 a city-level prohibition on top of the state cap, separately enforceable under \u00a7 9-804(16)',
+    'Where a first-year deposit exceeds one month\u2019s rent, the landlord must accept, at the tenant\u2019s choice, either a lump sum or one month up front with the remainder in three equal monthly payments (landlords of two or fewer rental units are exempt from this installment rule only, with ownership aggregated across related entities)',
+    'No unlawful retention of any security deposit, \u201chowever styled in a lease\u201d (\u00a7 9-804(4)(c))',
+  ],
+  stateStillApplies:
+    'Pennsylvania law (68 P.S. \u00a7 250.512) applies in full: a 30-day ' +
+    'deadline for the written list and refund, double the amount by which the ' +
+    'deposit exceeds actual damages, and the strict \u00a7 250.512(e) rule ' +
+    'that a tenant who fails to provide a written forwarding address at ' +
+    'move-out relieves the landlord of all liability under the section. The ' +
+    'city remedy is separate and additional.',
   notes: [
     {
       kind: 'general',
-      heading: 'No distinct Philadelphia deposit ordinance surfaced:',
+      heading: 'Attorney\u2019s fees are discretionary:',
       body:
-        'This pass did not surface a Philadelphia-specific deposit-return ' +
-        'ordinance exceeding Pennsylvania state law \u2014 Philadelphia appears to ' +
-        'follow the state framework. This is a medium-confidence conclusion; if a ' +
-        'local overlay is later identified, this entry should be revisited.',
+        'Under \u00a7 9-804(16) the court MAY award reasonable attorney\u2019s ' +
+        'fees and costs \u2014 it is not an entitlement, so this page does not ' +
+        'promise them.',
     },
   ],
   lastVerified: '2026-07-20',
   primarySource:
-    '68 P.S. § 250.512 (verified in Batch 5); MEDIUM confidence — no distinct Philadelphia ordinance surfaced, likely defers to state (Phase 1 audit)',
+    'Phila. Code § 9-804 fetched in full at T1 (codelibrary.amlegal.com, 2026 Code current, runs (1)–(16); hist. ends Bill No. 250044-A, eff. 12/2/2025); §9-804(4)(a)–(c) duties + (16) remedy + (15) no-waiver + (14) enforcement routes verified (legal audit, July 2026)',
 };
 
 // ===========================================================================

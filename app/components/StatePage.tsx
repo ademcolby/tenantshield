@@ -229,13 +229,15 @@ export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction
                     </Link>
                   );
                 }
-                // 'defers' — no separate city ordinance; state law governs.
+                // 'defers' — no page. Label defaults to 'State law applies';
+                // cardLabel overrides it where that default would mislead
+                // (Evanston: 'Not yet covered' — its own ordinance is unverified).
                 return (
                   <div key={c.slug} className="rounded-lg border border-[#E7E5E0] bg-[#FAFAF7] p-5">
                     <p className="font-medium text-slate-900">
                       {short}
                       <span className="ml-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
-                        State law applies
+                        {c.cardLabel ?? 'State law applies'}
                       </span>
                     </p>
                     <p className="mt-2 text-sm text-slate-600">{c.homepageSummary}</p>
