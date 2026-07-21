@@ -122,7 +122,9 @@ const FORWARDING_ADDRESS_STATES = [
 ];
 
 // States whose statute applies only above a building unit-count threshold.
-const UNIT_COUNT_STATES = ['Illinois', 'Arkansas', 'New York'];
+// (Illinois removed July 2026 — P.A. 103-224, eff. 1/1/2024, repealed the
+// Security Deposit Return Act's old 5-unit gate; the Act is now statewide.)
+const UNIT_COUNT_STATES = ['Arkansas', 'New York'];
 
 // Maine's deadline is 21 days for a tenancy-at-will (no written lease) vs 30
 // days under a written lease, so the letter needs the lease type.
