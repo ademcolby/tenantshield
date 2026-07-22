@@ -79,7 +79,7 @@ The letter should include:
 Depending on your state and what your landlord did wrong, you may be entitled to more than just your deposit back.
 
 **If the landlord missed the deadline:**
-Many states have automatic penalty provisions. In Texas, a landlord who fails to return the deposit in bad faith owes the tenant *three times the deposit amount* plus attorney's fees (Texas Property Code § 92.109). California allows courts to award up to twice the deposit as a penalty.
+Many states have automatic penalty provisions. In Texas, a landlord who withholds in bad faith owes a $100 statutory penalty plus *three times the amount wrongfully withheld* plus attorney's fees (Texas Property Code § 92.109). California allows courts to award up to twice the deposit as a penalty for bad-faith retention.
 
 **If the landlord kept your deposit without an itemization:**
 Most states require landlords to send a written list of deductions along with the remaining balance. Keeping the deposit without that itemization is itself a violation — separate from whether the deductions were legitimate.
