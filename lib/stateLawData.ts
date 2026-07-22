@@ -7,6 +7,12 @@
 // from the audit findings; the 6 originally-seeded states (TX, FL, AR, AL, AK,
 // AZ) were re-confirmed against the Phase 1 audit.
 //
+// July 22, 2026 (post-correction prompt↔data cross-check, 2 precision fixes):
+// AZ penaltyExample corrected to the additive $4,500 total per § 33-1321(E)
+// (register AZ deep-dive 🔴 that never received a numbered confirmed-wrong row,
+// so the correction batch never wrote it); HI "service animal" → "assistance
+// animal (§ 515-3 reasonable accommodation)" (Batch 9 precision item).
+//
 // Single source of truth for security-deposit legal facts consumed by the
 // marketing state pages (and, later, blog sync). NOT consumed by the letter
 // engine — systemPrompt.ts stays prose (Phase 5, separate project).
@@ -599,7 +605,8 @@ const ARIZONA: SimpleJurisdiction = {
     ],
     penaltyExample:
       'So a $1,500 deposit wrongfully withheld can support a court judgment of ' +
-      '$3,000. Most landlords settle quickly once they realize you know the law.',
+      '$4,500 — the $1,500 back plus $3,000 in damages. Most landlords settle ' +
+      'quickly once they realize you know the law.',
     statuteLine:
       'ARS § 33-1321 and any others triggered by your circumstances — not ' +
       'generic legalese.',
@@ -1161,8 +1168,8 @@ const HAWAII: SimpleJurisdiction = {
       heading: 'Good to know:',
       body:
         'Hawaii caps security deposits at one month\u2019s rent, plus an optional ' +
-        'pet deposit of up to one month (no pet deposit may be charged for a ' +
-        'service animal).',
+        'pet deposit of up to one month (no pet deposit may be charged for an ' +
+        'assistance animal \u2014 a reasonable accommodation under \u00a7 515-3).',
     },
   ],
   lastVerified: '2026-07-20',
