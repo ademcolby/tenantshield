@@ -6,7 +6,7 @@ import { buildStateMetadata } from '@/lib/stateMetadata';
 export const metadata: Metadata = buildStateMetadata({
   slug: 'missouri',
   title: 'Security Deposit Demand Letter Missouri',
-  description: 'Get your security deposit back in Missouri. State-specific demand letter citing RSMo § 535.300, the 30-day deadline, and the up-to-double-damages penalty for wrongful withholding. Ready in minutes for $39.',
+  description: 'Get your security deposit back in Missouri. State-specific demand letter citing RSMo § 535.300, the 30-day deadline, and the double-damages penalty for wrongful withholding. Ready in minutes for $39.',
 });
 
 export default function MissouriPage() {

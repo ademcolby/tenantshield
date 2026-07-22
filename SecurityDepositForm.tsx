@@ -35,11 +35,15 @@ const STATE_ABBR: { [key: string]: string } = {
 
 // City dropdown source.
 // IMPORTANT: The special-jurisdiction city strings below are matched verbatim
-// by lib/systemPrompt.ts (Chicago RLTO, NYC escrow, etc.) and by the
-// showRentStabilized logic (=== 'New York City'). DO NOT alter these strings:
+// by lib/systemPrompt.ts (Chicago RLTO, NYC escrow, Philadelphia § 9-804, etc.)
+// and by the showRentStabilized logic (=== 'New York City'). DO NOT alter these
+// strings:
 //   San Francisco, Los Angeles, Berkeley, West Hollywood, Santa Monica,
 //   Chicago, Cook County (outside Chicago), Evanston, New York City, Seattle,
-//   Portland, Boston, Cambridge, Washington DC
+//   Portland, Boston, Cambridge, Washington DC, Philadelphia, Baltimore
+// (Philadelphia + Baltimore added to this list July 22, 2026 — both gained
+// their own systemPrompt.ts city sections in the correction batch; Evanston is
+// matched by the C0 coverage block, not a prompt section.)
 // General cities are added alongside them and carry no special legal logic.
 // An "Other city" option is appended to every state and reveals a write-in.
 const CITIES_BY_STATE: { [key: string]: string[] } = {

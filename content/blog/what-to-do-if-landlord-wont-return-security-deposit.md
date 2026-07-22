@@ -5,8 +5,6 @@ slug: "what-to-do-if-landlord-wont-return-security-deposit"
 publishedAt: "2026-05-26"
 ---
 
-# What to Do If Your Landlord Won't Return Your Security Deposit
-
 You moved out weeks ago. You cleaned the place, patched the nail holes, handed back the keys — and you're still waiting. No check. No itemized list. Maybe a vague text saying "we're working on it," or silence.
 
 This happens constantly. And most tenants don't realize they have real leverage.

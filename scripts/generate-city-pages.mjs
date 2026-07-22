@@ -1,13 +1,20 @@
 // scripts/generate-city-pages.mjs
 //
-// Creates the 10 city pages that get their own route, nested under their parent
+// Creates the 11 city pages that get their own route, nested under their parent
 // state: app/states/{state}/{city}/page.tsx
 //
-// Only 'augments' + 'replaces' cities are listed here. The 5 'defers' cities
-// (Boston, Cambridge, New York City, Philadelphia, Baltimore) deliberately get
-// NO page — they surface in the "Local ordinances" section of their parent
-// state page instead. See the eligibility rule in lib/cityHelpers.ts before
-// adding anything to this list.
+// Only 'augments' + 'replaces' cities are listed here. The 4 'defers' cities
+// (Boston, Cambridge, Baltimore, Evanston) deliberately get NO page — they
+// surface in the "Local ordinances" section of their parent state page instead.
+// See the eligibility rule in lib/cityHelpers.ts before adding anything here.
+//
+// ⚠️ UPDATED July 22, 2026 (post-Batch-31 retypes): Evanston was retyped
+// ReplacingCity→DeferringCity (its route directory was DELETED and must never
+// be regenerated — the letter path is blocked and /states/illinois/evanston
+// intentionally 404s); Philadelphia and New York City were retyped
+// DeferringCity→AugmentingCity and their route files created. If a city's
+// overlay type ever changes again, remember: the route-directory set changes
+// BY HAND (Batch 31 lesson) — update this list AND the directories together.
 //
 // Dry run (writes nothing):
 //     node scripts/generate-city-pages.mjs
@@ -21,18 +28,21 @@ const APPLY = process.argv.includes('--apply');
 
 // [parentStateSlug, urlSegment, overlayType] — verified against stateLawData.ts
 const CITIES = [
-  // augments (7) — city duties stack ON TOP of state law
+  // augments (9) — city duties stack ON TOP of state law
   ['california', 'berkeley', 'augments'],
   ['california', 'los-angeles', 'augments'],
   ['california', 'san-francisco', 'augments'],
   ['california', 'santa-monica', 'augments'],
   ['california', 'west-hollywood', 'augments'],
+  ['new-york', 'new-york-city', 'augments'],
   ['oregon', 'portland', 'augments'],
+  ['pennsylvania', 'philadelphia', 'augments'],
   ['washington', 'seattle', 'augments'],
-  // replaces (3) — city ordinance governs instead of the state default
+  // replaces (2) — city ordinance governs instead of the state default
   ['illinois', 'chicago', 'replaces'],
   ['illinois', 'cook-county', 'replaces'],
-  ['illinois', 'evanston', 'replaces'],
+  // ⚠️ Evanston deliberately NOT listed — DeferringCity, letters blocked,
+  // route deleted in Batch 31. Do not re-add without a product decision.
 ];
 
 const pascal = (seg) =>

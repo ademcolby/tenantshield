@@ -29,7 +29,7 @@ Some states only require one of these; a few also factor in the date the lease o
 |---|---|---|---|
 | [Alabama](/states/alabama) | 60 days | 2x deposit (failure to timely refund) | Ala. Code § 35-9A-201 |
 | [Alaska](/states/alaska) | 14 days (proper notice given, no deductions) / 30 days (otherwise) | 2x wrongfully withheld (willful) | AS § 34.03.070 |
-| [Arizona](/states/arizona) | 14 business days | 2x wrongfully withheld amount | A.R.S. § 33-1321 |
+| [Arizona](/states/arizona) | 14 business days | Withheld amount + 2x damages | A.R.S. § 33-1321 |
 | [Arkansas](/states/arkansas) | 60 days | 2x + fees (landlords with 6+ units) | A.C.A. § 18-16-305 |
 | [California](/states/california) | 21 days | 2x bad-faith withholding (see AB 2801/AB 414 note below) | Cal. Civ. Code § 1950.5 |
 | [Colorado](/states/colorado) | 30 days (60 days if specified in lease) | 3x + attorney's fees (see HB25-1249 note below) | C.R.S. § 38-12-103 |
@@ -38,7 +38,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | [DC](/states/district-of-columbia) | 45 days | 3x (bad faith) | 14 DCMR § 308–309 |
 | [Florida](/states/florida) | 15 days (no deductions) / 30 days (with deductions) | Forfeiture of right to deductions | Fla. Stat. § 83.49 |
 | [Georgia](/states/georgia) | 30 days | 3x (bad faith; small self-managed landlords exempt) | O.C.G.A. § 44-7-34, § 44-7-35 |
-| [Hawaii](/states/hawaii) | 14 days | 3x (willful) | HRS § 521-44 |
+| [Hawaii](/states/hawaii) | 14 days | Up to 3x (willful; court's discretion) | HRS § 521-44 |
 | [Idaho](/states/idaho) | 21 days (default) / up to 30 days if the lease specifies | Up to 3x actual damages (discretionary) | Idaho Code § 6-321, § 6-317 |
 | [Illinois](/states/illinois) | 30 days (itemized statement) / 45 days (return) | 2x + fees (Chicago RLTO: automatic 2x) | 765 ILCS 710; Chicago RLTO § 5-12-080 |
 | [Indiana](/states/indiana) | 45 days | Forfeiture of deposit + attorney's fees | Ind. Code § 32-31-3-12 |
@@ -58,7 +58,7 @@ Some states only require one of these; a few also factor in the date the lease o
 | [Nevada](/states/nevada) | 30 days | Up to 2x | NRS § 118A.242 |
 | [New Hampshire](/states/new-hampshire) | 30 days | 2x | N.H. Rev. Stat. § 540-A:7 |
 | [New Jersey](/states/new-jersey) | 30 days (5 days if fire/flood displacement) | 2x (mandatory) | N.J.S.A. § 46:8-21.1 |
-| [New Mexico](/states/new-mexico) | 30 days | Forfeiture + $250 civil penalty + fees | N.M. Stat. § 47-8-18 |
+| [New Mexico](/states/new-mexico) | 30 days | Forfeiture + fees (+ $250 if bad faith) | N.M. Stat. § 47-8-18 |
 | [New York](/states/new-york) | 14 days | 2x (see § 7-107 note below) | N.Y. Gen. Oblig. Law § 7-108 |
 | [North Carolina](/states/north-carolina) | 30 days | Forfeiture (willful noncompliance) | N.C. Gen. Stat. § 42-52 |
 | [North Dakota](/states/north-dakota) | 30 days | Up to 3x | N.D. Cent. Code § 47-16-07.1 |
@@ -111,7 +111,7 @@ These states impose the highest penalties for landlords who miss the deadline or
 
 **Colorado** — 3x plus attorney's fees if the landlord willfully fails to return the deposit.
 
-**Hawaii** — 3x the wrongfully withheld amount, which can stack quickly on larger deposits.
+**Hawaii** — Up to 3x the wrongfully withheld amount for willful retention (awarded at the court's discretion), which can stack quickly on larger deposits.
 
 **Maryland** — Up to 3x plus attorney's fees, matching the strongest statutes in the country. Maryland is a high-renter-population state and courts here enforce the penalty provisions consistently.
 

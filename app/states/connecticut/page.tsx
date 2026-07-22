@@ -6,7 +6,7 @@ import { buildStateMetadata } from '@/lib/stateMetadata';
 export const metadata: Metadata = buildStateMetadata({
   slug: 'connecticut',
   title: 'Security Deposit Demand Letter Connecticut',
-  description: 'Get your security deposit back in Connecticut. State-specific demand letter citing Conn. Gen. Stat. § 47a-21, the 30 days deadline, and the penalty for wrongful withholding. Ready in minutes for $39.',
+  description: 'Get your security deposit back in Connecticut. State-specific demand letter citing Conn. Gen. Stat. § 47a-21, the 21-day deadline, and the penalty for wrongful withholding. Ready in minutes for $39.',
 });
 
 export default function ConnecticutPage() {
