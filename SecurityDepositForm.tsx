@@ -489,7 +489,7 @@ export default function SecurityDepositForm() {
 
   // DOM order of fields, used to scroll to the first issue on submit.
   const FIELD_ORDER = [
-    'state', 'city', 'tenantName', 'email', 'rentalPropertyAddress', 'depositAmount', 'vacatedDate',
+    'state', 'city', 'tenantName', 'email', 'rentalPropertyAddress', 'isRentStabilized', 'depositAmount', 'vacatedDate',
     'depositPaidDate', 'forwardingAddressDate', 'buildingUnitCount', 'leaseType', 'tenantAddress',
     'landlordName', 'landlordAddress', 'propertySold', 'scenario', 'amountReturned',
     'unitCondition', 'damageEstimate', 'unpaidRent', 'unpaidRentAmount',
@@ -670,6 +670,15 @@ export default function SecurityDepositForm() {
     if (showLeaseType && !formData.leaseType) {
       b.leaseType = `Select your tenancy type \u2014 it determines the return deadline in ${formData.state}.`;
     }
+    // PV-11a: rent-stabilized status is a conditional driver too — it decides
+    // WHICH New York deposit law the letter argues (GOL § 7-108 vs. § 7-107 /
+    // DHCR). Skipping it used to silently produce a § 7-108 letter for a
+    // possibly-stabilized tenant, so an explicit answer (including "I'm not
+    // sure") is now required whenever the question is shown (BLOCK).
+    if (showRentStabilized && !formData.isRentStabilized) {
+      b.isRentStabilized =
+        'Let us know whether the apartment is rent-stabilized \u2014 it determines which New York deposit law your letter argues. Choose \u201cI\u2019m not sure\u201d if you don\u2019t know.';
+    }
 
     // --- Project I: authoritative scenario (BLOCK) ---
     if (!formData.scenario) {
@@ -723,9 +732,17 @@ export default function SecurityDepositForm() {
       }
     }
 
-    // Unit count sanity when shown (BLOCK only if they typed something invalid).
-    if (showUnitCount && formData.buildingUnitCount !== '' && formData.buildingUnitCount !== 'unknown') {
-      if (!/^\d+$/.test(formData.buildingUnitCount) || parseInt(formData.buildingUnitCount, 10) < 1) {
+    // Unit count when shown (BLOCK) — PV-11b: a typed number OR the "I'm not
+    // sure" checkbox is now required (a silent blank used to pass and reach
+    // the same downstream handling as "unsure," but a typed answer produces a
+    // stronger letter, so we make the choice explicit).
+    if (showUnitCount) {
+      if (formData.buildingUnitCount === '') {
+        b.buildingUnitCount = 'Enter the number of units in the building, or check \u201cI\u2019m not sure\u201d \u2014 it affects which law your letter cites.';
+      } else if (
+        formData.buildingUnitCount !== 'unknown' &&
+        (!/^\d+$/.test(formData.buildingUnitCount) || parseInt(formData.buildingUnitCount, 10) < 1)
+      ) {
         b.buildingUnitCount = 'Enter the number of units as a whole number (1 or more), or check \u201cI\u2019m not sure.\u201d';
       }
     }
@@ -1458,12 +1475,16 @@ export default function SecurityDepositForm() {
               </div>
             )}
 
-            {/* NYC rent-stabilized */}
+            {/* NYC rent-stabilized — mandatory when shown (PV-11a): the answer
+                decides which NY deposit law the letter argues, so skipping it
+                is blocked in validateForm. */}
             {showRentStabilized && (
-              <div className="pt-1">
-                <label className={labelClass}>Is this a rent-stabilized apartment?</label>
+              <div className="pt-1" id="f-isRentStabilized">
+                <label className={labelClass}>
+                  Is this a rent-stabilized apartment? <span className="text-red-500">*</span>
+                </label>
                 <div className="flex flex-wrap gap-4">
-                  {[['yes', 'Yes'], ['no', 'No'], ['unknown', 'I don\u2019t know']].map(([v, l]) => (
+                  {[['yes', 'Yes'], ['no', 'No'], ['unknown', 'I\u2019m not sure']].map(([v, l]) => (
                     <label key={v} className="flex items-center gap-2 text-sm text-slate-700">
                       <input type="radio" value={v}
                         checked={formData.isRentStabilized === v}
@@ -1473,6 +1494,12 @@ export default function SecurityDepositForm() {
                     </label>
                   ))}
                 </div>
+                {errors.isRentStabilized && <p className="mt-1 text-sm text-red-600">{errors.isRentStabilized}</p>}
+                <p className="mt-1 text-xs text-slate-500">
+                  Rent-stabilized apartments are covered by different deposit rules, so
+                  this determines which law your letter argues. Choose &ldquo;I&rsquo;m not
+                  sure&rdquo; if you don&rsquo;t know &mdash; your letter will cover both.
+                </p>
               </div>
             )}
             {showLeaseStartDate && (
@@ -1574,7 +1601,7 @@ export default function SecurityDepositForm() {
             {showUnitCount && (
               <div id="f-buildingUnitCount">
                 <label className={labelClass}>
-                  How many rental units are in the building?
+                  How many rental units are in the building? <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -1602,7 +1629,9 @@ export default function SecurityDepositForm() {
                 <p className="mt-1 text-xs text-slate-500">
                   In {formData.state}, the security-deposit statute applies differently
                   depending on the building&apos;s size, so this affects which law your
-                  letter cites. Enter the exact number of units if you know it.
+                  letter cites. Enter the exact number of units if you know it, or check
+                  &ldquo;I&rsquo;m not sure&rdquo; &mdash; an exact number makes your
+                  letter stronger.
                 </p>
               </div>
             )}
