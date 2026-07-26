@@ -51,12 +51,12 @@ Here's what a properly structured Florida demand letter looks like. The scenario
 
 > July 26, 2026
 >
-> Maria Delgado
-> 2214 Lakeview Terrace, Apt 3
+> Maria Delgado  
+> 2214 Lakeview Terrace, Apt 3  
 > Tampa, FL 33604
 >
-> Richard Hobbs
-> 890 Commerce Blvd, Suite 210
+> Richard Hobbs  
+> 890 Commerce Blvd, Suite 210  
 > Tampa, FL 33607
 >
 > RE: Security Deposit — Formal Demand for Return of $2,400 Deposit
