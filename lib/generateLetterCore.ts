@@ -404,7 +404,20 @@ async function callAnthropic(apiKey: string, userMessage: string): Promise<strin
     body: JSON.stringify({
       model: 'claude-opus-4-8',
       max_tokens: 4000,
-      system: SYSTEM_PROMPT,
+      // Prompt caching (Batch 37): the static SYSTEM_PROMPT is marked as a
+      // cache breakpoint. Billing-only — the prompt text sent to the model is
+      // byte-identical to the uncached call; cached tokens produce identical
+      // generations. Cache TTL is 5 min, refreshed on every hit, so clustered
+      // letters (and harness sweeps) read the prompt at ~10% of base input
+      // price instead of paying full price per call. The single dynamic part
+      // (the user message) is never cached.
+      system: [
+        {
+          type: 'text',
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
       messages: [{ role: 'user', content: userMessage }],
     }),
   });
