@@ -95,9 +95,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             onClick={handleLogoClick}
             className="flex items-center gap-2"
           >
-            <ShieldMark className="h-6 w-6 text-slate-900" />
+            <ShieldMark className="h-6 w-6 shrink-0 text-slate-900" />
             <span
-              className="text-xl font-semibold tracking-tight text-slate-900"
+              className="whitespace-nowrap text-lg font-semibold tracking-tight text-slate-900 sm:text-xl"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               TenantShield
@@ -122,13 +122,13 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
               About
             </Link>
           </nav>
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-4">
             {/* Project D: admin-only nav link. Rendering is cosmetic; the
                 server-side requireAdmin() gate is what actually protects /admin. */}
             {isAdminEmail(userEmail) && (
               <Link
                 href="/admin"
-                className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+                className="whitespace-nowrap text-xs font-medium text-slate-700 transition hover:text-slate-900 sm:text-sm"
               >
                 Admin
               </Link>
@@ -137,7 +137,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             {authed !== null && (
               <Link
                 href={authed ? '/dashboard' : '/auth'}
-                className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+                className="whitespace-nowrap text-xs font-medium text-slate-700 transition hover:text-slate-900 sm:text-sm"
               >
                 {authed ? 'My account' : 'Sign in'}
               </Link>
@@ -148,9 +148,10 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             {!isGeneratePage && (
               <Link
                 href="/generate"
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#B45309] px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
               >
-                Generate my letter
+                <span className="sm:hidden">Get my letter</span>
+                <span className="hidden sm:inline">Generate my letter</span>
                 <span className="hidden text-amber-100/80 sm:inline">— $39</span>
               </Link>
             )}

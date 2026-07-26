@@ -105,9 +105,9 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
             onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className="flex items-center gap-2"
           >
-            <ShieldMark className="h-6 w-6 text-slate-900" />
+            <ShieldMark className="h-6 w-6 shrink-0 text-slate-900" />
             <span
-              className="text-xl font-semibold tracking-tight text-slate-900"
+              className="whitespace-nowrap text-lg font-semibold tracking-tight text-slate-900 sm:text-xl"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               TenantShield
@@ -119,21 +119,22 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
             <a href="#faq" className="transition hover:text-slate-900">FAQ</a>
             <Link href="/about" className="transition hover:text-slate-900">About</Link>
           </nav>
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-4">
             {/* Project E: swaps with auth state. Hidden while unknown. */}
             {authed !== null && (
               <Link
                 href={authed ? '/dashboard' : '/auth'}
-                className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+                className="whitespace-nowrap text-xs font-medium text-slate-700 transition hover:text-slate-900 sm:text-sm"
               >
                 {authed ? 'My account' : 'Sign in'}
               </Link>
             )}
             <Link
               href="/generate"
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#B45309] px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E] sm:gap-2 sm:px-5 sm:py-2.5"
             >
-              Generate my letter
+              <span className="sm:hidden">Get my letter</span>
+              <span className="hidden sm:inline">Generate my letter</span>
               <span className="hidden text-amber-100/80 sm:inline">— $39</span>
             </Link>
           </div>
@@ -587,7 +588,7 @@ export default function HomeClient({ deadlineStates, cityOverlaysByState }: Home
                   <Quote className="h-6 w-6" />
                 </div>
                 <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
-                  Be one of the first.
+                  No fake reviews — be one of the first.
                 </h2>
                 <p className="mt-4 text-lg leading-relaxed text-slate-600">
                   TenantShield is new, so we&apos;re not going to show you reviews from
