@@ -136,7 +136,8 @@ export default async function AdminOrderDetailPage({
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
-                <DownloadPdfButton letterText={order.letterText} />
+                {/* W1: letter text is fetched at click time (never stale). */}
+                <DownloadPdfButton refNumber={order.refNumber} />
                 {/* v2: manual re-send — always attempts (bypasses the pipeline's
                     idempotency flag by calling sendLetterEmail directly). */}
                 <form action={resendReceiptEmail}>
