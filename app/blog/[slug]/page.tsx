@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
 import { getPostBySlug, getAllPosts } from '@/lib/posts'
 import SiteFooter from '@/app/components/SiteFooter'
 
@@ -98,6 +99,57 @@ function buildDatasetSchema() {
   }
 }
 
+/*
+ * Letter-document card ("blueprint" format, July 2026).
+ * Blog sample letters are wrapped in <div class="letter-doc"> inside the
+ * markdown (rendered via rehype-raw). The card visually echoes the generated
+ * PDF: white paper, Helvetica, non-italic, true paragraph + address-block
+ * spacing. Styles are scoped under .letter-doc with higher specificity than
+ * .prose-tenantshield descendants so nothing leaks into (or in from) the
+ * shared prose styles. Do NOT move these into globals.css.
+ */
+const letterDocStyles = `
+  .prose-tenantshield .letter-doc {
+    background: #FFFFFF;
+    border: 1px solid #E2E0DA;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.08);
+    padding: clamp(28px, 6vw, 56px);
+    margin: 40px 0 16px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #111827;
+    font-style: normal;
+    overflow-wrap: break-word;
+  }
+  .prose-tenantshield .letter-doc p {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    font-style: normal;
+    margin: 0 0 1.35em;
+    padding: 0;
+    border: none;
+  }
+  .prose-tenantshield .letter-doc p:last-child {
+    margin-bottom: 0;
+  }
+  .prose-tenantshield .letter-doc strong {
+    font-weight: 700;
+    color: inherit;
+  }
+  .prose-tenantshield .letter-doc em {
+    font-style: normal;
+  }
+  .prose-tenantshield .letter-doc a {
+    color: inherit;
+    text-decoration: none;
+    pointer-events: none;
+  }
+`
+
 export default async function BlogPostPage({
   params,
 }: {
@@ -128,6 +180,9 @@ export default async function BlogPostPage({
           }}
         />
       )}
+
+      {/* Letter-document card styles (scoped; see comment above) */}
+      <style dangerouslySetInnerHTML={{ __html: letterDocStyles }} />
 
       {/* Header */}
       <header
@@ -280,7 +335,10 @@ export default async function BlogPostPage({
 
         {/* Markdown Body */}
         <div className="prose-tenantshield">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+          >
             {post.content}
           </ReactMarkdown>
         </div>

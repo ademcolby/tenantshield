@@ -45,45 +45,46 @@ If all three are yes, the forfeiture argument is yours to make. If you didn't gi
 
 ## Sample Florida Security Deposit Demand Letter
 
-Here's what a properly structured Florida demand letter looks like. The scenario: the tenant gave written notice, moved out May 31, and the landlord has said nothing for nearly two months.
+Here's what a properly structured Florida demand letter looks like — laid out the way an actual demand letter reads on paper. The scenario: the tenant gave written notice, moved out May 31, and the landlord has said nothing for nearly two months.
 
----
+<div class="letter-doc">
 
-> July 26, 2026
->
-> Maria Delgado  
-> 2214 Lakeview Terrace, Apt 3  
-> Tampa, FL 33604
->
-> Richard Hobbs  
-> 890 Commerce Blvd, Suite 210  
-> Tampa, FL 33607
->
-> RE: Security Deposit — Formal Demand for Return of $2,400 Deposit
->
-> Dear Mr. Hobbs,
->
-> I am writing regarding the security deposit for the residential tenancy at 4471 Palmetto Grove Ln, Tampa, FL 33610, where I was your tenant. At the beginning of the tenancy, you accepted a security deposit of $2,400. I vacated the property on May 31, 2026, after giving proper written notice as required, and I left the unit in good condition with only normal wear and tear. My forwarding address for all correspondence and for return of the deposit is the address stated above.
->
-> To date, you have returned none of my security deposit. You have not sent me any written notice of intent to impose a claim on the deposit, by certified mail or otherwise, and you have provided no accounting of any kind.
->
-> Under Florida Statutes § 83.49, a landlord who intends to impose a claim on a security deposit must send the tenant written notice of that intent by certified mail within 30 days after the tenant vacates. You provided no such notice. Under § 83.49(3)(a), a landlord who fails to give the required notice within 30 days forfeits the right to impose any claim upon the security deposit. Because you never provided any notice of intent to impose a claim, you are not entitled to retain any portion of my deposit, and the full $2,400 is due to be returned to me.
->
-> I demand return of my full security deposit of $2,400 no later than August 9, 2026. Payment should be sent to my forwarding address stated above.
->
-> If I do not receive full payment by that date, I intend to pursue all remedies available to me under Florida Statutes § 83.49 in an appropriate court. I would prefer to resolve this matter without litigation, and prompt return of the deposit will make that unnecessary.
->
-> Please govern yourself accordingly. I look forward to your prompt response.
->
-> Sincerely,
->
-> Maria Delgado
+July 26, 2026
 
----
+Maria Delgado  
+2214 Lakeview Terrace, Apt 3  
+Tampa, FL 33604
+
+Richard Hobbs  
+890 Commerce Blvd, Suite 210  
+Tampa, FL 33607
+
+**RE: Security Deposit — Formal Demand for Return of $2,400.00**
+
+Dear Mr. Hobbs,
+
+I am the former tenant of the residential property located at 4471 Palmetto Grove Ln, Tampa, FL 33610. In connection with that tenancy, you accepted a security deposit of $2,400.00. I provided proper written notice before vacating and moved out on May 31, 2026, leaving the unit in good condition with only normal wear and tear. I have photographs and a condition checklist documenting the unit's condition at move-out. My forwarding address for all correspondence and for return of the deposit is the address stated above.
+
+To date, you have not returned any portion of my security deposit, and you have provided no written notice of any intent to impose a claim against it, by certified mail or otherwise. I owe no unpaid rent or fees, and there is no basis for withholding any part of the deposit.
+
+Under Florida Statutes § 83.49, a landlord who intends to impose a claim on a security deposit must send the tenant written notice of that intent by certified mail within 30 days after the tenant vacates. Under § 83.49(3)(a), a landlord who fails to give the required notice within 30 days forfeits the right to impose any claim upon the security deposit. Because I gave proper written notice and completed my tenancy, and because you have neither returned the deposit nor provided any notice of intent to impose a claim, you have forfeited any right to withhold any portion of my $2,400.00 deposit, which is now due to me in full.
+
+I demand return of the full security deposit of $2,400.00. Please deliver payment to me at my forwarding address stated above no later than August 9, 2026.
+
+If I do not receive the full amount by that date, I am prepared to pursue all remedies available to me under Florida Statutes § 83.49, including filing suit in the appropriate Florida court to recover the deposit. I would prefer to resolve this matter without litigation, and prompt return of the deposit will make that unnecessary.
+
+Please direct all correspondence regarding this matter to me at the address above.
+
+Sincerely,
+
+Maria Delgado
+
+</div>
 
 Notice what this letter does — and doesn't do:
 
 - **It states the notice facts precisely.** The tenant gave proper notice before vacating (keeping the § 83.49(5) door closed) and the landlord sent no certified notice of claim (opening the § 83.49(3)(a) forfeiture).
+- **It closes the side doors.** Stating that no rent or fees are owed and that the unit's condition is documented with photographs and a checklist removes the two excuses landlords reach for first.
 - **It cites the statute by section**, not "Florida law says." Specific citations tell the landlord you've done the homework.
 - **It sets a real deadline** and states the consequence — court — without bluster.
 - **It confirms the forwarding address**, which matters under § 83.49's notice mechanics.
