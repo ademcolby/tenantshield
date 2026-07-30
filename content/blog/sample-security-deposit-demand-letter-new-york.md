@@ -142,6 +142,6 @@ The sample above fits one specific fact pattern: a market-rate unit in a small b
 
 **[Generate your New York demand letter →](/generate)**
 
-*Also see: [New York security deposit law — deadlines and penalties](/states/new-york) · [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit)*
+*Also see: [New York security deposit law — deadlines and penalties](/states/new-york) · [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit) · [Sample demand letters for every state](/blog/sample-security-deposit-demand-letter)*
 
 *This article is general information about New York law, not legal advice for your specific situation.*
