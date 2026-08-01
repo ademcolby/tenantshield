@@ -128,6 +128,6 @@ The sample above fits one specific fact pattern. Your situation may differ — a
 
 **[Generate your Texas demand letter →](/generate)**
 
-*Also see: [Texas security deposit law — deadlines and penalties](/states/texas) · [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit) · [Sample demand letters for every state](/blog/sample-security-deposit-demand-letter)*
+*Also see: [Texas security deposit law — deadlines and penalties](/states/texas) · [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit) · [Sample demand letters for every state](/blog/sample-security-deposit-demand-letter) · [Security deposit deadline calculator](/security-deposit-deadline-calculator)*
 
 *This article is general information about Texas law, not legal advice for your specific situation.*

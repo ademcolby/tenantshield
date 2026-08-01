@@ -44,7 +44,7 @@ State the exact amount you paid, and if you have it, reference the date it was p
 
 Note the date you vacated the property and confirm that you provided a forwarding address — and when. This matters because most state statutes start the return clock from the date the tenant vacates *and* provides a forwarding address in writing.
 
-If your landlord tries to argue the clock never started, this shuts that down.
+If your landlord tries to argue the clock never started, this shuts that down. (Not sure where your state's clock stands? The free [security deposit deadline calculator](/security-deposit-deadline-calculator) computes your landlord's exact deadline — and flags the states where the clock doesn't start until you act.)
 
 ### 4. The Specific State Statute
 

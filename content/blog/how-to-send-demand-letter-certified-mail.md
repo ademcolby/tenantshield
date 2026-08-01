@@ -105,6 +105,6 @@ Certified mail proves your letter arrived — it can't fix a letter that cites t
 
 **[Generate your demand letter →](/generate)**
 
-*Also see: [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit) · Sample letters: [Florida](/blog/sample-security-deposit-demand-letter-florida) · [Ohio](/blog/ohio-landlord-not-returned-security-deposit-30-days) · [Texas](/blog/sample-security-deposit-demand-letter-texas)*
+*Also see: [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit) · Sample letters: [Florida](/blog/sample-security-deposit-demand-letter-florida) · [Ohio](/blog/ohio-landlord-not-returned-security-deposit-30-days) · [Texas](/blog/sample-security-deposit-demand-letter-texas) · [Security deposit deadline calculator](/security-deposit-deadline-calculator)*
 
 *This article is general information, not legal advice for your specific situation.*

@@ -31,7 +31,7 @@ Here are a few examples:
 
 If the deadline has passed and you haven't received your deposit *or* a written itemization of deductions — your landlord is already in violation.
 
-Not sure what your state requires? Check out our [complete 50-state security deposit deadline guide](/blog/security-deposit-return-deadlines-all-50-states).
+Not sure what your state requires? Check out our [complete 50-state security deposit deadline guide](/blog/security-deposit-return-deadlines-all-50-states). Or get the exact date instantly: the free [security deposit deadline calculator](/security-deposit-deadline-calculator) computes your landlord's deadline from your state and move-out date — and tells you whether they're already late.
 
 ---
 

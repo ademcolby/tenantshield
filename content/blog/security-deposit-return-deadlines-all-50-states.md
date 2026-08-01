@@ -21,6 +21,8 @@ The clock typically starts when *both* of the following occur:
 
 Some states only require one of these; a few also factor in the date the lease officially ends. Check your state's specific statute for the precise trigger — it matters.
 
+**Want the exact date for your situation?** Enter your state and move-out date in the free [security deposit deadline calculator](/security-deposit-deadline-calculator) — it computes your landlord's legal deadline, tells you whether they're already late, and handles the states where the clock doesn't start until you act.
+
 ---
 
 ## All 50 States + DC: Security Deposit Return Deadlines
