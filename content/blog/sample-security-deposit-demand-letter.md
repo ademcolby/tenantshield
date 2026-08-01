@@ -1,13 +1,13 @@
 ---
 title: "Sample Security Deposit Demand Letter (2026) — Example + State-by-State Guide"
-description: "A complete sample security deposit demand letter you can model yours on, what every effective letter includes, and state-by-state guides with real examples for Florida, Texas, Ohio, Arizona, and New York."
+description: "A complete sample security deposit demand letter you can model yours on, what every effective letter includes, and state-by-state guides with real examples for Florida, Texas, Ohio, Arizona, New York, Nevada, and Colorado."
 slug: "sample-security-deposit-demand-letter"
 publishedAt: "2026-07-27"
 ---
 
 When a landlord won't return a security deposit, the step that most often gets the money back isn't a lawsuit — it's a properly written demand letter. It costs a stamp, it creates the paper trail a court wants to see, and in many states it does real legal work: starting statutory clocks, preserving penalty rights, and putting the landlord's exposure on the record.
 
-This guide shows you a complete sample demand letter, explains what every effective letter includes — and then does the part most "free template" pages skip: it shows you why the letter that wins in Florida is built differently from the one that wins in Texas, Ohio, Arizona, or New York, with a dedicated sample for each.
+This guide shows you a complete sample demand letter, explains what every effective letter includes — and then does the part most "free template" pages skip: it shows you why the letter that wins in Florida is built differently from the one that wins in Texas, Ohio, Arizona, New York, Nevada, or Colorado, with a dedicated sample for each.
 
 ---
 
@@ -76,7 +76,7 @@ That skeleton is sound in every state. But look at where the brackets sit: the s
 
 ## Why Your State Changes the Letter
 
-Fill those brackets wrong and the letter doesn't just get weaker — it can hand the landlord's attorney the reply. Here's how differently the same dispute plays out across five states, each with a full guide and a complete state-specific sample letter:
+Fill those brackets wrong and the letter doesn't just get weaker — it can hand the landlord's attorney the reply. Here's how differently the same dispute plays out across seven states, each with a full guide and a complete state-specific sample letter:
 
 **[Florida](/blog/sample-security-deposit-demand-letter-florida)** runs on a notice-and-forfeiture system: a landlord who fails to send a certified-mail notice of claim within 30 days forfeits the right to keep anything — but a tenant who skipped their own 7-day pre-move-out notice can lose that argument. The letter has to get both halves right.
 
@@ -88,7 +88,11 @@ Fill those brackets wrong and the letter doesn't just get weaker — it can hand
 
 **[New York](/blog/sample-security-deposit-demand-letter-new-york)** gives landlords just 14 days from move-out, and a miss forfeits the right to retain anything. But rent-stabilized units are governed by a different statute entirely — the single easiest way in the country to cite the wrong law.
 
-Same skeleton, five different letters. And the differences aren't trivia — they're the deadline, the dollar exposure, and in two of those states, whether your own rights survive at all.
+**[Nevada](/blog/sample-security-deposit-demand-letter-nevada)** exposes a landlord who misses the 30-day deadline to the entire deposit plus a court-fixed sum of up to another full deposit — up to double, while template sites keep promising a treble the statute doesn’t contain. The credible letter claims exactly what Nevada gives.
+
+**[Colorado](/blog/sample-security-deposit-demand-letter-colorado)** requires a 7-day written notice before a tenant can sue for treble damages — so the demand letter isn’t preparation for the legal mechanism, it *is* the mechanism. And since January 2026, it can demand documentation for every claimed deduction.
+
+Same skeleton, seven different letters. And the differences aren't trivia — they're the deadline, the dollar exposure, and in two of those states, whether your own rights survive at all.
 
 ## How to Send It
 
