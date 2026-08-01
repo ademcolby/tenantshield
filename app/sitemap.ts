@@ -69,6 +69,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      // Free deadline checker (U6, shipped Aug 1 2026). Fixed lastModified per
+      // this file's own lastmod philosophy — bump it when the page materially
+      // changes (next expected: Jan 2027 holiday-list refresh).
+      url: `${baseUrl}/security-deposit-deadline-calculator`,
+      lastModified: asDate('2026-08-01'),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
