@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getAttribution } from './lib/attribution';
 
 // Basic email format check. Kept byte-for-byte identical to the server mirror
 // in app/api/create-checkout-session/route.ts so client and server never drift.
@@ -876,6 +877,12 @@ export default function SecurityDepositForm() {
       // Record the assessed tier (admin/analytics; the letter calibrates from
       // the raw case facts themselves, not this label).
       caseStrength: tier ?? '',
+      // Project J v1: first/last-touch marketing attribution (admin/analytics
+      // only — same rider pattern as caseStrength). Rides the payload wholesale
+      // into form_payload; buildUserMessage() reads only named fields, so this
+      // can never reach the prompt or the letter. undefined when storage was
+      // unavailable, in which case JSON.stringify drops the key entirely.
+      attribution: getAttribution(),
     };
 
     setViewState('loading');
