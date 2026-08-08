@@ -9,6 +9,10 @@ export type PostMeta = {
   title: string
   description: string
   publishedAt: string
+  // U5 (Aug 2026): optional. Set in frontmatter when a post is materially
+  // updated; buildArticleSchema emits it as dateModified (falls back to
+  // publishedAt when absent).
+  updatedAt?: string
 }
 
 export type Post = PostMeta & {
@@ -31,6 +35,7 @@ export function getAllPosts(): PostMeta[] {
         title: data.title as string,
         description: data.description as string,
         publishedAt: data.publishedAt as string,
+        updatedAt: data.updatedAt as string | undefined,
       }
     })
 
@@ -51,6 +56,7 @@ export function getPostBySlug(slug: string): Post | null {
     title: data.title as string,
     description: data.description as string,
     publishedAt: data.publishedAt as string,
+    updatedAt: data.updatedAt as string | undefined,
     content,
   }
 }

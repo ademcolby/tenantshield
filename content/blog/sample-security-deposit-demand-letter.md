@@ -3,6 +3,7 @@ title: "Sample Security Deposit Demand Letter (2026) — Example + State-by-Stat
 description: "A complete sample security deposit demand letter you can model yours on, what every effective letter includes, and state-by-state guides with real examples for Florida, Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, Connecticut, Wisconsin, Georgia, Oregon, and Illinois."
 slug: "sample-security-deposit-demand-letter"
 publishedAt: "2026-07-27"
+updatedAt: "2026-08-08"
 ---
 
 When a landlord won't return a security deposit, the step that most often gets the money back isn't a lawsuit — it's a properly written demand letter. It costs a stamp, it creates the paper trail a court wants to see, and in many states it does real legal work: starting statutory clocks, preserving penalty rights, and putting the landlord's exposure on the record.
