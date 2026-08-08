@@ -1,13 +1,13 @@
 ---
 title: "Sample Security Deposit Demand Letter (2026) — Example + State-by-State Guide"
-description: "A complete sample security deposit demand letter you can model yours on, what every effective letter includes, and state-by-state guides with real examples for Florida, Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, and Connecticut."
+description: "A complete sample security deposit demand letter you can model yours on, what every effective letter includes, and state-by-state guides with real examples for Florida, Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, Connecticut, Wisconsin, and Georgia."
 slug: "sample-security-deposit-demand-letter"
 publishedAt: "2026-07-27"
 ---
 
 When a landlord won't return a security deposit, the step that most often gets the money back isn't a lawsuit — it's a properly written demand letter. It costs a stamp, it creates the paper trail a court wants to see, and in many states it does real legal work: starting statutory clocks, preserving penalty rights, and putting the landlord's exposure on the record.
 
-This guide shows you a complete sample demand letter, explains what every effective letter includes — and then does the part most "free template" pages skip: it shows you why the letter that wins in Florida is built differently from the one that wins in Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, or Connecticut, with a dedicated sample for each.
+This guide shows you a complete sample demand letter, explains what every effective letter includes — and then does the part most "free template" pages skip: it shows you why the letter that wins in Florida is built differently from the one that wins in Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, Connecticut, Wisconsin, or Georgia, with a dedicated sample for each.
 
 ---
 
@@ -76,7 +76,7 @@ That skeleton is sound in every state. But look at where the brackets sit: the s
 
 ## Why Your State Changes the Letter
 
-Fill those brackets wrong and the letter doesn't just get weaker — it can hand the landlord's attorney the reply. Here's how differently the same dispute plays out across ten states, each with a full guide and a complete state-specific sample letter:
+Fill those brackets wrong and the letter doesn't just get weaker — it can hand the landlord's attorney the reply. Here's how differently the same dispute plays out across twelve states, each with a full guide and a complete state-specific sample letter:
 
 **[Florida](/blog/sample-security-deposit-demand-letter-florida)** runs on a notice-and-forfeiture system: a landlord who fails to send a certified-mail notice of claim within 30 days forfeits the right to keep anything — but a tenant who skipped their own 7-day pre-move-out notice can lose that argument. The letter has to get both halves right.
 
@@ -98,7 +98,11 @@ Fill those brackets wrong and the letter doesn't just get weaker — it can hand
 
 **[Connecticut](/blog/sample-security-deposit-demand-letter-connecticut)** cut its deadline from 30 days to 21 in late 2023 — and much of the internet still cites the stale figure. The clock runs to the *later* of 21 days after move-out or 15 days after a written forwarding address, so for tenants who never gave one, the letter itself starts the clock. Miss it, and the landlord faces twice the full deposit paid, plus interest.
 
-Same skeleton, ten different letters. And the differences aren't trivia — they're the deadline, the dollar exposure, and in two of those states, whether your own rights survive at all.
+**[Wisconsin](/blog/sample-security-deposit-demand-letter-wisconsin)** pairs a 21-day deadline with the remedy most states don't offer: double damages *plus* attorney's fees — but only if the letter cites ATCP 134.06 and Wis. Stat. § 100.20(5) together, because the rule and the penalty live in different statutes. And a landlord who never provided a move-in check-in sheet can lose the right to deduct anything.
+
+**[Georgia](/blog/sample-security-deposit-demand-letter-georgia)** attaches full forfeiture — of the right to withhold *and* to sue — to a missed 30-day deadline, with a bad-faith treble behind it. But it also has the country's quietest claim-killer: a tenant who signed the move-out list without dissenting in writing can be barred from recovering at all. The letter has to check that door before it opens any other.
+
+Same skeleton, twelve different letters. And the differences aren't trivia — they're the deadline, the dollar exposure, and in two of those states, whether your own rights survive at all.
 
 ## How to Send It
 
