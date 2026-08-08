@@ -1,13 +1,13 @@
 ---
 title: "Sample Security Deposit Demand Letter (2026) — Example + State-by-State Guide"
-description: "A complete sample security deposit demand letter you can model yours on, what every effective letter includes, and state-by-state guides with real examples for Florida, Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, Connecticut, Wisconsin, Georgia, and Oregon."
+description: "A complete sample security deposit demand letter you can model yours on, what every effective letter includes, and state-by-state guides with real examples for Florida, Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, Connecticut, Wisconsin, Georgia, Oregon, and Illinois."
 slug: "sample-security-deposit-demand-letter"
 publishedAt: "2026-07-27"
 ---
 
 When a landlord won't return a security deposit, the step that most often gets the money back isn't a lawsuit — it's a properly written demand letter. It costs a stamp, it creates the paper trail a court wants to see, and in many states it does real legal work: starting statutory clocks, preserving penalty rights, and putting the landlord's exposure on the record.
 
-This guide shows you a complete sample demand letter, explains what every effective letter includes — and then does the part most "free template" pages skip: it shows you why the letter that wins in Florida is built differently from the one that wins in Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, Connecticut, Wisconsin, Georgia, or Oregon, with a dedicated sample for each.
+This guide shows you a complete sample demand letter, explains what every effective letter includes — and then does the part most "free template" pages skip: it shows you why the letter that wins in Florida is built differently from the one that wins in Texas, Ohio, Arizona, New York, Nevada, Colorado, Maryland, California, Connecticut, Wisconsin, Georgia, Oregon, or Illinois, with a dedicated sample for each.
 
 ---
 
@@ -76,7 +76,7 @@ That skeleton is sound in every state. But look at where the brackets sit: the s
 
 ## Why Your State Changes the Letter
 
-Fill those brackets wrong and the letter doesn't just get weaker — it can hand the landlord's attorney the reply. Here's how differently the same dispute plays out across thirteen states, each with a full guide and a complete state-specific sample letter:
+Fill those brackets wrong and the letter doesn't just get weaker — it can hand the landlord's attorney the reply. Here's how differently the same dispute plays out across fourteen states, each with a full guide and a complete state-specific sample letter:
 
 **[Florida](/blog/sample-security-deposit-demand-letter-florida)** runs on a notice-and-forfeiture system: a landlord who fails to send a certified-mail notice of claim within 30 days forfeits the right to keep anything — but a tenant who skipped their own 7-day pre-move-out notice can lose that argument. The letter has to get both halves right.
 
@@ -104,7 +104,9 @@ Fill those brackets wrong and the letter doesn't just get weaker — it can hand
 
 **[Oregon](/blog/sample-security-deposit-demand-letter-oregon)** runs a 31-day clock from *two* events — lease termination and delivery of possession — and backs it with the bluntest penalty on this list: a flat double that courts have held they cannot reduce, triggered by silence alone. But its attorney-fee rule runs to the prevailing party in either direction, so the letter that threatens fees is the letter that overreached.
 
-Same skeleton, thirteen different letters. And the differences aren't trivia — they're the deadline, the dollar exposure, and in two of those states, whether your own rights survive at all.
+**[Illinois](/blog/sample-security-deposit-demand-letter-illinois)** splits its deadline in two — 30 days is only the window for an itemized damage statement; the full-return deadline is 45 — and half the internet cites the wrong clock, while plenty still repeats a five-unit-building threshold the legislature repealed in 2024. The double-damages penalty doesn't require proving bad faith when the landlord simply never sent the statement — refusing to supply it is its own trigger. But a tenant who never provides a forwarding address can lose the penalty entirely, which the letter itself prevents.
+
+Same skeleton, fourteen different letters. And the differences aren't trivia — they're the deadline, the dollar exposure, and in two of those states, whether your own rights survive at all.
 
 ## How to Send It
 
