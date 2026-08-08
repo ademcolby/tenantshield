@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Fraunces, DM_Sans } from 'next/font/google';
+import AttributionCapture from './components/AttributionCapture';
 import './globals.css';
 
 // ============================================================
@@ -133,7 +134,14 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* Project J v1: sitewide first/last-touch attribution capture.
+            Mounted HERE (root layout) and nowhere else — SiteChrome does NOT
+            wrap blog routes, which is exactly where organic first touches
+            land. Renders nothing; can never throw. */}
+        <AttributionCapture />
+        {children}
+      </body>
     </html>
   );
 }

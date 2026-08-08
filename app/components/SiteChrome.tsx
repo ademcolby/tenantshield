@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation'
 import type { Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '../../lib/auth'
 import { isAdminEmail } from '../../lib/adminEmail'
-import { captureAttribution } from '../../lib/attribution'
 import SiteFooter from './SiteFooter'
 
 const ENTITY = 'TenantShield LLC'
@@ -46,15 +45,6 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   // Project D: the signed-in email, used ONLY to decide whether to render the
   // Admin nav link. Cosmetic — the real gate is requireAdmin() on the server.
   const [userEmail, setUserEmail] = useState<string | null>(null)
-
-  // Project J v1: sitewide first/last-touch attribution capture. SiteChrome
-  // mounts once per full page load (client-side route changes don't remount
-  // it), which is exactly the granularity we want — internal navigation is
-  // not a new site entry. captureAttribution() is fully try/catch'd and can
-  // never throw or block rendering.
-  useEffect(() => {
-    captureAttribution()
-  }, [])
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient()
