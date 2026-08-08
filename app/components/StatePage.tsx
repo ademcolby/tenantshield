@@ -67,6 +67,26 @@ function formatVerifiedDate(iso: string): string {
   });
 }
 
+/** U4 (Aug 2026): state slug → published sample-letter blog post. Ohio's post
+ *  predates the naming convention — keep its slug as-is. Update this map when a
+ *  new state post ships (it is the ONLY place the state→post mapping lives). */
+const SAMPLE_POST_SLUGS: Record<string, string> = {
+  florida: '/blog/sample-security-deposit-demand-letter-florida',
+  ohio: '/blog/ohio-landlord-not-returned-security-deposit-30-days',
+  texas: '/blog/sample-security-deposit-demand-letter-texas',
+  arizona: '/blog/sample-security-deposit-demand-letter-arizona',
+  'new-york': '/blog/sample-security-deposit-demand-letter-new-york',
+  nevada: '/blog/sample-security-deposit-demand-letter-nevada',
+  colorado: '/blog/sample-security-deposit-demand-letter-colorado',
+  maryland: '/blog/sample-security-deposit-demand-letter-maryland',
+  california: '/blog/sample-security-deposit-demand-letter-california',
+  connecticut: '/blog/sample-security-deposit-demand-letter-connecticut',
+  wisconsin: '/blog/sample-security-deposit-demand-letter-wisconsin',
+  georgia: '/blog/sample-security-deposit-demand-letter-georgia',
+  oregon: '/blog/sample-security-deposit-demand-letter-oregon',
+  illinois: '/blog/sample-security-deposit-demand-letter-illinois',
+};
+
 export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction }) {
   const j = jurisdiction;
   const cities = getCitiesForState(j.slug);
@@ -193,6 +213,64 @@ export default function StatePage({ jurisdiction }: { jurisdiction: Jurisdiction
               <strong className="text-slate-900">{note.heading}</strong> {note.body}
             </p>
           ))}
+        </div>
+      </section>
+
+      {/* AUG 2026 CODE BATCH — U1: sample-letter preview + U4: blog cross-links.
+          The skeleton is deliberately BRACKETED and asserts no penalty, fee, or
+          deadline figure — same convention as the hub post's generic sample: the
+          only per-state facts drawn in are `statutes[0].label` (guarded; some
+          jurisdictions ship an empty statutes[] ) and the state name. The paid
+          generator is what computes real figures. Styling is Tailwind-only by
+          design — do NOT move this into globals.css (styles-scoping rule).
+          SAMPLE_POST_SLUGS maps the states that have a published sample-letter
+          blog post; states without one just get the hub + checker links. */}
+      <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-8">
+        <h2 className="text-3xl font-medium tracking-tight text-slate-900 sm:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
+          What a {j.name} demand letter looks like.
+        </h2>
+        <p className="mt-6 text-slate-700">
+          Every letter follows the structure courts expect &mdash; your facts, the statute, a
+          specific demand, and a deadline. Here&apos;s the skeleton; the generator fills the
+          brackets from your answers and computes {j.name}&apos;s deadlines
+          {j.statutes.length > 0 ? <> under {j.statutes[0].label}</> : null}.
+        </p>
+        <div className="mt-8 rounded-xl border border-[#E7E5E0] bg-white p-6 text-sm leading-relaxed text-slate-700 sm:p-8">
+          <p>[Date]</p>
+          <p className="mt-4">[Your name]<br />[Your forwarding address]</p>
+          <p className="mt-4">[Landlord&apos;s name and address]</p>
+          <p className="mt-5 font-medium text-slate-900">RE: Security Deposit &mdash; Formal Demand for Return of $[Amount]</p>
+          <p className="mt-5">
+            I am the former tenant of [rental property address]. You accepted a security
+            deposit of $[Amount], and my tenancy ended on [move-out date]. My forwarding
+            address for return of the deposit is stated above, which I am providing to you
+            in writing.
+          </p>
+          <p className="mt-4">
+            Under {j.statutes.length > 0 ? j.statutes[0].label : '[the governing statute]'}, you were
+            required to [return the deposit or provide an itemized statement] within [the
+            statutory period]. That period has passed, and you have done neither. [The
+            specific consequence {j.name} law attaches, cited by section.]
+          </p>
+          <p className="mt-4">
+            I demand return of $[Amount] no later than [deadline]. If I do not receive it,
+            I am prepared to pursue all remedies available under [statute], including
+            filing suit in the appropriate court.
+          </p>
+          <p className="mt-5">Sincerely,<br />[Your name]</p>
+        </div>
+        <div className="mt-6 flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6">
+          {SAMPLE_POST_SLUGS[j.slug] && (
+            <Link href={SAMPLE_POST_SLUGS[j.slug]} className="font-medium text-[#B45309] transition hover:text-[#92400E]">
+              Read a complete {j.name} sample letter &rarr;
+            </Link>
+          )}
+          <Link href="/blog/sample-security-deposit-demand-letter" className="font-medium text-[#B45309] transition hover:text-[#92400E]">
+            Sample demand letters for every state &rarr;
+          </Link>
+          <Link href="/security-deposit-deadline-calculator" className="font-medium text-[#B45309] transition hover:text-[#92400E]">
+            Check your {j.name} deadline free &rarr;
+          </Link>
         </div>
       </section>
 

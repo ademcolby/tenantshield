@@ -1256,22 +1256,26 @@ const ILLINOIS: SimpleJurisdiction = {
     kind: 'multiplier',
     multiplier: 2,
     attorneyFees: true,
-    short: '2× + fees (bad faith)',
+    short: '2× + fees (court finding)',
     long:
-      'A landlord who acts in bad faith is liable for twice the amount of the ' +
-      'deposit due, plus court costs and reasonable attorney\u2019s fees. Unlike ' +
-      'the Chicago ordinance, the state Act\u2019s penalty is not automatic ' +
-      '\u2014 it requires a finding of bad faith.',
+      'A landlord who has refused to supply the required itemized statement ' +
+      '\u2014 or supplied one in bad faith \u2014 and has failed to return the ' +
+      'deposit due in time is liable for twice the amount of the security ' +
+      'deposit due, plus court costs and reasonable attorney\u2019s fees. ' +
+      'Unlike the Chicago ordinance, the state Act\u2019s penalty is not ' +
+      'automatic \u2014 it requires a circuit court finding \u2014 but bad ' +
+      'faith is not required where the landlord simply never sent the ' +
+      'statement: refusing to supply it is its own trigger.',
   },
   statuteCardLabel: '765 ILCS 710',
   statuteCardSubtext: 'Security Deposit Return Act',
   penaltyCardLabel: '2× + fees',
-  penaltyCardSubtext: 'on a bad-faith finding',
+  penaltyCardSubtext: 'on a refusal or bad-faith finding',
   copy: {
     heroSummary:
       "A professional demand letter citing Illinois's Security Deposit Return Act " +
       '(765 ILCS 710), the 30-day itemization and 45-day return deadlines, and ' +
-      'the double-damages penalty for bad-faith withholding. Ready in minutes.',
+      'the double-damages penalty for wrongful withholding. Ready in minutes.',
     lawSummary:
       'Under the Illinois Security Deposit Return Act (765 ILCS 710), your ' +
       'landlord must give you an itemized statement of any damages within 30 days ' +
@@ -1279,11 +1283,12 @@ const ILLINOIS: SimpleJurisdiction = {
       'move-out. Since January 1, 2024, the Act applies to residential rentals ' +
       'statewide regardless of building size.',
     penaltyLeadIn:
-      'If the landlord withholds your deposit in bad faith \u2014 for example, ' +
-      'refusing to return it, providing no itemization, or making clearly ' +
-      'improper deductions \u2014 you may recover:',
+      'If the landlord has refused to supply the required itemized statement ' +
+      '\u2014 for example, by sending you nothing at all \u2014 or supplied ' +
+      'one in bad faith, and has failed to return the deposit due in time, ' +
+      'you may recover:',
     penaltyBullets: [
-      'Two times the security deposit due (on a bad-faith finding)',
+      'Two times the security deposit due (upon a circuit court finding)',
       'Court costs',
       "Reasonable attorney's fees",
     ],
@@ -1307,10 +1312,21 @@ const ILLINOIS: SimpleJurisdiction = {
         'rule are out of date. Local ordinances (Chicago, Cook County) can add ' +
         'further protections on top.',
     },
+    {
+      kind: 'trigger_condition',
+      heading: 'Give your forwarding address in writing:',
+      body:
+        'Under the current Act, a tenant who fails to provide the landlord ' +
+        'with a mailing address or email address cannot hold the landlord ' +
+        'liable for damages or penalties resulting from that failure \u2014 ' +
+        'the deposit is still owed, but the penalty exposure can be lost. A ' +
+        'written demand letter that states your forwarding address closes ' +
+        'that door.',
+    },
   ],
   lastVerified: '2026-07-20',
   primarySource:
-    '765 ILCS 710 + P.A. 103-224 (verified against statute text; 5-unit gate repealed eff. 1/1/2024; bad-faith-finding requirement confirmed) (legal audit, July 2026)',
+    '765 ILCS 710 + P.A. 103-224 (verified against statute text; 5-unit gate repealed eff. 1/1/2024; \u00a71(c) two-prong trigger confirmed \u2014 refused-to-supply OR bad-faith supply, refusal prong needs no bad faith; \u00a71(a) address rule confirmed) (legal audit, July 2026; penalty prose corrected + T1 re-verified against ilga.gov, Aug 8, 2026)',
 };
 
 const INDIANA: SimpleJurisdiction = {
