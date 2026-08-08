@@ -34,6 +34,10 @@ const WIDTHS = {
 
 const LINKS = [
   { label: 'All states', href: '/states' },
+  // Aug 2026 code batch — the checker's last discoverability gap (U6 follow-up):
+  // one edit here puts it in the footer of every page on the site, per this
+  // file's single-source rule.
+  { label: 'Deadline Checker', href: '/security-deposit-deadline-calculator' },
   { label: 'Blog', href: '/blog' },
   { label: 'About', href: '/about' },
   { label: 'Terms', href: '/terms' },
