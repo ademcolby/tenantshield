@@ -45,9 +45,18 @@ function buildArticleSchema(post: {
   description: string
   slug: string
   publishedAt: string
+  // U5 (Aug 2026): optional frontmatter field. When a post is materially
+  // updated (e.g. the Jan annual refresh), add `updatedAt: "YYYY-MM-DD"` to
+  // its frontmatter and dateModified diverges from datePublished; absent, it
+  // falls back to publishedAt — identical output to the pre-U5 behavior.
+  // NOTE: requires lib/posts.ts to pass `updatedAt` through from frontmatter.
+  updatedAt?: string
 }) {
   // Convert YYYY-MM-DD to full ISO 8601 with timezone
   const dateISO = `${post.publishedAt}T00:00:00-05:00`
+  const modifiedISO = post.updatedAt
+    ? `${post.updatedAt}T00:00:00-05:00`
+    : dateISO
 
   return {
     '@context': 'https://schema.org',
@@ -55,7 +64,7 @@ function buildArticleSchema(post: {
     headline: post.title,
     description: post.description,
     datePublished: dateISO,
-    dateModified: dateISO,
+    dateModified: modifiedISO,
     url: `https://gettenantshield.com/blog/${post.slug}`,
     author: {
       '@type': 'Organization',
