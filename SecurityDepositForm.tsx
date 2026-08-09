@@ -195,7 +195,7 @@ const SPECIAL_CIRCUMSTANCES: CircumstanceItem[] = [
   { id: 'non_refundable_cleaning_fee', label: 'I paid a non-refundable cleaning fee', tip: 'You paid a fee at move-in that was labeled non-refundable. Depending on your state, this may still be legally recoverable.' },
 ];
 
-type ViewState = 'form' | 'loading' | 'result' | 'missing_info' | 'out_of_scope' | 'error' | 'blocked';
+type ViewState = 'form' | 'review' | 'loading' | 'result' | 'missing_info' | 'out_of_scope' | 'error' | 'blocked';
 type Tier = 'strong' | 'moderate' | 'weak';
 
 interface AddressParts {
@@ -784,7 +784,7 @@ export default function SecurityDepositForm() {
     return { blocks: b, warns: w };
   };
 
-  const runSubmit = async (opts?: { ackStrength?: boolean }) => {
+  const runSubmit = async (opts?: { ackStrength?: boolean; fromReview?: boolean }) => {
     const composedTenant = composeAddress(tenantAddr);
     const composedLandlord = composeAddress(landlordAddr);
     const composedCity = effectiveCity;
@@ -860,6 +860,20 @@ export default function SecurityDepositForm() {
       return;
     }
 
+    // --- Pre-payment review screen (backlog item #7, July 6 2026; built
+    // August 2026). Final gate before checkout: a factual recap of every
+    // entered field so typos get caught BEFORE the $39. First pass through
+    // here shows the review; the review screen's confirm button re-enters
+    // runSubmit with fromReview, which re-runs the full validation chain
+    // (cheap, and guarantees nothing changed) and proceeds to checkout.
+    // Scope discipline per the backlog item: recap ONLY — no stats, no
+    // outcome predictions; at most the plain "you're requesting $X" line.
+    if (!opts?.fromReview) {
+      setViewState('review');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      return;
+    }
+
     const cleanedDeposit = parseDeposit(formData.depositAmount).value.toString();
 
     const payload = {
@@ -918,6 +932,29 @@ export default function SecurityDepositForm() {
     runSubmit({ ackStrength: true });
   };
 
+  // --- Pre-payment review screen handlers (backlog item #7). ---
+  // Confirm: re-enter runSubmit with both bypass flags. The full validation
+  // chain re-runs (fields are unchanged, so it passes) and proceeds to the
+  // payload build + checkout fetch.
+  const handleConfirmReview = () => {
+    runSubmit({ ackStrength: true, fromReview: true });
+  };
+  // Back to the form — optionally scrolled to a specific section anchor.
+  // strengthAcknowledged is deliberately RESET: if they edit case facts the
+  // tier can change, and the strength modal should re-fire with the fresh
+  // assessment rather than honoring a stale acknowledgment.
+  const handleEditFromReview = (anchorId?: string) => {
+    setStrengthAcknowledged(false);
+    setViewState('form');
+    if (anchorId) {
+      requestAnimationFrame(() => {
+        document.getElementById(anchorId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  };
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(generatedLetter);
@@ -957,6 +994,232 @@ export default function SecurityDepositForm() {
             You&apos;ll be taken to Stripe to complete your $39 payment. After payment, your
             letter is generated automatically.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- Pre-payment review (backlog item #7) ----------
+  // Factual recap of every entered field, shown AFTER validation + the
+  // strength modal and BEFORE checkout. Recap only — no stats, no outcome
+  // predictions (the jab.today anti-pattern, ruled out when the item was
+  // logged July 6, 2026). Blank optional fields render as "Not provided"
+  // rather than disappearing, so a forgotten field is visible too.
+  if (viewState === 'review') {
+    const scenarioLabel =
+      SCENARIOS.find(s => s.id === formData.scenario)?.label ?? formData.scenario;
+    const allGrounds = [...DEDUCTION_DISPUTE_GROUNDS, ...PROCEDURAL_DISPUTE_GROUNDS];
+    const disputeLabels = formData.disputes
+      .map(id => allGrounds.find(g => g.id === id)?.label ?? id)
+      .filter(Boolean);
+
+    const depositVal = parseDeposit(formData.depositAmount).value;
+    const returnedVal = PARTIAL_SCENARIOS.includes(formData.scenario)
+      ? parseMoney(formData.amountReturned)
+      : 0;
+    const requestedVal = Math.max(depositVal - returnedVal, 0);
+    const money = (n: number) =>
+      '$' + n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+    const NOT_PROVIDED = <span className="italic text-slate-400">Not provided</span>;
+    // Local copy of the form's card style — the shared `cardClass` const is
+    // declared further down (after this early-return branch), so referencing
+    // it here would be a temporal-dead-zone crash. Keep the strings in sync.
+    const reviewCard = 'rounded-2xl border border-[#E7E5E0] bg-white p-6 sm:p-7 space-y-6';
+    const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
+      <div className="flex flex-col gap-0.5 py-2 sm:flex-row sm:gap-4">
+        <dt className="w-full shrink-0 text-sm text-slate-500 sm:w-56">{label}</dt>
+        <dd className="text-sm font-medium text-slate-900">{value || NOT_PROVIDED}</dd>
+      </div>
+    );
+    const Section = ({
+      title,
+      anchor,
+      children,
+    }: {
+      title: string;
+      anchor: string;
+      children: React.ReactNode;
+    }) => (
+      <div className={reviewCard}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium tracking-tight text-slate-900" style={display}>
+            {title}
+          </h3>
+          <button
+            type="button"
+            onClick={() => handleEditFromReview(anchor)}
+            className="text-sm font-medium text-[#B45309] transition hover:text-[#92400E]"
+          >
+            Edit
+          </button>
+        </div>
+        <dl className="divide-y divide-slate-100">{children}</dl>
+      </div>
+    );
+
+    const yesNo = (v: string) => (v === 'yes' ? 'Yes' : v === 'no' ? 'No' : v);
+    const conditionLabel =
+      formData.unitCondition === 'good'
+        ? 'Good — normal wear and tear only'
+        : formData.unitCondition === 'minor'
+        ? 'Minor issues'
+        : formData.unitCondition === 'damage'
+        ? 'Some damage'
+        : '';
+    const noticeLabel =
+      formData.properNotice === 'yes'
+        ? 'Yes — proper written notice given'
+        : formData.properNotice === 'not_required'
+        ? 'Notice was not required'
+        : formData.properNotice === 'no'
+        ? formData.noticeGiven === 'partial'
+          ? 'No — some notice, but not as required'
+          : 'No — no notice given'
+        : '';
+    const docsLabel =
+      formData.conditionDocumentation === 'yes'
+        ? 'Yes — photos/video or a checklist'
+        : formData.conditionDocumentation === 'partial'
+        ? 'Some documentation'
+        : formData.conditionDocumentation === 'no'
+        ? 'No documentation'
+        : '';
+
+    return (
+      <div
+        className={`${fontVars} bg-[#FAFAF7]`}
+        style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}
+      >
+        <div className="mx-auto max-w-3xl px-5 py-14 sm:px-8">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#B45309]">
+            One last look
+          </p>
+          <h2
+            className="mb-2 text-3xl font-medium tracking-tight text-slate-900"
+            style={display}
+          >
+            Review your details
+          </h2>
+          <p className="mb-8 text-sm leading-relaxed text-slate-600">
+            Your letter is built from exactly what&apos;s below. Please check names, addresses,
+            and amounts — this is the easiest moment to fix a typo, before payment.
+          </p>
+
+          <div className="space-y-5">
+            <Section title="About you" anchor="f-tenantName">
+              <Row label="Your name" value={formData.tenantName} />
+              <Row label="Email (letter sent here)" value={formData.email} />
+              <Row label="Your mailing address" value={composeAddress(tenantAddr)} />
+            </Section>
+
+            <Section title="Rental property" anchor="f-rentalPropertyAddress">
+              <Row
+                label="Property address"
+                value={composeAddress({ ...rentalAddr, city: effectiveCity, state: formData.state })}
+              />
+              <Row label="State" value={formData.state} />
+              <Row label="City" value={effectiveCity} />
+              {showRentStabilized && (
+                <Row label="Rent-stabilized (NYC)" value={yesNo(formData.isRentStabilized)} />
+              )}
+              {showLeaseStartDate && (
+                <Row label="Lease start date" value={formData.leaseStartDate} />
+              )}
+              {showUnitCount && (
+                <Row
+                  label="Units in building"
+                  value={formData.buildingUnitCount === 'unknown' ? 'Not sure' : formData.buildingUnitCount}
+                />
+              )}
+              {showLeaseType && <Row label="Tenancy type" value={formData.leaseType} />}
+            </Section>
+
+            <Section title="Landlord" anchor="f-landlordName">
+              <Row label="Landlord name" value={formData.landlordName} />
+              <Row label="Landlord address" value={composeAddress(landlordAddr)} />
+              <Row label="Property sold while you lived there" value={yesNo(formData.propertySold)} />
+              {formData.propertySold === 'yes' && (
+                <>
+                  <Row label="New owner name" value={formData.newOwnerName} />
+                  <Row label="New owner address" value={formData.newOwnerAddress} />
+                </>
+              )}
+            </Section>
+
+            <Section title="Deposit & dates" anchor="f-depositAmount">
+              <Row label="Security deposit" value={money(depositVal)} />
+              {PARTIAL_SCENARIOS.includes(formData.scenario) && (
+                <Row label="Amount returned to you" value={money(returnedVal)} />
+              )}
+              <Row label="Date deposit was paid" value={formData.depositPaidDate} />
+              <Row label="Move-out date" value={formData.vacatedDate} />
+              {FORWARDING_ADDRESS_STATES.includes(formData.state) && (
+                <Row label="Forwarding address given on" value={formData.forwardingAddressDate} />
+              )}
+            </Section>
+
+            <Section title="Your case" anchor="f-scenario">
+              <Row label="What your landlord did" value={scenarioLabel} />
+              {disputeLabels.length > 0 && (
+                <Row
+                  label="Why it's wrong"
+                  value={
+                    <ul className="list-disc space-y-0.5 pl-4">
+                      {disputeLabels.map(l => (
+                        <li key={l}>{l}</li>
+                      ))}
+                    </ul>
+                  }
+                />
+              )}
+              <Row label="Condition you left the unit in" value={conditionLabel} />
+              {formData.unitCondition === 'damage' && (
+                <Row label="Your repair-cost estimate" value={money(parseMoney(formData.damageEstimate))} />
+              )}
+              <Row label="Unpaid rent or fees" value={yesNo(formData.unpaidRent)} />
+              {formData.unpaidRent === 'yes' && (
+                <Row label="Approximate amount owed" value={money(parseMoney(formData.unpaidRentAmount))} />
+              )}
+              <Row label="Written notice before moving out" value={noticeLabel} />
+              <Row label="Move-out condition documented" value={docsLabel} />
+              <Row
+                label="Additional details"
+                value={
+                  formData.situation ? (
+                    <span className="whitespace-pre-wrap">{formData.situation}</span>
+                  ) : (
+                    ''
+                  )
+                }
+              />
+            </Section>
+          </div>
+
+          {/* The one permitted money line: a plain factual restatement. */}
+          <div className="mt-6 rounded-2xl border border-[#E7E5E0] bg-white p-5 text-center">
+            <p className="text-sm text-slate-600">
+              Your letter will demand the return of{' '}
+              <span className="font-semibold text-slate-900">{money(requestedVal)}</span>.
+            </p>
+          </div>
+
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+            <button
+              type="button"
+              onClick={() => handleEditFromReview()}
+              className="rounded-full border border-[#E7E5E0] bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Go back and edit
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmReview}
+              className="rounded-full bg-[#B45309] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E]"
+            >
+              Looks correct — continue to payment ($39)
+            </button>
+          </div>
         </div>
       </div>
     );
