@@ -1017,7 +1017,18 @@ export default function SecurityDepositForm() {
     const returnedVal = PARTIAL_SCENARIOS.includes(formData.scenario)
       ? parseMoney(formData.amountReturned)
       : 0;
-    const requestedVal = Math.max(depositVal - returnedVal, 0);
+    // The demanded figure must MIRROR THE LETTER. systemPrompt.ts instructs a
+    // NET demand: deposit minus admitted damage estimate minus admitted unpaid
+    // rent/fees ("Never demand money the tenant's own answers concede they
+    // owe") — verified against the prompt's calibration block, Aug 2026.
+    // Showing the gross figure here while the letter demands the net one is
+    // exactly the pre-payment surprise this screen exists to prevent. The
+    // Project I scope block guarantees offsets < deposit by this point, so
+    // the Math.max guard is belt-and-suspenders only.
+    const admittedOffsets =
+      (formData.unitCondition === 'damage' ? parseMoney(formData.damageEstimate) : 0) +
+      (formData.unpaidRent === 'yes' ? parseMoney(formData.unpaidRentAmount) : 0);
+    const requestedVal = Math.max(depositVal - returnedVal - admittedOffsets, 0);
     const money = (n: number) =>
       '$' + n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
@@ -1132,7 +1143,18 @@ export default function SecurityDepositForm() {
                   value={formData.buildingUnitCount === 'unknown' ? 'Not sure' : formData.buildingUnitCount}
                 />
               )}
-              {showLeaseType && <Row label="Tenancy type" value={formData.leaseType} />}
+              {showLeaseType && (
+                <Row
+                  label="Tenancy type"
+                  value={
+                    formData.leaseType === 'written_lease'
+                      ? 'A written lease'
+                      : formData.leaseType === 'tenancy_at_will'
+                      ? 'Tenancy at will / month-to-month (no written lease)'
+                      : formData.leaseType
+                  }
+                />
+              )}
             </Section>
 
             <Section title="Landlord" anchor="f-landlordName">
@@ -1196,12 +1218,19 @@ export default function SecurityDepositForm() {
             </Section>
           </div>
 
-          {/* The one permitted money line: a plain factual restatement. */}
+          {/* The one permitted money line: a plain factual restatement,
+              mirroring the letter's net-demand math from systemPrompt.ts. */}
           <div className="mt-6 rounded-2xl border border-[#E7E5E0] bg-white p-5 text-center">
             <p className="text-sm text-slate-600">
               Your letter will demand the return of{' '}
               <span className="font-semibold text-slate-900">{money(requestedVal)}</span>.
             </p>
+            {admittedOffsets > 0 && (
+              <p className="mt-1 text-xs text-slate-500">
+                Your {money(depositVal)} deposit, minus the {money(admittedOffsets)} you told us may
+                lawfully be deducted — conceding it makes your letter more credible.
+              </p>
+            )}
           </div>
 
           <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
