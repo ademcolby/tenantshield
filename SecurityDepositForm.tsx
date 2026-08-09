@@ -1,7 +1,7 @@
 // SecurityDepositForm.tsx  (repo root)
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAttribution } from './lib/attribution';
 
 // Basic email format check. Kept byte-for-byte identical to the server mirror
@@ -356,6 +356,25 @@ export default function SecurityDepositForm() {
   const [showStrengthModal, setShowStrengthModal] = useState(false);
   const [weakChecked, setWeakChecked] = useState(false);
   const [strengthAcknowledged, setStrengthAcknowledged] = useState(false);
+
+  // Backlog #7 review screen: where to scroll after "Edit" returns to the
+  // form. null = no pending scroll; '' = top of page; 'f-…' = section anchor.
+  // The scroll happens in the effect below, which React guarantees runs AFTER
+  // the form view has committed — scrolling directly in the click handler (or
+  // one requestAnimationFrame later) raced the re-render and intermittently
+  // no-opped because the anchor element didn't exist yet (caught on the
+  // Aug 9 2026 production verification pass; staging had won the same race).
+  const [pendingEditAnchor, setPendingEditAnchor] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (viewState !== 'form' || pendingEditAnchor === null) return;
+    if (pendingEditAnchor === '') {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      document.getElementById(pendingEditAnchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setPendingEditAnchor(null);
+  }, [viewState, pendingEditAnchor]);
 
   const todayISO = new Date().toISOString().slice(0, 10);
 
@@ -942,17 +961,12 @@ export default function SecurityDepositForm() {
   // Back to the form — optionally scrolled to a specific section anchor.
   // strengthAcknowledged is deliberately RESET: if they edit case facts the
   // tier can change, and the strength modal should re-fire with the fresh
-  // assessment rather than honoring a stale acknowledgment.
+  // assessment rather than honoring a stale acknowledgment. The scroll itself
+  // is handled by the pendingEditAnchor effect (post-commit, race-free).
   const handleEditFromReview = (anchorId?: string) => {
     setStrengthAcknowledged(false);
+    setPendingEditAnchor(anchorId ?? '');
     setViewState('form');
-    if (anchorId) {
-      requestAnimationFrame(() => {
-        document.getElementById(anchorId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }
   };
 
   const handleCopy = async () => {
