@@ -198,6 +198,48 @@ const SPECIAL_CIRCUMSTANCES: CircumstanceItem[] = [
 type ViewState = 'form' | 'review' | 'loading' | 'result' | 'missing_info' | 'out_of_scope' | 'error' | 'blocked';
 type Tier = 'strong' | 'moderate' | 'weak';
 
+// ---- Wizard steps (Aug 2026 form restructure) ----
+// Presentation-only: the single formData state object persists across every
+// step, runSubmit's gate order (blocks -> coverage -> offsets -> warnings ->
+// strength modal -> review -> checkout) is untouched, and the payload build
+// is byte-identical to the single-page form. The wizard's NEW user-facing
+// strings live here; full string extraction of the existing form copy is
+// deliberately deferred until the Spanish UI shell is greenlit.
+const WIZARD_STEPS = [
+  { id: 'about-you', title: 'About you' },
+  { id: 'rental', title: 'The rental property' },
+  { id: 'deposit-dates', title: 'Deposit & dates' },
+  { id: 'landlord', title: 'Your landlord' },
+  { id: 'what-happened', title: 'What happened' },
+  { id: 'case-facts', title: 'The honest facts' },
+] as const;
+const WIZARD_LAST_STEP = WIZARD_STEPS.length - 1;
+
+// Owning step for every validated field key (blocks AND warnings). Used to
+// (a) scope the per-step Continue gate and (b) jump to the earliest offending
+// step if the final full-chain validation in runSubmit finds a block.
+const FIELD_STEP: { [key: string]: number } = {
+  tenantName: 0, email: 0, tenantAddress: 0, tenantZip: 0,
+  state: 1, city: 1, rentalPropertyAddress: 1, rentalZip: 1,
+  isRentStabilized: 1, leaseStartDate: 1,
+  depositAmount: 2, vacatedDate: 2, depositPaidDate: 2,
+  forwardingAddressDate: 2, buildingUnitCount: 2, leaseType: 2,
+  landlordName: 3, landlordAddress: 3, landlordZip: 3, propertySold: 3,
+  newOwnerName: 3, newOwnerAddress: 3, identicalParties: 3,
+  scenario: 4, amountReturned: 4,
+  unitCondition: 5, damageEstimate: 5, unpaidRent: 5, unpaidRentAmount: 5,
+  properNotice: 5, noticeGiven: 5, conditionDocumentation: 5, situation: 5,
+};
+
+// Review-screen Edit anchors -> owning step (anchors unchanged from batch 7).
+const ANCHOR_STEP: { [anchor: string]: number } = {
+  'f-tenantName': 0,
+  'f-rentalPropertyAddress': 1,
+  'f-depositAmount': 2,
+  'f-landlordName': 3,
+  'f-scenario': 4,
+};
+
 interface AddressParts {
   street: string;
   unit: string;
@@ -284,6 +326,10 @@ const InfoTip = ({ text }: { text: string }) => (
 
 export default function SecurityDepositForm() {
   const [viewState, setViewState] = useState<ViewState>('form');
+  // Wizard position (Aug 2026 restructure). Survives view changes so a
+  // customer returning from the review screen or an error lands where they
+  // left off.
+  const [currentStep, setCurrentStep] = useState(0);
   // Why the 'blocked' screen is showing. 'offsets' = the Project I scope block
   // (admitted offsets >= deposit); 'coverage' = the C0 Evanston coverage block.
   // Set immediately before every setViewState('blocked') so the render branch
@@ -611,7 +657,11 @@ export default function SecurityDepositForm() {
     return out;
   };
 
-  const validateForm = (composed: {
+  // Pure validation: builds the block/warn maps WITHOUT touching state.
+  // Shared by (a) the state-setting validateForm wrapper that runSubmit calls
+  // (behavior unchanged) and (b) the per-step Continue gate, so the two
+  // layers can never drift.
+  const computeValidation = (composed: {
     city: string;
     rentalPropertyAddress: string;
     tenantAddress: string;
@@ -798,9 +848,21 @@ export default function SecurityDepositForm() {
         'Your information and the landlord\u2019s information look identical \u2014 please double-check you didn\u2019t enter the same details twice.';
     }
 
-    setErrors(b);
-    setWarnings(w);
     return { blocks: b, warns: w };
+  };
+
+  // State-setting wrapper — runSubmit's validation path is byte-identical to
+  // the single-page form: full chain, all errors and warnings surfaced.
+  const validateForm = (composed: {
+    city: string;
+    rentalPropertyAddress: string;
+    tenantAddress: string;
+    landlordAddress: string;
+  }) => {
+    const { blocks, warns } = computeValidation(composed);
+    setErrors(blocks);
+    setWarnings(warns);
+    return { blocks, warns };
   };
 
   const runSubmit = async (opts?: { ackStrength?: boolean; fromReview?: boolean }) => {
@@ -825,7 +887,17 @@ export default function SecurityDepositForm() {
 
     if (blockKeys.length > 0) {
       setWarningsShown(false);
-      scrollToFirstIssue(blockKeys);
+      // Wizard: the offending field can live on an earlier step. Jump to the
+      // earliest one, then scroll via the pendingEditAnchor effect (post-
+      // commit, race-free — the same pattern as the review-screen Edit path).
+      const earliest = Math.min(...blockKeys.map(k => FIELD_STEP[k] ?? WIZARD_LAST_STEP));
+      if (earliest !== currentStep) {
+        setCurrentStep(earliest);
+        const first = FIELD_ORDER.find(k => blockKeys.includes(k));
+        setPendingEditAnchor(first ? 'f-' + (SCROLL_ALIAS[first] || first) : '');
+      } else {
+        scrollToFirstIssue(blockKeys);
+      }
       return;
     }
 
@@ -965,8 +1037,50 @@ export default function SecurityDepositForm() {
   // is handled by the pendingEditAnchor effect (post-commit, race-free).
   const handleEditFromReview = (anchorId?: string) => {
     setStrengthAcknowledged(false);
+    // Wizard: land on the step that owns the edited section. Global back
+    // (no anchor) returns to the final step, next to the Generate button.
+    setCurrentStep(anchorId ? (ANCHOR_STEP[anchorId] ?? WIZARD_LAST_STEP) : WIZARD_LAST_STEP);
     setPendingEditAnchor(anchorId ?? '');
     setViewState('form');
+  };
+
+  // --- Wizard navigation (Aug 2026 restructure). ---
+  const composeForValidation = () => ({
+    city: effectiveCity,
+    rentalPropertyAddress: composeAddress({
+      ...rentalAddr,
+      city: effectiveCity,
+      state: formData.state,
+    }),
+    tenantAddress: composeAddress(tenantAddr),
+    landlordAddress: composeAddress(landlordAddr),
+  });
+
+  // Continue: gate on THIS step's blocks only — later steps stay clean until
+  // reached. Warnings keep their submit-time semantics (summary next to the
+  // Generate button, click-again-to-proceed), exactly as before.
+  const handleStepContinue = () => {
+    const { blocks } = computeValidation(composeForValidation());
+    const stepBlocks: { [key: string]: string } = {};
+    for (const k of Object.keys(blocks)) {
+      if (blocks[k] && (FIELD_STEP[k] ?? WIZARD_LAST_STEP) === currentStep) {
+        stepBlocks[k] = blocks[k];
+      }
+    }
+    setErrors(stepBlocks);
+    const keys = Object.keys(stepBlocks);
+    if (keys.length > 0) {
+      scrollToFirstIssue(keys);
+      return;
+    }
+    setCurrentStep(s => Math.min(s + 1, WIZARD_LAST_STEP));
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const handleStepBack = () => {
+    setErrors({});
+    setCurrentStep(s => Math.max(s - 1, 0));
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   const handleCopy = async () => {
@@ -1648,15 +1762,45 @@ export default function SecurityDepositForm() {
           </ul>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* ============ CARD 1: RENTAL PROPERTY DETAILS ============ */}
+        <form
+          onSubmit={handleSubmit}
+          onKeyDown={(e) => {
+            // Enter advances the current step instead of submitting the whole
+            // form early. Textareas keep Enter for newlines; the final step's
+            // real submit button submits normally.
+            if (
+              e.key === 'Enter' &&
+              currentStep < WIZARD_LAST_STEP &&
+              (e.target as HTMLElement).tagName !== 'TEXTAREA'
+            ) {
+              e.preventDefault();
+              handleStepContinue();
+            }
+          }}
+          className="space-y-6"
+        >
+          {/* ============ WIZARD PROGRESS (Aug 2026 restructure) ============ */}
+          <div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-slate-700">{WIZARD_STEPS[currentStep].title}</span>
+              <span className="text-slate-500">{`Step ${currentStep + 1} of ${WIZARD_STEPS.length}`}</span>
+            </div>
+            <div className="mt-2 h-1.5 w-full rounded-full bg-slate-200">
+              <div
+                className="h-1.5 rounded-full bg-slate-900 transition-all duration-300"
+                style={{ width: `${((currentStep + 1) / WIZARD_STEPS.length) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* ============ STEP 1 — ABOUT YOU (name, email, mailing address) ============ */}
+          {currentStep === 0 && (<>
           <div className={cardClass}>
             <div>
-              <h3 className={`${sectionLabel} mb-2`}>Rental Property Details</h3>
+              <h3 className={`${sectionLabel} mb-2`}>About you</h3>
               <p className="text-sm text-slate-600">
-                Enter the rental you&apos;re writing about — the city and state set
-                which laws your letter cites, so use the rental&apos;s location, not your
-                current address.
+                Who you are, and where your deposit &mdash; and the landlord&apos;s
+                response &mdash; should be sent.
               </p>
             </div>
 
@@ -1692,6 +1836,44 @@ export default function SecurityDepositForm() {
                   We&apos;ll email your finished letter here as a downloadable PDF — use an address you can access.
                 </p>
               )}
+            </div>
+
+            {/* Your mailing address (formerly CARD 2 — moved into this step;
+                copy and the f-tenantAddress anchor preserved verbatim). */}
+            <div id="f-tenantAddress">
+              <p className="mb-1 text-sm font-medium text-slate-700">
+                Your current mailing address <span className="text-red-500">*</span>
+              </p>
+              <p className="mb-3 text-sm text-slate-600">
+                Where the landlord&apos;s response and your deposit should be sent.
+              </p>
+              {renderAddressBlock('tenant', tenantAddr, {
+                required: true,
+                fieldErrors: errors.tenantAddress
+                  ? {
+                      street: !tenantAddr.street,
+                      city: !tenantAddr.city,
+                      state: !tenantAddr.state,
+                      zip: !tenantAddr.zip,
+                    }
+                  : {},
+                message: errors.tenantAddress,
+                warnMessage: warnings.tenantZip,
+              })}
+            </div>
+          </div>
+          </>)}
+
+          {/* ============ STEP 2 — THE RENTAL PROPERTY ============ */}
+          {currentStep === 1 && (<>
+          <div className={cardClass}>
+            <div>
+              <h3 className={`${sectionLabel} mb-2`}>The rental property</h3>
+              <p className="text-sm text-slate-600">
+                Enter the rental you&apos;re writing about — the city and state set
+                which laws your letter cites, so use the rental&apos;s location, not your
+                current address.
+              </p>
             </div>
 
             {/* Rental address: street / unit */}
@@ -1833,6 +2015,19 @@ export default function SecurityDepositForm() {
                 {errors.leaseStartDate && <p className="mt-1 text-sm text-red-600">{errors.leaseStartDate}</p>}
               </div>
             )}
+          </div>
+          </>)}
+
+          {/* ============ STEP 3 — DEPOSIT & DATES ============ */}
+          {currentStep === 2 && (<>
+          <div className={cardClass}>
+            <div>
+              <h3 className={`${sectionLabel} mb-2`}>Deposit &amp; dates</h3>
+              <p className="text-sm text-slate-600">
+                The money and the timeline &mdash; your letter&apos;s demand and its
+                deadline math are built from these.
+              </p>
+            </div>
 
             {/* Deposit + move-out */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1980,32 +2175,10 @@ export default function SecurityDepositForm() {
               </div>
             )}
           </div>
+          </>)}
 
-          {/* ============ CARD 2: YOUR MAILING ADDRESS ============ */}
-          <div className={cardClass}>
-            <div>
-              <h3 className={`${sectionLabel} mb-2`}>Your current mailing address</h3>
-              <p className="text-sm text-slate-600">
-                Where the landlord&apos;s response and your deposit should be sent.
-              </p>
-            </div>
-            <div id="f-tenantAddress">
-              {renderAddressBlock('tenant', tenantAddr, {
-                required: true,
-                fieldErrors: errors.tenantAddress
-                  ? {
-                      street: !tenantAddr.street,
-                      city: !tenantAddr.city,
-                      state: !tenantAddr.state,
-                      zip: !tenantAddr.zip,
-                    }
-                  : {},
-                message: errors.tenantAddress,
-                warnMessage: warnings.tenantZip,
-              })}
-            </div>
-          </div>
-
+          {/* ============ STEP 4 — YOUR LANDLORD ============ */}
+          {currentStep === 3 && (<>
           {/* ============ CARD 3: LANDLORD INFORMATION ============ */}
           <div className={cardClass}>
             <h3 className={sectionLabel}>Landlord information</h3>
@@ -2107,7 +2280,10 @@ export default function SecurityDepositForm() {
               )}
             </div>
           </div>
+          </>)}
 
+          {/* ============ STEP 5 — WHAT HAPPENED (scenario, disputes, circumstances) ============ */}
+          {currentStep === 4 && (<>
           {/* ============ CARD 4: WHAT YOUR LANDLORD DID (authoritative scenario) ============ */}
           <div className={cardClass} id="f-scenario">
             <div>
@@ -2261,7 +2437,33 @@ export default function SecurityDepositForm() {
               </div>
             )}
           </div>
+          </>)}
 
+          {/* ============ WIZARD NAVIGATION (steps 1–5; the final step has the
+               real Generate/submit button in its own block below) ============ */}
+          {currentStep < WIZARD_LAST_STEP && (
+            <div className="flex items-center gap-3 pt-2">
+              {currentStep > 0 && (
+                <button
+                  type="button"
+                  onClick={handleStepBack}
+                  className="rounded-full border border-slate-300 px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                >
+                  &larr; Back
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleStepContinue}
+                className="flex-1 rounded-full bg-slate-900 px-6 py-3.5 text-base font-semibold text-white transition hover:bg-slate-800"
+              >
+                Continue &rarr;
+              </button>
+            </div>
+          )}
+
+          {/* ============ STEP 6 — THE HONEST FACTS (case facts + supporting detail) ============ */}
+          {currentStep === WIZARD_LAST_STEP && (<>
           {/* ============ CARD 7: THE HONEST FACTS (required — shape the letter) ============ */}
           <div className={cardClass}>
             <div>
@@ -2472,6 +2674,16 @@ export default function SecurityDepositForm() {
             </p>
           </div>
 
+          <div>
+            <button
+              type="button"
+              onClick={handleStepBack}
+              className="rounded-full border border-slate-300 px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            >
+              &larr; Back
+            </button>
+          </div>
+
           {(() => {
             const blockCount = Object.keys(errors).filter(k => errors[k]).length;
             const warnList = Object.keys(warnings).filter(k => warnings[k]);
@@ -2510,6 +2722,7 @@ export default function SecurityDepositForm() {
           <p className="text-center text-sm text-slate-500">
             One-time payment. No subscription. Complete package with certified mail instructions.
           </p>
+          </>)}
         </form>
       </div>
 
