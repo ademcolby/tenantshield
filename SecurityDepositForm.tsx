@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { getAttribution } from './lib/attribution';
+import AddressAutocomplete, { type AutofillAddress } from './AddressAutocomplete';
 
 // Basic email format check. Kept byte-for-byte identical to the server mirror
 // in app/api/create-checkout-session/route.ts so client and server never drift.
@@ -102,6 +103,17 @@ const CITIES_BY_STATE: { [key: string]: string[] } = {
 };
 
 const OTHER_CITY = 'Other city';
+
+// ---- Address autofill (Aug 2026): Google locality -> jurisdiction dropdown ----
+// The rental city/state MUST land on the same verbatim dropdown strings that
+// lib/systemPrompt.ts matches (see the CITIES_BY_STATE warning above). NYC
+// boroughs, DC, and the Cook County overlay are the three places Google's
+// address components and our dropdown vocabulary differ; everything else is a
+// case-insensitive list match with the "Other city" write-in as fallback.
+const NYC_CITY_OPTION = 'New York City'; // verbatim (showRentStabilized + prompt)
+const NYC_BOROUGHS = ['new york', 'manhattan', 'brooklyn', 'queens', 'bronx', 'the bronx', 'staten island'];
+const NYC_COUNTIES = ['new york county', 'kings county', 'queens county', 'bronx county', 'richmond county'];
+const COOK_COUNTY_OPTION = 'Cook County (outside Chicago)'; // verbatim (prompt)
 
 // --- C0 (correction batch, July 2026): Evanston, IL coverage block. ---
 // Evanston has its own security-deposit ordinance that governs INSTEAD of the
@@ -541,6 +553,80 @@ export default function SecurityDepositForm() {
       if (warnings.landlordAddress || warnings.landlordZip || warnings.identicalParties) {
         setWarnings(prev => ({ ...prev, landlordAddress: '', landlordZip: '', identicalParties: '' }));
       }
+    }
+  };
+
+  // Map a Google Places result onto the rental jurisdiction dropdown's
+  // verbatim vocabulary. Exact list match wins (so Chicago and Evanston hit
+  // their own options before the county rule); NYC boroughs collapse to
+  // 'New York City'; DC collapses to its single option; a Cook County
+  // locality that isn't Chicago/Evanston selects the county overlay option
+  // (Google's county component knows this better than most tenants do);
+  // anything else becomes an 'Other city' write-in.
+  const mapAutofillCity = (stateFull: string, a: AutofillAddress): { select: string; other: string } => {
+    const cityRaw = (a.city || '').trim();
+    const county = (a.county || '').trim().toLowerCase();
+    const sub = (a.sublocality || '').trim().toLowerCase();
+    if (
+      stateFull === 'New York' &&
+      (NYC_BOROUGHS.includes(cityRaw.toLowerCase()) || NYC_BOROUGHS.includes(sub) || NYC_COUNTIES.includes(county))
+    ) {
+      return { select: NYC_CITY_OPTION, other: '' };
+    }
+    if (stateFull === 'District of Columbia') {
+      return { select: CITIES_BY_STATE['District of Columbia'][0], other: '' };
+    }
+    const options = CITIES_BY_STATE[stateFull] || [];
+    const exact = options.find(c => c.toLowerCase() === cityRaw.toLowerCase());
+    if (exact) return { select: exact, other: '' };
+    if (stateFull === 'Illinois' && county === 'cook county') {
+      return { select: COOK_COUNTY_OPTION, other: '' };
+    }
+    if (cityRaw) return { select: OTHER_CITY, other: cityRaw };
+    return { select: '', other: '' };
+  };
+
+  // Address-autofill applier (Aug 2026). Writes ONLY the existing address
+  // fields a user would have typed by hand — the payload shape is untouched
+  // and systemPrompt.ts is net-zero. The typed Apt/Unit is always preserved
+  // (Google predictions drop unit numbers). Error/warning clearing mirrors
+  // updateAddr and the state/city handlers.
+  const applyAddressAutofill = (which: 'tenant' | 'landlord' | 'rental', a: AutofillAddress) => {
+    const stateFull = US_STATES.includes(a.stateFullName) ? a.stateFullName : '';
+    if (which === 'rental') {
+      setRentalAddr(p => ({ ...p, street: a.street || p.street, zip: a.zip || p.zip }));
+      if (stateFull) {
+        // Same semantics as handleStateChange + handleCitySelect/handleOtherCity,
+        // collapsed into one pass so the jurisdiction lands atomically.
+        const mapped = mapAutofillCity(stateFull, a);
+        setCitySelect(mapped.select);
+        setOtherCity(mapped.select === OTHER_CITY ? mapped.other : '');
+        setFormData(prev => ({
+          ...prev,
+          state: stateFull,
+          city: mapped.select === OTHER_CITY ? mapped.other : mapped.select,
+        }));
+        setErrors(prev => ({ ...prev, state: '', city: '', rentalPropertyAddress: '' }));
+      } else {
+        setErrors(prev => ({ ...prev, rentalPropertyAddress: '' }));
+      }
+      setWarnings(prev => ({ ...prev, rentalZip: '' }));
+      return;
+    }
+    const next = (p: AddressParts): AddressParts => ({
+      ...p,
+      street: a.street || p.street,
+      city: a.city || p.city,
+      state: stateFull || p.state,
+      zip: a.zip || p.zip,
+    });
+    if (which === 'tenant') {
+      setTenantAddr(next);
+      setErrors(prev => ({ ...prev, tenantAddress: '' }));
+      setWarnings(prev => ({ ...prev, tenantZip: '' }));
+    } else {
+      setLandlordAddr(next);
+      setWarnings(prev => ({ ...prev, landlordAddress: '', landlordZip: '', identicalParties: '' }));
     }
   };
 
@@ -1625,10 +1711,13 @@ export default function SecurityDepositForm() {
           <label className={labelClass}>
             Street address {opts.required && <span className="text-red-500">*</span>}
           </label>
-          <input
-            type="text"
+          {/* Aug 2026: Google Places autofill — selecting a suggestion fills
+              city/state/ZIP below via applyAddressAutofill; typing manually
+              behaves exactly like the plain input this replaced. */}
+          <AddressAutocomplete
             value={addr.street}
-            onChange={(e) => updateAddr(which, 'street', e.target.value)}
+            onChangeText={(v) => updateAddr(which, 'street', v)}
+            onSelectAddress={(a) => applyAddressAutofill(which, a)}
             placeholder="789 Elm St"
             className={inputClass(!!fe.street)}
           />
@@ -1882,10 +1971,13 @@ export default function SecurityDepositForm() {
                 <label className={labelClass}>
                   Street address <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                {/* Aug 2026: Google Places autofill — selecting a suggestion
+                    fills ZIP and sets the state + city dropdowns onto their
+                    verbatim jurisdiction values via applyAddressAutofill. */}
+                <AddressAutocomplete
                   value={rentalAddr.street}
-                  onChange={(e) => updateAddr('rental', 'street', e.target.value)}
+                  onChangeText={(v) => updateAddr('rental', 'street', v)}
+                  onSelectAddress={(a) => applyAddressAutofill('rental', a)}
                   placeholder="1428 Magnolia Ave"
                   className={inputClass(!!errors.rentalPropertyAddress)}
                 />
