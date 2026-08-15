@@ -214,7 +214,7 @@ export default async function AdminOrdersPage({
             </h1>
             <p className="mt-1 text-sm text-slate-600">
               {anyFilterActive
-                ? `${totalMatching} order${totalMatching === 1 ? '' : 's'} match the current search/filters`
+                ? `${totalMatching} ${totalMatching === 1 ? 'order matches' : 'orders match'} the current search/filters`
                 : 'Most recent 50 orders, newest first'}
             </p>
           </div>
