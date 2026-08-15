@@ -97,6 +97,33 @@ export interface RangeMetrics {
   byState: { state: string; count: number }[];
 }
 
+// Project D v3 — filters for the admin order list. All optional; an empty
+// object means "everything". Dates are YYYY-MM-DD strings in ADMIN_TZ
+// (America/New_York) and are INCLUSIVE on both ends — the UI's "today"
+// preset passes the same date for both.
+export interface OrderListFilters {
+  search?: string; // global search: ref, email, name, state, Stripe session id
+  customer?: string; // narrower: tenant name or email only
+  state?: string; // case-insensitive; exact or substring (typed partials work)
+  caseStrength?: string; // 'strong' | 'moderate' | 'weak' | 'not answered'
+  orderType?: 'real' | 'test'; // omit for all
+  dateFrom?: string; // YYYY-MM-DD in ADMIN_TZ, inclusive
+  dateTo?: string; // YYYY-MM-DD in ADMIN_TZ, inclusive
+}
+
+// Project D v3 — the admin list result. Facets are Excel-style: each facet
+// lists only the values present in the orders that pass all OTHER filters
+// (so filtering to test-only shrinks the state list to states with test
+// orders, exactly like Excel's cascading column filters).
+export interface OrderListResult {
+  orders: Order[]; // newest first, capped at the caller's limit
+  totalMatching: number; // before the cap
+  facets: {
+    states: string[]; // alphabetical
+    caseStrengths: string[]; // strong / moderate / weak / not answered order
+  };
+}
+
 // --- Client (lazy singleton) --------------------------------------------
 
 // Instantiate lazily and guarded so a missing env var never throws at
@@ -316,6 +343,138 @@ export async function getAllOrders(options?: {
   return (data as OrderRow[]).map(rowToOrder);
 }
 
+// Project D v3 — all admin-facing dates (the list's date filter and its
+// rendered Date column) use Eastern time so "today" means Adem's today, not
+// the server's UTC day. Rows are stored as UTC ISO timestamps; this converts
+// one to its YYYY-MM-DD date string in Eastern time ('en-CA' gives ISO order).
+const ADMIN_TZ = 'America/New_York';
+function adminTzDateString(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-CA', { timeZone: ADMIN_TZ });
+}
+
+/**
+ * Project D v3 — does one order pass the filter set? `skip` omits one facet's
+ * own filter so that facet's option list can be computed Excel-style (a
+ * column's dropdown reflects every OTHER active filter, never its own).
+ */
+function orderMatchesFilters(
+  order: Order,
+  f: OrderListFilters,
+  skip?: 'state' | 'strength',
+): boolean {
+  if (f.search) {
+    const s = f.search.toLowerCase();
+    const hay = [
+      order.refNumber,
+      order.email,
+      order.tenantName,
+      order.state,
+      order.stripeSessionId,
+    ]
+      .join(' ')
+      .toLowerCase();
+    if (!hay.includes(s)) return false;
+  }
+
+  if (f.customer) {
+    const c = f.customer.toLowerCase();
+    if (
+      !order.tenantName.toLowerCase().includes(c) &&
+      !order.email.toLowerCase().includes(c)
+    ) {
+      return false;
+    }
+  }
+
+  if (skip !== 'state' && f.state) {
+    const wanted = f.state.trim().toLowerCase();
+    const actual = order.state.toLowerCase();
+    // Exact match (a datalist pick) or substring (a typed partial like "conn").
+    if (actual !== wanted && !actual.includes(wanted)) return false;
+  }
+
+  if (skip !== 'strength' && f.caseStrength) {
+    const actual = order.caseStrength ?? 'not answered';
+    if (actual !== f.caseStrength) return false;
+  }
+
+  if (f.orderType === 'real' && order.isTest) return false;
+  if (f.orderType === 'test' && !order.isTest) return false;
+
+  if (f.dateFrom || f.dateTo) {
+    const d = adminTzDateString(order.createdAt); // YYYY-MM-DD sorts lexically
+    if (f.dateFrom && d < f.dateFrom) return false;
+    if (f.dateTo && d > f.dateTo) return false;
+  }
+
+  return true;
+}
+
+/**
+ * Project D v3 — the filtered admin order list with Excel-style cascading
+ * facets.
+ *
+ * Implementation note: fetches ALL orders and filters/facets in JS — the same
+ * fetch-all-and-aggregate pattern (and the same scale rationale) as
+ * getOrderMetrics: at well under Supabase's 1,000-row cap this is simpler and
+ * just as fast as pushing every combination into PostgREST, and it's the only
+ * practical way to get cascading facets in one round trip. Revisit alongside
+ * the metrics functions if volume approaches ~1,000 rows. Explicit .range()
+ * like the export query so growth never silently truncates.
+ */
+export async function getOrdersForAdminList(
+  filters: OrderListFilters,
+  limit: number,
+): Promise<OrderListResult> {
+  const empty: OrderListResult = {
+    orders: [],
+    totalMatching: 0,
+    facets: { states: [], caseStrengths: [] },
+  };
+  const client = getClient();
+  if (!client) return empty;
+
+  const { data, error } = await client
+    .from('orders')
+    .select()
+    .order('created_at', { ascending: false })
+    .range(0, 9999);
+
+  if (error) {
+    console.error('getOrdersForAdminList error:', error);
+    return empty;
+  }
+
+  const all = (data as OrderRow[]).map(rowToOrder);
+
+  const matching = all.filter((o) => orderMatchesFilters(o, filters));
+
+  // Facets: each list comes from the orders passing all OTHER filters.
+  const stateSet = new Set<string>();
+  for (const o of all) {
+    if (orderMatchesFilters(o, filters, 'state')) stateSet.add(o.state);
+  }
+  const strengthSet = new Set<string>();
+  for (const o of all) {
+    if (orderMatchesFilters(o, filters, 'strength')) {
+      strengthSet.add(o.caseStrength ?? 'not answered');
+    }
+  }
+
+  const strengthOrder = ['strong', 'moderate', 'weak', 'not answered'];
+  const caseStrengths = [...strengthSet].sort((a, b) => {
+    const ai = strengthOrder.indexOf(a);
+    const bi = strengthOrder.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  return {
+    orders: matching.slice(0, limit),
+    totalMatching: matching.length,
+    facets: { states: [...stateSet].sort(), caseStrengths },
+  };
+}
+
 /**
  * Aggregate metrics for the /admin dashboard. Excludes test orders from every
  * figure and reports how many were excluded.
@@ -445,6 +604,35 @@ export async function updateOrderAdminFields(
     return false;
   }
   return true;
+}
+
+/**
+ * Project D v3 — bulk-set the test flag on many orders at once (the order
+ * list's checkbox selection). Same writable-columns rule as
+ * updateOrderAdminFields: is_test is one of the only two admin-writable
+ * fields. Returns the number of rows actually updated (which the banner
+ * reports), or -1 on error so callers can distinguish "0 matched" from
+ * "the write failed".
+ */
+export async function bulkUpdateIsTest(
+  refNumbers: string[],
+  isTest: boolean,
+): Promise<number> {
+  if (refNumbers.length === 0) return 0;
+  const client = getClient();
+  if (!client) return -1;
+
+  const { data, error } = await client
+    .from('orders')
+    .update({ is_test: isTest })
+    .in('ref_number', refNumbers)
+    .select('ref_number');
+
+  if (error) {
+    console.error('bulkUpdateIsTest error:', error);
+    return -1;
+  }
+  return (data ?? []).length;
 }
 
 /**
