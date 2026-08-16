@@ -28,6 +28,7 @@ import { getOrdersForAdminList, type OrderListFilters } from '../../../lib/db';
 import SelectAllCheckbox from './SelectAllCheckbox';
 import TableScroller from './TableScroller';
 import { bulkSetTestFlag } from './actions';
+import { orderSourceLabel } from './attributionSummary';
 
 export const dynamic = 'force-dynamic';
 
@@ -429,7 +430,7 @@ export default async function AdminOrdersPage({
               </p>
             ) : (
               <TableScroller>
-                <table className="w-full min-w-[780px] text-sm">
+                <table className="w-full min-w-[880px] text-sm">
                   <thead>
                     <tr className="border-b border-[#E7E5E0] text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                       <th className="w-10 px-4 py-3">
@@ -439,6 +440,7 @@ export default async function AdminOrdersPage({
                       <th className="px-5 py-3">Date</th>
                       <th className="px-5 py-3">Customer</th>
                       <th className="px-5 py-3">State</th>
+                      <th className="px-5 py-3">Source</th>
                       <th className="px-5 py-3">Paid</th>
                       <th className="px-5 py-3">Case</th>
                       <th className="px-5 py-3" />
@@ -487,6 +489,12 @@ export default async function AdminOrdersPage({
                         <td className="px-5 py-3 text-slate-700">
                           {order.state}
                           {order.city ? `, ${order.city}` : ''}
+                        </td>
+                        {/* D7: first-touch source (J v1 attribution). '—' =
+                            no attribution captured (pre-Aug-9 order, or the
+                            customer's browser blocked storage). */}
+                        <td className="px-5 py-3 whitespace-nowrap text-slate-700">
+                          {orderSourceLabel(order.formPayload) ?? '—'}
                         </td>
                         <td className="px-5 py-3 whitespace-nowrap text-slate-700">
                           {formatUsd(order.amountPaidCents)}

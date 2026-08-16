@@ -14,6 +14,12 @@ import CopyButton from '../../CopyButton';
 import DownloadPdfButton from '../../DownloadPdfButton';
 import ConfirmButton from '../../ConfirmButton';
 import { saveAdminFields, resendReceiptEmail, regenerateLetter } from './actions';
+import {
+  readAttribution,
+  readFunnelStamp,
+  touchLabel,
+  type TouchView,
+} from '../attributionSummary';
 
 export const dynamic = 'force-dynamic';
 // Regeneration calls Anthropic and can take most of a minute.
@@ -271,6 +277,103 @@ export default async function AdminOrderDetailPage({
                   Save
                 </button>
               </form>
+            </section>
+
+            {/* ---------- Marketing & funnel (D7, Project J) ---------- */}
+            <section className="mt-8">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                Marketing &amp; funnel
+              </h2>
+              {(() => {
+                const attribution = readAttribution(order.formPayload);
+                const funnel = readFunnelStamp(order.formPayload);
+                if (!attribution && !funnel) {
+                  return (
+                    <p className="mt-3 rounded-xl border border-[#E7E5E0] bg-white p-5 text-sm text-slate-600">
+                      No attribution or funnel data on this order (it pre-dates
+                      the tracking, or the customer&apos;s browser blocked
+                      storage).
+                    </p>
+                  );
+                }
+                const TouchCard = ({ title, touch }: { title: string; touch?: TouchView }) => (
+                  <div className="rounded-xl border border-[#E7E5E0] bg-white p-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+                        {touchLabel(touch) ?? 'Not captured'}
+                      </span>
+                    </div>
+                    {touch && (
+                      <dl className="mt-3 space-y-1.5 text-xs text-slate-700">
+                        {touch.landingPage && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 shrink-0 text-slate-500">Landing page</dt>
+                            <dd className="break-all font-mono">{touch.landingPage}</dd>
+                          </div>
+                        )}
+                        {touch.referrer && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 shrink-0 text-slate-500">Referrer</dt>
+                            <dd className="break-all font-mono">{touch.referrer}</dd>
+                          </div>
+                        )}
+                        {(touch.utmSource || touch.utmMedium || touch.utmCampaign) && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 shrink-0 text-slate-500">UTM</dt>
+                            <dd className="break-all">
+                              {[touch.utmSource, touch.utmMedium, touch.utmCampaign]
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </dd>
+                          </div>
+                        )}
+                        {(touch.utmTerm || touch.utmContent) && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 shrink-0 text-slate-500">UTM detail</dt>
+                            <dd className="break-all">
+                              {[touch.utmTerm, touch.utmContent].filter(Boolean).join(' · ')}
+                            </dd>
+                          </div>
+                        )}
+                        {touch.gclid && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 shrink-0 text-slate-500">gclid</dt>
+                            <dd className="break-all font-mono">{touch.gclid}</dd>
+                          </div>
+                        )}
+                        {touch.capturedAt && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 shrink-0 text-slate-500">Captured</dt>
+                            <dd>{formatDateTime(touch.capturedAt)}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    )}
+                  </div>
+                );
+                return (
+                  <div className="mt-3 space-y-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <TouchCard title="First touch" touch={attribution?.first} />
+                      <TouchCard title="Last touch" touch={attribution?.last} />
+                    </div>
+                    {funnel && (
+                      <div className="rounded-xl border border-[#E7E5E0] bg-white px-5 py-3 text-sm text-slate-700">
+                        <span className="font-semibold text-slate-900">Funnel:</span>{' '}
+                        address autofill{' '}
+                        {funnel.autofillUsed === true ? 'used' : 'not used'}
+                        {funnel.sessionId && (
+                          <span className="text-slate-500">
+                            {' '}
+                            · session <span className="font-mono text-xs">{funnel.sessionId}</span>
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </section>
 
             {/* ---------- Letter text ---------- */}

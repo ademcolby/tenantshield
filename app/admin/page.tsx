@@ -107,12 +107,20 @@ export default async function AdminPage({
             </h1>
             <p className="mt-1 text-sm text-slate-600">Signed in as {adminEmail}</p>
           </div>
-          <Link
-            href="/admin/orders"
-            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E]"
-          >
-            View orders →
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/funnel"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#E7E5E0] bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:text-slate-900"
+            >
+              Funnel →
+            </Link>
+            <Link
+              href="/admin/orders"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#B45309] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#92400E]"
+            >
+              View orders →
+            </Link>
+          </div>
         </div>
 
         {!metrics ? (

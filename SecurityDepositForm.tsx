@@ -1,8 +1,9 @@
 // SecurityDepositForm.tsx  (repo root)
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getAttribution } from './lib/attribution';
+import { trackFunnelEvent, getFunnelId } from './lib/funnel';
 import AddressAutocomplete, { type AutofillAddress } from './AddressAutocomplete';
 
 // Basic email format check. Kept byte-for-byte identical to the server mirror
@@ -342,6 +343,10 @@ export default function SecurityDepositForm() {
   // customer returning from the review screen or an error lands where they
   // left off.
   const [currentStep, setCurrentStep] = useState(0);
+  // Project J v2: whether a Places suggestion was accepted at any point this
+  // page load. A ref (not state) — it never affects rendering, only the
+  // funnel stamp in the checkout payload and the autofill_used funnel event.
+  const autofillUsedRef = useRef(false);
   // Why the 'blocked' screen is showing. 'offsets' = the Project I scope block
   // (admitted offsets >= deposit); 'coverage' = the C0 Evanston coverage block.
   // Set immediately before every setViewState('blocked') so the render branch
@@ -592,6 +597,10 @@ export default function SecurityDepositForm() {
   // (Google predictions drop unit numbers). Error/warning clearing mirrors
   // updateAddr and the state/city handlers.
   const applyAddressAutofill = (which: 'tenant' | 'landlord' | 'rental', a: AutofillAddress) => {
+    // Project J v2: record that autofill was used (once per session — the
+    // funnel module dedupes) and remember it for the checkout payload stamp.
+    autofillUsedRef.current = true;
+    trackFunnelEvent('autofill_used');
     const stateFull = US_STATES.includes(a.stateFullName) ? a.stateFullName : '';
     if (which === 'rental') {
       setRentalAddr(p => ({ ...p, street: a.street || p.street, zip: a.zip || p.zip }));
@@ -977,6 +986,9 @@ export default function SecurityDepositForm() {
       // earliest one, then scroll via the pendingEditAnchor effect (post-
       // commit, race-free — the same pattern as the review-screen Edit path).
       const earliest = Math.min(...blockKeys.map(k => FIELD_STEP[k] ?? WIZARD_LAST_STEP));
+      // Project J v2: the full chain blocked — attribute it to the earliest
+      // offending step (the one the customer is sent back to).
+      trackFunnelEvent('validation_blocked', earliest + 1);
       if (earliest !== currentStep) {
         setCurrentStep(earliest);
         const first = FIELD_ORDER.find(k => blockKeys.includes(k));
@@ -986,6 +998,12 @@ export default function SecurityDepositForm() {
       }
       return;
     }
+
+    // Project J v2: the final wizard step's fields all validated — the last
+    // step_completed. The coverage/offsets blocks, the warnings pause, and
+    // the strength modal below are the losses visible as the step-6 →
+    // review_reached gap. (Re-entries from the modal/review dedupe away.)
+    trackFunnelEvent('step_completed', WIZARD_LAST_STEP + 1);
 
     // --- C0 (correction batch): Evanston coverage block. Evanston's overlay
     // data is unverified, so the letter path is blocked pre-payment with an
@@ -1046,6 +1064,8 @@ export default function SecurityDepositForm() {
     // Scope discipline per the backlog item: recap ONLY — no stats, no
     // outcome predictions; at most the plain "you're requesting $X" line.
     if (!opts?.fromReview) {
+      // Project J v2: the pre-payment review screen is showing.
+      trackFunnelEvent('review_reached');
       setViewState('review');
       window.scrollTo({ top: 0, behavior: 'auto' });
       return;
@@ -1074,6 +1094,16 @@ export default function SecurityDepositForm() {
       // can never reach the prompt or the letter. undefined when storage was
       // unavailable, in which case JSON.stringify drops the key entirely.
       attribution: getAttribution(),
+      // Project J v2: funnel linkage — ties this order to its anonymous funnel
+      // session and records whether address autofill was used. Same rider
+      // rules as attribution: admin/analytics only, never reaches the prompt;
+      // undefined (key dropped) when storage was unavailable.
+      funnel: (() => {
+        const funnelId = getFunnelId();
+        return funnelId
+          ? { sessionId: funnelId, autofillUsed: autofillUsedRef.current }
+          : undefined;
+      })(),
     };
 
     setViewState('loading');
@@ -1088,6 +1118,10 @@ export default function SecurityDepositForm() {
       if (!response.ok) throw new Error('Failed to create checkout session');
 
       const { url } = await response.json();
+      // Project J v2: the Stripe handoff is actually happening (fires only
+      // after a checkout session was created; sendBeacon survives the
+      // navigation away).
+      trackFunnelEvent('checkout_redirect');
       window.location.href = url;
     } catch (err) {
       console.error(err);
@@ -1156,9 +1190,13 @@ export default function SecurityDepositForm() {
     setErrors(stepBlocks);
     const keys = Object.keys(stepBlocks);
     if (keys.length > 0) {
+      // Project J v2: this step actively stopped them (1-based step number).
+      trackFunnelEvent('validation_blocked', currentStep + 1);
       scrollToFirstIssue(keys);
       return;
     }
+    // Project J v2: step passed its gate and the customer advanced.
+    trackFunnelEvent('step_completed', currentStep + 1);
     setCurrentStep(s => Math.min(s + 1, WIZARD_LAST_STEP));
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
@@ -1853,6 +1891,11 @@ export default function SecurityDepositForm() {
 
         <form
           onSubmit={handleSubmit}
+          // Project J v2: form_started fires on the FIRST field interaction —
+          // not on page view — so bounces and bots don't inflate the funnel's
+          // denominator. Capture phase sees every child input's change; the
+          // funnel module dedupes, so this is one event per session.
+          onChangeCapture={() => trackFunnelEvent('form_started')}
           onKeyDown={(e) => {
             // Enter advances the current step instead of submitting the whole
             // form early. Textareas keep Enter for newlines; the final step's

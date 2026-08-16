@@ -763,3 +763,78 @@ export async function regenerateOrderLetter(
   }
   return true;
 }
+
+// --- Project J v2: funnel page order stats ---------------------------------
+
+// Paid-order figures for the /admin/funnel page's bottom rows: how many real
+// orders landed in the (Eastern) day range, and the autofill-vs-manual split
+// read from the form_payload.funnel stamp the form writes at checkout.
+export interface FunnelOrderStats {
+  paidOrders: number; // real (non-test) orders in range
+  withFunnelStamp: number; // of those, orders carrying a funnel stamp
+  autofillUsed: number; // stamped orders where a Places suggestion was used
+  manualEntry: number; // stamped orders typed entirely by hand
+  testOrdersExcluded: number;
+}
+
+/**
+ * Project J v2 — paid orders + autofill split for an inclusive Eastern-day
+ * range (same day vocabulary as the funnel counters and the order list's
+ * date filter, via the shared adminTzDateString helper — the funnel page's
+ * Redis rows and Supabase rows can never disagree about what "today" means).
+ *
+ * Implementation note: fetch-and-filter-in-JS like getOrderMetrics /
+ * getOrdersForAdminList — same scale rationale, same ~1,000-row revisit note.
+ * Orders that pre-date J v2 simply have no funnel stamp and are counted in
+ * paidOrders but not in the split.
+ */
+export async function getFunnelOrderStats(
+  dayFrom: string,
+  dayTo: string,
+): Promise<FunnelOrderStats> {
+  const stats: FunnelOrderStats = {
+    paidOrders: 0,
+    withFunnelStamp: 0,
+    autofillUsed: 0,
+    manualEntry: 0,
+    testOrdersExcluded: 0,
+  };
+  const client = getClient();
+  if (!client) return stats;
+
+  const { data, error } = await client
+    .from('orders')
+    .select('created_at,is_test,form_payload')
+    .range(0, 9999);
+
+  if (error) {
+    console.error('getFunnelOrderStats error:', error);
+    return stats;
+  }
+
+  const rows = data as Pick<OrderRow, 'created_at' | 'is_test' | 'form_payload'>[];
+
+  for (const row of rows) {
+    const day = adminTzDateString(row.created_at);
+    if (day < dayFrom || day > dayTo) continue;
+
+    if (row.is_test === true) {
+      stats.testOrdersExcluded += 1;
+      continue;
+    }
+    stats.paidOrders += 1;
+
+    // The stamp the form writes at payload build: { sessionId, autofillUsed }.
+    const funnel = (row.form_payload as { funnel?: unknown } | null)?.funnel;
+    if (typeof funnel === 'object' && funnel !== null) {
+      stats.withFunnelStamp += 1;
+      if ((funnel as { autofillUsed?: unknown }).autofillUsed === true) {
+        stats.autofillUsed += 1;
+      } else {
+        stats.manualEntry += 1;
+      }
+    }
+  }
+
+  return stats;
+}
