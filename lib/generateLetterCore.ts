@@ -35,6 +35,12 @@ export interface FormData {
   depositAmount: string;
   vacatedDate: string;
   forwardingAddressDate: string;
+  // ADDRESS_GATE_STATES only (PA). 'yes' | 'no' | 'unsure'. A THRESHOLD
+  // condition, not a clock input: 68 P.S. § 250.512(e) can extinguish the
+  // tenant's rights under the section entirely, and the letter cannot cure it.
+  // Optional so legacy payloads (and every non-gate state) stay valid; the
+  // prompt treats an absent value as 'unsure'.
+  forwardingAddressGiven?: string;
   situation: string;
   specialCircumstances: string[];
   // Mandatory yes/no: was the property sold during the tenancy? Drives the
@@ -270,6 +276,17 @@ RENTAL PROPERTY:
 
   if (data.forwardingAddressDate) {
     message += `\n- Date tenant provided forwarding address: ${computed.forwardingAddressDateFormatted}`;
+  }
+  // ADDRESS GATE (PA). Emitted verbatim so the PA branch in systemPrompt.ts can
+  // switch on it. Absent => the prompt's documented 'unsure' fallback applies.
+  if (data.forwardingAddressGiven) {
+    const gateLabel =
+      data.forwardingAddressGiven === 'yes'
+        ? 'yes'
+        : data.forwardingAddressGiven === 'no'
+          ? 'no'
+          : 'unsure';
+    message += `\n- Written forwarding address given at move-out: ${gateLabel}`;
   }
   if (data.gaveWrittenNotice) {
     message += `\n- Tenant gave proper written notice of termination: ${data.gaveWrittenNotice}`;

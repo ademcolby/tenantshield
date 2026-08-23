@@ -27,6 +27,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const UNIT_COUNT_STATES = ['Illinois', 'Arkansas', 'New York'];
 const LEASE_TYPE_STATES = ['Maine'];
+// Mirror of ADDRESS_GATE_STATES in SecurityDepositForm.tsx. Threshold
+// condition (68 P.S. § 250.512(e)), not a clock input — keep the two in sync.
+const ADDRESS_GATE_STATES = ['Pennsylvania'];
+const ADDRESS_GATE_VALUES = ['yes', 'no', 'unsure'];
 const NOTICE_STATES = ['Alaska'];
 const SITUATION_MAX = 4000;
 
@@ -162,6 +166,17 @@ function validatePayload(p: Record<string, unknown>): { field: string; message: 
   }
   if (NOTICE_STATES.includes(state) && !str(p.gaveWrittenNotice)) {
     errs.push({ field: 'gaveWrittenNotice', message: 'Written-notice answer is required for this state.' });
+  }
+  // ADDRESS GATE (PA): an unanswered or forged value would let the letter
+  // assert § 250.512 remedies that may already be extinguished.
+  if (ADDRESS_GATE_STATES.includes(state)) {
+    const gate = str(p.forwardingAddressGiven);
+    if (!gate || !ADDRESS_GATE_VALUES.includes(gate)) {
+      errs.push({
+        field: 'forwardingAddressGiven',
+        message: 'Written forwarding-address answer is required for this state.',
+      });
+    }
   }
 
   // --- Unit-count sanity when shown (BLOCK only if a bad value was supplied;

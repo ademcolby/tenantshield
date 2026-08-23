@@ -2958,9 +2958,10 @@ const PENNSYLVANIA: SimpleJurisdiction = {
       '(68 P.S. \u00a7 250.512), the 30-day return deadline, and the ' +
       'double-damages penalty for wrongful withholding. Ready in minutes.',
     lawSummary:
-      'Under 68 P.S. \u00a7 250.512, your landlord has 30 days after your tenancy ' +
-      'ends to return your security deposit or provide a written, itemized list ' +
-      'of any deductions for damages.',
+      'Under 68 P.S. \u00a7 250.512, your landlord has 30 days \u2014 measured from ' +
+      'the termination of your lease OR from surrender and acceptance of the ' +
+      'premises, whichever occurs FIRST \u2014 to return your security deposit or ' +
+      'provide a written, itemized list of any deductions for damages.',
     penaltyLeadIn:
       'If the landlord fails to provide that written list and refund within 30 ' +
       'days, the landlord loses the right to keep any of the deposit and becomes ' +
@@ -2987,17 +2988,20 @@ const PENNSYLVANIA: SimpleJurisdiction = {
       kind: 'trigger_condition',
       heading: 'The forwarding-address rule is strict (§ 250.512(e)):',
       body:
-        'A tenant who fails to provide the landlord with a new address in ' +
-        'writing upon moving out is relieved from ALL liability under the ' +
-        'section \u2014 meaning the landlord owes neither the list, the refund, ' +
-        'nor the double-damages penalty. Your demand letter supplies your ' +
-        'forwarding address in writing, which is essential to preserving these ' +
-        'rights.',
+        'Pennsylvania requires you to give your landlord your new address IN ' +
+        'WRITING when the lease terminates or you surrender the premises. If ' +
+        'you did not, \u00a7 250.512(e) relieves the LANDLORD from all liability ' +
+        'under the section \u2014 not just the double-damages penalty, but the ' +
+        'itemized list and the refund duty as well. Because the statute ties ' +
+        'this duty to move-out, a demand letter sent afterward states your ' +
+        'address for the record but cannot revive a right that was already ' +
+        'lost. Our form asks whether you gave one, so your letter reflects ' +
+        'your actual position rather than assuming the best case.',
     },
   ],
-  lastVerified: '2026-07-20',
+  lastVerified: '2026-08-23',
   primarySource:
-    '68 P.S. §§ 250.511a, 250.512 (verified against statute text; §250.512(e) address failure relieves the landlord of all §250.512 liability); 2×-of-excess + tiered cap confirmed (legal audit, July 2026)',
+    '68 P.S. §§ 250.511a, 250.511b, 250.512 (§ 250.512(a)–(f) re-read in full Aug 23 2026, FindLaw current as of Jan 1 2026, no substantive change from the Jan 1 2025 audit read; § 250.511b read Aug 23 2026, closing the audit-register UNREAD flag — escrow over $100, interest-bearing after the second anniversary, interest to tenant annually from year three less a 1% administrative fee); § 250.512(a) earlier-of two-event trigger ("whichever first occurs") now stated in copy; § 250.512(e) address failure relieves the landlord of ALL § 250.512 liability and is NOT curable by the demand letter; 2×-of-excess base + tiered cap confirmed (legal audit, July 2026)',
 };
 
 const RHODE_ISLAND: SimpleJurisdiction = {

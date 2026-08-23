@@ -139,6 +139,17 @@ const FORWARDING_ADDRESS_STATES = [
   'Wyoming',
 ];
 
+// ELIGIBILITY-GATE states (Aug 2026, PA correction batch). Structurally
+// DIFFERENT from FORWARDING_ADDRESS_STATES above: there, the address date is a
+// CLOCK INPUT (the deadline is measured from it). Here, the written address is
+// a THRESHOLD CONDITION — failing to give one at move-out can extinguish the
+// tenant's rights under the statute entirely, and no later letter cures it.
+// Never merge these two lists; the help text and the consequences differ.
+// PA: 68 P.S. § 250.512(e) — failure relieves the landlord of ALL liability
+// under the section. Michigan (MCL § 554.609, 4-day rule) is the next
+// candidate for this list when that state ships.
+const ADDRESS_GATE_STATES = ['Pennsylvania'];
+
 // States whose statute applies only above a building unit-count threshold.
 // (Illinois removed July 2026 — P.A. 103-224, eff. 1/1/2024, repealed the
 // Security Deposit Return Act's old 5-unit gate; the Act is now statewide.)
@@ -236,7 +247,7 @@ const FIELD_STEP: { [key: string]: number } = {
   state: 1, city: 1, rentalPropertyAddress: 1, rentalZip: 1,
   isRentStabilized: 1, leaseStartDate: 1,
   depositAmount: 2, vacatedDate: 2, depositPaidDate: 2,
-  forwardingAddressDate: 2, buildingUnitCount: 2, leaseType: 2,
+  forwardingAddressDate: 2, forwardingAddressGiven: 2, buildingUnitCount: 2, leaseType: 2,
   landlordName: 3, landlordAddress: 3, landlordZip: 3, propertySold: 3,
   newOwnerName: 3, newOwnerAddress: 3, identicalParties: 3,
   scenario: 4, amountReturned: 4,
@@ -377,6 +388,9 @@ export default function SecurityDepositForm() {
     depositAmount: '',
     vacatedDate: '',
     forwardingAddressDate: '',
+    // ADDRESS_GATE_STATES only (PA). 'yes' | 'no' | 'unsure'. Threshold
+    // condition, NOT a clock input — see ADDRESS_GATE_STATES above.
+    forwardingAddressGiven: '',
     situation: '',
     // ---- Project I: authoritative scenario + dispute grounds ----
     scenario: '',              // single-select; SCENARIOS ids
@@ -418,6 +432,13 @@ export default function SecurityDepositForm() {
   // tier; the weak tier additionally requires the acknowledgment checkbox.
   const [showStrengthModal, setShowStrengthModal] = useState(false);
   const [weakChecked, setWeakChecked] = useState(false);
+  // ADDRESS GATE (PA): separate acknowledgment from the weak-tier checkbox.
+  // Deliberately NOT folded into computeTier() — the tier measures the merits
+  // of the claim, this measures whether the statute reaches the tenant at all.
+  // A spotless case with no written address is a "strong" tier with a dead
+  // statute, so the two must stay independent (and computeTier() must remain
+  // byte-consistent with deriveCaseStrength() in lib/generateLetterCore.ts).
+  const [addressGateChecked, setAddressGateChecked] = useState(false);
   const [strengthAcknowledged, setStrengthAcknowledged] = useState(false);
 
   // Backlog #7 review screen: where to scroll after "Edit" returns to the
@@ -453,6 +474,7 @@ export default function SecurityDepositForm() {
   const showLeaseStartDate = showRentStabilized && formData.isRentStabilized === 'yes';
   const showUnitCount = UNIT_COUNT_STATES.includes(formData.state);
   const showLeaseType = LEASE_TYPE_STATES.includes(formData.state);
+  const showAddressGate = ADDRESS_GATE_STATES.includes(formData.state);
   const isAlaska = formData.state === 'Alaska';
 
   const handleInputChange = (field: string, value: string) => {
@@ -651,7 +673,7 @@ export default function SecurityDepositForm() {
   // DOM order of fields, used to scroll to the first issue on submit.
   const FIELD_ORDER = [
     'state', 'city', 'tenantName', 'email', 'rentalPropertyAddress', 'isRentStabilized', 'depositAmount', 'vacatedDate',
-    'depositPaidDate', 'forwardingAddressDate', 'buildingUnitCount', 'leaseType', 'tenantAddress',
+    'depositPaidDate', 'forwardingAddressDate', 'forwardingAddressGiven', 'buildingUnitCount', 'leaseType', 'tenantAddress',
     'landlordName', 'landlordAddress', 'propertySold', 'scenario', 'amountReturned',
     'unitCondition', 'damageEstimate', 'unpaidRent', 'unpaidRentAmount',
     'properNotice', 'noticeGiven', 'conditionDocumentation', 'situation',
@@ -840,6 +862,16 @@ export default function SecurityDepositForm() {
     // DHCR). Skipping it used to silently produce a § 7-108 letter for a
     // possibly-stabilized tenant, so an explicit answer (including "I'm not
     // sure") is now required whenever the question is shown (BLOCK).
+    // ADDRESS GATE (PA): a threshold condition, not a clock input. An
+    // unanswered gate would let the letter assert § 250.512 remedies that may
+    // already be extinguished, so an explicit answer — including "I'm not
+    // sure" — is required whenever the question is shown (BLOCK).
+    if (showAddressGate && !formData.forwardingAddressGiven) {
+      b.forwardingAddressGiven =
+        'Let us know whether you gave your landlord a written forwarding address when you moved out \u2014 in ' +
+        formData.state +
+        ' this decides which remedies your letter can claim. Choose \u201cI\u2019m not sure\u201d if you don\u2019t know.';
+    }
     if (showRentStabilized && !formData.isRentStabilized) {
       b.isRentStabilized =
         'Let us know whether the apartment is rent-stabilized \u2014 it determines which New York deposit law your letter argues. Choose \u201cI\u2019m not sure\u201d if you don\u2019t know.';
@@ -1051,6 +1083,7 @@ export default function SecurityDepositForm() {
     const tier = computeTier();
     if (!strengthAcknowledged && !opts?.ackStrength) {
       setWeakChecked(false);
+      setAddressGateChecked(false);
       setShowStrengthModal(true);
       return;
     }
@@ -1430,6 +1463,20 @@ export default function SecurityDepositForm() {
               <Row label="Move-out date" value={formData.vacatedDate} />
               {FORWARDING_ADDRESS_STATES.includes(formData.state) && (
                 <Row label="Forwarding address given on" value={formData.forwardingAddressDate} />
+              )}
+              {showAddressGate && (
+                <Row
+                  label="Written forwarding address at move-out"
+                  value={
+                    formData.forwardingAddressGiven === 'yes'
+                      ? 'Yes, in writing'
+                      : formData.forwardingAddressGiven === 'no'
+                        ? 'No'
+                        : formData.forwardingAddressGiven === 'unsure'
+                          ? 'Not sure / not in writing'
+                          : ''
+                  }
+                />
               )}
             </Section>
 
@@ -1815,6 +1862,17 @@ export default function SecurityDepositForm() {
   };
 
   const tier = computeTier();
+
+  // ADDRESS GATE (PA) — modal warning trigger. Fires on 'no' or 'unsure' only.
+  // Philadelphia branches: § 250.512(e) relieves the landlord of liability
+  // "under this section" — the STATE section only. Phila. Code § 9-804's
+  // retention prohibition and its (16) damages remedy run independently, so a
+  // Philadelphia tenant's claim survives a missing state-law address.
+  const addressGateFlagged =
+    showAddressGate &&
+    (formData.forwardingAddressGiven === 'no' || formData.forwardingAddressGiven === 'unsure');
+  const addressGateIsPhilly = effectiveCity === 'Philadelphia';
+  const addressGateNeedsAck = addressGateFlagged && formData.forwardingAddressGiven === 'no';
 
   // Case-strength modal content (Project I). Replaces the old inline result
   // box AND the old weak-only modal — one confirmation modal, every tier.
@@ -2236,6 +2294,50 @@ export default function SecurityDepositForm() {
                 <p className="mt-1 text-xs text-slate-500">
                   In {formData.state}, the deadline is measured from your forwarding
                   address date. Leave blank if you never provided one or aren&apos;t sure.
+                </p>
+              </div>
+            )}
+
+            {/* Conditional: ADDRESS GATE (PA). Threshold condition, not a clock
+                input — see ADDRESS_GATE_STATES. Required when shown (BLOCK). */}
+            {showAddressGate && (
+              <div id="f-forwardingAddressGiven">
+                <label className={labelClass}>
+                  When you moved out, did you give your landlord your new address in writing?
+                </label>
+                <div className="mt-2 space-y-2">
+                  {[
+                    { v: 'yes', l: 'Yes \u2014 in writing (letter, email, text, or on a form)' },
+                    { v: 'no', l: 'No' },
+                    { v: 'unsure', l: 'I\u2019m not sure, or I told them but not in writing' },
+                  ].map(opt => (
+                    <label
+                      key={opt.v}
+                      className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-3.5 py-2.5 text-sm transition ${
+                        formData.forwardingAddressGiven === opt.v
+                          ? 'border-[#B45309] bg-[#B45309]/[0.05] text-slate-900'
+                          : 'border-[#E7E5E0] bg-white text-slate-700 hover:border-slate-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="forwardingAddressGiven"
+                        value={opt.v}
+                        checked={formData.forwardingAddressGiven === opt.v}
+                        onChange={(e) => handleInputChange('forwardingAddressGiven', e.target.value)}
+                        className="mt-0.5 h-4 w-4 accent-[#B45309]"
+                      />
+                      <span>{opt.l}</span>
+                    </label>
+                  ))}
+                </div>
+                {errors.forwardingAddressGiven && (
+                  <p className="mt-1 text-sm text-red-600">{errors.forwardingAddressGiven}</p>
+                )}
+                <p className="mt-1.5 text-xs text-slate-500">
+                  {formData.state} law ties this to your move-out date, so it changes which
+                  remedies your letter can claim. Answer honestly &mdash; a letter that overstates
+                  your position is easier for a landlord to dismiss.
                 </p>
               </div>
             )}
@@ -2886,6 +2988,63 @@ export default function SecurityDepositForm() {
                 {tierModalContent[tier].expect}
               </p>
             </div>
+            {addressGateFlagged && (
+              <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
+                <h3 className="text-sm font-semibold text-amber-900">
+                  {formData.forwardingAddressGiven === 'no'
+                    ? 'Before you pay \u2014 a Pennsylvania rule may affect your claim'
+                    : 'Before you pay \u2014 one Pennsylvania detail worth confirming'}
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-amber-900">
+                  {formData.forwardingAddressGiven === 'no' ? (
+                    <>
+                      Under 68 P.S. &sect; 250.512(e), a tenant who does not give the landlord a
+                      new address in writing at move-out relieves the landlord of{' '}
+                      <strong>all liability under that section</strong> &mdash; the itemized list,
+                      the refund duty, and the double-damages penalty. Because the rule is tied
+                      to move-out, this letter cannot undo it.
+                    </>
+                  ) : (
+                    <>
+                      Under 68 P.S. &sect; 250.512(e), the forwarding address has to have been
+                      given <strong>in writing</strong> at move-out. If yours was verbal only,
+                      the landlord may be relieved of liability under that section. It is worth
+                      checking your texts, emails, and any move-out paperwork before you send.
+                    </>
+                  )}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-amber-900">
+                  {addressGateIsPhilly ? (
+                    <>
+                      <strong>Philadelphia changes this.</strong> The state rule only relieves a
+                      landlord of liability under the state section. Philadelphia&apos;s own
+                      ordinance (Phila. Code &sect; 9-804) separately bars unlawfully retaining a
+                      deposit and carries its own damages remedy, which is unaffected. Your
+                      letter will lean on the city claim.
+                    </>
+                  ) : (
+                    <>
+                      Your letter will still be written, and it will still be a dated, documented
+                      written demand &mdash; which is often what actually gets a deposit returned.
+                      It will not, however, claim penalties that may no longer be available.
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
+            {addressGateNeedsAck && (
+              <label className="mt-4 flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={addressGateChecked}
+                  onChange={(e) => setAddressGateChecked(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-[#B45309]"
+                />
+                I understand that because I did not give a written forwarding address at
+                move-out, my rights under this statute may be limited, and I want to generate
+                the letter anyway.
+              </label>
+            )}
             {tier === 'weak' && (
               <>
                 <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
@@ -2906,7 +3065,7 @@ export default function SecurityDepositForm() {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row-reverse">
               <button
                 type="button"
-                disabled={tier === 'weak' && !weakChecked}
+                disabled={(tier === 'weak' && !weakChecked) || (addressGateNeedsAck && !addressGateChecked)}
                 onClick={handleProceedFromModal}
                 className="flex-1 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
               >
