@@ -228,8 +228,25 @@ export default function PrivacyPage() {
             and edit them before submitting. When you submit the form, your information is
             transmitted to our servers to generate and store your letter (see Section 2).
             We do not keep your form entries in local storage, cookies, or any other
-            long-term browser storage, and we do not use third-party advertising or
-            tracking cookies.
+            long-term browser storage.
+          </p>
+          <p>
+            We do use Google Analytics and Google Ads measurement to understand how people
+            find and use the site. These set cookies in your browser (named{' '}
+            <code>_ga</code> and <code>_ga_*</code>) that record pages viewed and whether
+            you arrived from an ad. They do not contain your name, email address, or
+            anything you typed into the intake form &mdash; your form entries are never sent
+            to Google. You can opt out for every site you visit using Google&apos;s{' '}
+            <a
+              href="https://tools.google.com/dlpage/gaoptout"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              browser add-on
+            </a>
+            , or by blocking cookies in your browser settings. Blocking them does not affect
+            your ability to generate or download a letter.
           </p>
         </Section>
 
