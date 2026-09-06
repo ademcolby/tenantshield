@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import { getPostBySlug, getAllPosts } from '@/lib/posts'
+import { buildBreadcrumbSchema, buildFaqSchema, type Faq } from '@/lib/schema'
 import SiteFooter from '@/app/components/SiteFooter'
 
 export async function generateStaticParams() {
@@ -109,6 +111,105 @@ function buildDatasetSchema() {
 }
 
 /*
+ * FAQPage schema for blog posts (Sept 2026).
+ *
+ * Sixteen of the nineteen posts already end with a "## Frequently Asked
+ * Questions" section written in one uniform shape:
+ *
+ *     **Question text?**
+ *     Answer paragraph on the next line.
+ *
+ * separated by blank lines. Rather than duplicating that copy into
+ * frontmatter — which would create two sources of truth and let the rendered
+ * Q&A drift from the marked-up Q&A — we parse the rendered markdown itself.
+ * That guarantees the constraint in lib/schema.ts: only mark up Q&A that is
+ * VISIBLY on the page.
+ *
+ * The parser is deliberately strict. It returns [] rather than guessing if the
+ * section is missing or the shape does not match, and a post with no FAQ
+ * section simply emits no FAQPage schema (the three non-conforming posts:
+ * what-to-include, the 50-states table, and what-to-do-if-landlord-wont-return).
+ * If a future post's FAQ does not appear in search, check its shape against the
+ * pattern above FIRST — a silent [] is the designed failure mode.
+ */
+function parseFaqsFromMarkdown(markdown: string): Faq[] {
+  const section = markdown.match(
+    /^## Frequently Asked Questions\s*$([\s\S]*?)(?=^## |$(?![\s\S]))/m
+  )
+  if (!section) return []
+
+  const faqs: Faq[] = []
+  const blockRe = /^\*\*(.+?)\*\*[ \t]*\n([\s\S]+?)(?=\n[ \t]*\n|$)/gm
+  let m: RegExpExecArray | null
+
+  while ((m = blockRe.exec(section[1])) !== null) {
+    const q = m[1].trim()
+    // Collapse whitespace and strip the inline markdown that would otherwise
+    // reach Google as literal asterisks or bracket syntax.
+    const a = m[2]
+      .replace(/\s+/g, ' ')
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/(?<!\w)_(.+?)_(?!\w)/g, '$1')
+      .trim()
+    if (q && a) faqs.push({ q, a })
+  }
+
+  return faqs
+}
+
+/** Home → Blog → this post. Mirrors stateBreadcrumbs() in lib/schema.ts. */
+function blogBreadcrumbs(post: { title: string; slug: string }) {
+  const SITE_URL = 'https://gettenantshield.com'
+  return [
+    { name: 'Home', url: SITE_URL },
+    { name: 'Blog', url: `${SITE_URL}/blog` },
+    { name: post.title, url: `${SITE_URL}/blog/${post.slug}` },
+  ]
+}
+
+/*
+ * External links open in a new tab (Sept 2026).
+ *
+ * Blog posts cite statutes; those citations link out to the legislature's own
+ * text. A reader mid-funnel should not be navigated off a page they may be
+ * about to buy from, so every OFF-SITE link gets target="_blank". Internal
+ * links are untouched and still navigate in place.
+ *
+ * rel="noopener noreferrer" is REQUIRED alongside target="_blank" — without
+ * noopener the opened page gets a handle on this window via window.opener.
+ * Do not remove it.
+ *
+ * Note this only styles anchors produced from markdown. Anchors inside
+ * .letter-doc are already made inert by CSS (pointer-events: none) so the
+ * sample letters are unaffected.
+ */
+const EXTERNAL_HREF = /^https?:\/\//i
+const OWN_DOMAIN = /^https?:\/\/([a-z0-9-]+\.)*gettenantshield\.com(\/|$)/i
+
+const markdownComponents: Components = {
+  a({ node, href, children, ...rest }) {
+    const isExternal =
+      typeof href === 'string' &&
+      EXTERNAL_HREF.test(href) &&
+      !OWN_DOMAIN.test(href)
+
+    if (isExternal) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>
+          {children}
+        </a>
+      )
+    }
+    return (
+      <a href={href} {...rest}>
+        {children}
+      </a>
+    )
+  },
+}
+
+/*
  * Letter-document card ("blueprint" format, July 2026).
  * Blog sample letters are wrapped in <div class="letter-doc"> inside the
  * markdown (rendered via rehype-raw). The card visually echoes the generated
@@ -171,6 +272,9 @@ export default async function BlogPostPage({
   const is50StatesPost =
     slug === 'security-deposit-return-deadlines-all-50-states'
 
+  // Parsed from the post's own visible FAQ section; [] when it has none.
+  const faqs = parseFaqsFromMarkdown(post.content)
+
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       {/* JSON-LD — Article schema on all posts */}
@@ -180,6 +284,22 @@ export default async function BlogPostPage({
           __html: JSON.stringify(buildArticleSchema(post)),
         }}
       />
+      {/* JSON-LD — BreadcrumbList on all posts */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbSchema(blogBreadcrumbs(post))),
+        }}
+      />
+      {/* JSON-LD — FAQPage on the 16 posts that carry a visible FAQ section */}
+      {faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(buildFaqSchema(faqs)),
+          }}
+        />
+      )}
       {/* JSON-LD — Dataset schema only on 50-states post */}
       {is50StatesPost && (
         <script
@@ -347,6 +467,7 @@ export default async function BlogPostPage({
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw]}
+            components={markdownComponents}
           >
             {post.content}
           </ReactMarkdown>
