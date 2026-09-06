@@ -11,7 +11,7 @@ This is the complete court self-help walkthrough: what to bring, what to say at 
 
 ---
 
-## Why Certified Mail — and Why Not Email or Text
+## Why [Certified Mail](https://www.usps.com/ship/insurance-extra-services.htm) — and Why Not Email or Text
 
 When a deposit dispute reaches small claims court, one of the first factual questions is: *did the landlord get the demand, and when?* Here's how each delivery method holds up to that question:
 

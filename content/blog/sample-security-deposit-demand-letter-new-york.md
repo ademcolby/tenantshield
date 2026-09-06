@@ -7,7 +7,7 @@ publishedAt: "2026-07-27"
 
 New York gives landlords one of the shortest security deposit deadlines in the country — 14 days — and attaches a consequence most tenants don't realize is sitting there: a landlord who misses it doesn't just owe you the deposit late. They **forfeit any right to keep any of it**, deductions or no deductions.
 
-This guide shows you a complete sample demand letter for New York, explains the deadline in General Obligations Law § 7-108, covers the forfeiture rule and the willful-violation penalty — and walks through the rent-stabilization wrinkle that makes New York the easiest state in the country to cite the wrong statute in.
+This guide shows you a complete sample demand letter for New York, explains the deadline in [General Obligations Law § 7-108](https://www.nysenate.gov/legislation/laws/GOB/7-108), covers the forfeiture rule and the willful-violation penalty — and walks through the rent-stabilization wrinkle that makes New York the easiest state in the country to cite the wrong statute in.
 
 ---
 

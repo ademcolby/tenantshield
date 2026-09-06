@@ -5,7 +5,7 @@ slug: "sample-security-deposit-demand-letter-connecticut"
 publishedAt: "2026-08-08"
 ---
 
-If your Connecticut landlord hasn't returned your security deposit, a written demand letter citing Conn. Gen. Stat. § 47a-21 is usually the step that gets it back — and Connecticut backs that letter with one of the sharper penalties in the country: twice the deposit you paid, plus interest.
+If your Connecticut landlord hasn't returned your security deposit, a written demand letter citing [Conn. Gen. Stat. § 47a-21](https://www.cga.ct.gov/current/pub/chap_831.htm#sec_47a-21) is usually the step that gets it back — and Connecticut backs that letter with one of the sharper penalties in the country: twice the deposit you paid, plus interest.
 
 This guide shows you a complete sample demand letter for Connecticut, explains how the return deadline actually works (it's a two-part clock, and your own letter can be part of it), and flags the outdated deadline figure that still circulates on much of the internet.
 

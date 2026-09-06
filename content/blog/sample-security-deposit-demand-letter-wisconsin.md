@@ -13,7 +13,7 @@ This guide shows you a complete sample demand letter for Wisconsin, explains how
 
 ## Wisconsin's Deadline: 21 Days
 
-Under Wis. Admin. Code ATCP 134.06, your landlord has **21 days** after your tenancy ends — whether by lease termination or by you surrendering the premises — to either return your security deposit in full or deliver a written, itemized statement of any amounts withheld.
+Under [Wis. Admin. Code ATCP 134.06](https://docs.legis.wisconsin.gov/code/admin_code/atcp/090/134/06), your landlord has **21 days** after your tenancy ends — whether by lease termination or by you surrendering the premises — to either return your security deposit in full or deliver a written, itemized statement of any amounts withheld.
 
 No refund and no itemized statement within 21 days is a violation. So is withholding for things Wisconsin law doesn't allow: Wis. Stat. § 704.28 limits deductions to unpaid rent, damage beyond normal wear and tear, unpaid utilities, and certain other specified amounts. Routine carpet cleaning and repainting for ordinary wear are the classic improper deductions.
 

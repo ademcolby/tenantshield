@@ -7,7 +7,7 @@ publishedAt: "2026-07-27"
 
 In Ohio, a landlord who sits on your security deposit past the statutory deadline isn't just being slow — they're exposing themselves to one of the cleaner tenant remedies in the country: the amount withheld, damages in an equal amount on top of it, and your attorney's fees.
 
-This guide covers Ohio Rev. Code § 5321.16 — the 30-day rule, the double-damages penalty, and the one requirement that decides whether you get the penalty or just the deposit — plus a complete sample demand letter and a note on Ohio's separate rent-escrow remedy, since the two get confused constantly.
+This guide covers [Ohio Rev. Code § 5321.16](https://codes.ohio.gov/ohio-revised-code/section-5321.16) — the 30-day rule, the double-damages penalty, and the one requirement that decides whether you get the penalty or just the deposit — plus a complete sample demand letter and a note on Ohio's separate rent-escrow remedy, since the two get confused constantly.
 
 ---
 

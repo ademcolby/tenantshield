@@ -7,7 +7,7 @@ publishedAt: "2026-07-26"
 
 If your Florida landlord is sitting on your security deposit, a written demand letter is the step that usually gets it back — and Florida's deposit statute gives tenants one of the strongest positions in the country, *if* the letter invokes it correctly.
 
-This guide shows you a complete sample demand letter for Florida, explains the deadlines in Florida Statutes § 83.49, and covers the one notice rule that trips up tenants who would otherwise have a winning case.
+This guide shows you a complete sample demand letter for Florida, explains the deadlines in [Florida Statutes § 83.49](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0083/Sections/0083.49.html), and covers the one notice rule that trips up tenants who would otherwise have a winning case.
 
 ---
 

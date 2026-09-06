@@ -5,7 +5,7 @@ slug: "sample-security-deposit-demand-letter-oregon"
 publishedAt: "2026-08-08"
 ---
 
-If your Oregon landlord hasn't returned your security deposit, a written demand letter citing ORS § 90.300 is usually the step that gets it back — and Oregon gives that letter an unusually blunt instrument: a double-damages penalty that isn't discretionary, isn't bad-faith-gated when the landlord stays silent, and that courts have held they cannot reduce.
+If your Oregon landlord hasn't returned your security deposit, a written demand letter citing [ORS § 90.300](https://www.oregonlegislature.gov/bills_laws/ors/ors090.html) is usually the step that gets it back — and Oregon gives that letter an unusually blunt instrument: a double-damages penalty that isn't discretionary, isn't bad-faith-gated when the landlord stays silent, and that courts have held they cannot reduce.
 
 This guide shows you a complete sample demand letter for Oregon, explains how the 31-day deadline actually works (it has two triggers, and both matter), and covers the one threat you should leave *out* of an Oregon letter — because it can backfire on you.
 

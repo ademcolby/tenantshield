@@ -7,7 +7,7 @@ publishedAt: "2026-07-27"
 
 If your Texas landlord is sitting on your security deposit, a written demand letter is the step that usually gets it back — and Texas backs that letter with one of the sharper penalty structures in the country: a statutory fine, triple damages, and your attorney's fees, with a presumption rule that does most of the arguing for you.
 
-This guide shows you a complete sample demand letter for Texas, explains the deadline in Texas Property Code § 92.103, and covers the two details — one about your forwarding address, one about the burden of proof — that separate letters landlords ignore from letters they pay.
+This guide shows you a complete sample demand letter for Texas, explains the deadline in [Texas Property Code § 92.103](https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm), and covers the two details — one about your forwarding address, one about the burden of proof — that separate letters landlords ignore from letters they pay.
 
 ---
 

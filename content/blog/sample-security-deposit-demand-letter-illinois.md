@@ -5,7 +5,7 @@ slug: "sample-security-deposit-demand-letter-illinois"
 publishedAt: "2026-08-08"
 ---
 
-If your Illinois landlord hasn't returned your security deposit, a written demand letter citing the Security Deposit Return Act (765 ILCS 710) is usually the step that gets it back — and Illinois rewards a letter that gets its two clocks right, because most of the internet cites the wrong one.
+If your Illinois landlord hasn't returned your security deposit, a written demand letter citing the Security Deposit Return Act ([765 ILCS 710](https://www.ilga.gov/Legislation/ILCS/Articles?ActID=2202&ChapterID=62)) is usually the step that gets it back — and Illinois rewards a letter that gets its two clocks right, because most of the internet cites the wrong one.
 
 This guide shows you a complete sample demand letter for Illinois, explains the 30/45-day split that trips up landlords and template sites alike, covers the double-damages penalty — including why you don't have to prove bad faith when the landlord simply sent you nothing — and the one sentence in the letter that protects your penalty claim from a quiet statutory kill switch.
 

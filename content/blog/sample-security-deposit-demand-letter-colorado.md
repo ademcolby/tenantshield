@@ -7,7 +7,7 @@ publishedAt: "2026-08-01"
 
 Colorado is one of the few states where a demand letter isn't just the smart first move — it's a **statutory prerequisite**. Before a tenant can sue for Colorado's treble-damages penalty, the law requires giving the landlord at least **7 days' written notice**. That's the "7-day demand letter" tenants search for, and the demand letter in this guide is built to serve as exactly that notice.
 
-This guide shows you a complete sample demand letter for Colorado, explains the deadline in C.R.S. § 38-12-103, covers the treble-damages-plus-fees penalty and the 7-day notice that unlocks it — and walks through the new tenant protections that took effect January 1, 2026 under HB25-1249.
+This guide shows you a complete sample demand letter for Colorado, explains the deadline in [C.R.S. § 38-12-103](https://law.justia.com/codes/colorado/title-38/tenants-and-landlords/article-12/part-1/section-38-12-103/), covers the treble-damages-plus-fees penalty and the 7-day notice that unlocks it — and walks through the new tenant protections that took effect January 1, 2026 under HB25-1249.
 
 ---
 

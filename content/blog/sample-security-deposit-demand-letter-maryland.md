@@ -7,7 +7,7 @@ publishedAt: "2026-08-01"
 
 If your Maryland landlord is sitting on your security deposit, a written demand letter is the step that usually gets it back — and Maryland's statute hands that letter two separate weapons: a forfeiture rule with no preconditions at all, and an up-to-treble penalty with attorney's fees stacked on top.
 
-This guide shows you a complete sample demand letter for Maryland, explains the deadline in Md. Real Property § 8-203, covers the forfeiture-then-treble structure that most template letters get backwards — and walks through the interest your deposit has been quietly earning the whole time.
+This guide shows you a complete sample demand letter for Maryland, explains the deadline in [Md. Real Property § 8-203](https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=grp&section=8-203), covers the forfeiture-then-treble structure that most template letters get backwards — and walks through the interest your deposit has been quietly earning the whole time.
 
 ---
 

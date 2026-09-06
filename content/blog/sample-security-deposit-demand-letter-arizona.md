@@ -7,7 +7,7 @@ publishedAt: "2026-07-27"
 
 If your Arizona landlord is holding your security deposit, there's a detail in the statute most tenants never learn: the landlord's deadline may not have started running yet — because in Arizona, the clock doesn't start until *you* demand the deposit. A written demand letter isn't just a nudge in Arizona. It's the legal trigger.
 
-This guide shows you a complete sample demand letter for Arizona, explains the 14-business-day deadline in ARS § 33-1321, covers the double-damages penalty for wrongful withholding, and walks through the 60-day dispute rule that can quietly waive your claim if you sit on an itemized list too long.
+This guide shows you a complete sample demand letter for Arizona, explains the 14-business-day deadline in [ARS § 33-1321](https://www.azleg.gov/ars/33/01321.htm), covers the double-damages penalty for wrongful withholding, and walks through the 60-day dispute rule that can quietly waive your claim if you sit on an itemized list too long.
 
 ---
 

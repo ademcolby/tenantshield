@@ -7,7 +7,7 @@ publishedAt: "2026-08-01"
 
 If your California landlord is sitting on your security deposit, a written demand letter is the step that usually gets it back — and California has quietly become one of the most documentation-heavy deposit states in the country. Since 2025, a landlord who wants to keep any of your money owes you an itemized statement, receipts, *and* photographs — and most landlords are still running on the old rules.
 
-This guide shows you a complete sample demand letter for California, explains the 21-day deadline in Civil Code § 1950.5, covers the bad-faith penalty of up to twice the deposit plus your actual damages — and walks through the 2025–2026 changes (AB 2801, AB 414, AB 12) that most template letters haven't caught up with.
+This guide shows you a complete sample demand letter for California, explains the 21-day deadline in [Civil Code § 1950.5](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1950.5), covers the bad-faith penalty of up to twice the deposit plus your actual damages — and walks through the 2025–2026 changes (AB 2801, AB 414, AB 12) that most template letters haven't caught up with.
 
 ---
 

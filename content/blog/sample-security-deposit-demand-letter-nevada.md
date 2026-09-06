@@ -7,7 +7,7 @@ publishedAt: "2026-08-01"
 
 If your Nevada landlord is sitting on your security deposit, a written demand letter is the step that usually gets it back — and Nevada's statute gives that letter a clean, unconditional foundation: a hard 30-day deadline, and a penalty triggered by the missed deadline itself, not by anything you have to prove about the landlord's state of mind.
 
-This guide shows you a complete sample demand letter for Nevada, explains the deadline in NRS § 118A.242, covers what the landlord actually risks by blowing it — and flags the one number circulating on template sites that Nevada law doesn't contain.
+This guide shows you a complete sample demand letter for Nevada, explains the deadline in [NRS § 118A.242](https://www.leg.state.nv.us/nrs/nrs-118a.html#NRS118ASec242), covers what the landlord actually risks by blowing it — and flags the one number circulating on template sites that Nevada law doesn't contain.
 
 ---
 

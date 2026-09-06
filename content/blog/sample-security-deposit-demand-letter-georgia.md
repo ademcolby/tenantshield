@@ -13,7 +13,7 @@ But Georgia also has a trap that can quietly kill a tenant's case before the let
 
 ## Georgia's Deadline: 30 Days
 
-Under O.C.G.A. § 44-7-34, your landlord has **30 days** from the date you move out to either return your security deposit or send you a written, itemized list of the deductions being claimed. Silence past 30 days — no refund, no list — is a violation.
+Under [O.C.G.A. § 44-7-34](https://law.justia.com/codes/georgia/title-44/chapter-7/article-2/section-44-7-34/), your landlord has **30 days** from the date you move out to either return your security deposit or send you a written, itemized list of the deductions being claimed. Silence past 30 days — no refund, no list — is a violation.
 
 ## The Forfeiture Rule — Lead With This
 

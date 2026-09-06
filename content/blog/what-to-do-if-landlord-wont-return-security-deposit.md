@@ -56,7 +56,7 @@ A demand letter does three things:
 2. **Sets a hard deadline** for the landlord to respond
 3. **Signals you're serious** — landlords know what a demand letter means
 
-Your demand letter should reference your state's specific security deposit statute by name and section number. This matters. A letter that cites *Florida Statutes § 83.49* or *California Civil Code § 1950.5* reads as legally credible. A letter that says "I want my money back" reads as a complaint.
+Your demand letter should reference your state's specific security deposit statute by name and section number. This matters. A letter that cites *[Florida Statutes § 83.49](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0083/Sections/0083.49.html)* or *California Civil Code § 1950.5* reads as legally credible. A letter that says "I want my money back" reads as a complaint.
 
 The letter should include:
 - Your name and the rental address

@@ -51,7 +51,7 @@ If your landlord tries to argue the clock never started, this shuts that down. (
 This is the element that separates a credible demand letter from a complaint. Cite the exact statute governing security deposit returns in your state — by code name and section number.
 
 For example:
-- **California**: Civil Code § 1950.5
+- **California**: [Civil Code § 1950.5](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1950.5)
 - **Texas**: Property Code § 92.103 and § 92.109
 - **Florida**: Florida Statutes § 83.49
 - **New York**: General Obligations Law § 7-108
