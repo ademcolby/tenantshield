@@ -141,3 +141,5 @@ A well-written demand letter is the single highest-leverage action you can take 
 The key is getting it right — with the correct statute, the correct timeline, and the professional tone that signals you're serious.
 
 [Generate your statute-cited demand letter for $39 →](https://gettenantshield.com/generate)
+
+*Also see: [Security deposit refund letter](/blog/security-deposit-refund-letter) · [What a security deposit disposition notice means](/blog/security-deposit-disposition) · [Small claims court for a security deposit](/blog/small-claims-court-security-deposit)*

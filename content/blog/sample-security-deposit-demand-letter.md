@@ -141,6 +141,6 @@ You can — but the parts that decide cases are exactly the parts a generic temp
 
 **[Generate your demand letter →](/generate)**
 
-*Also see: [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit) · [How to send a demand letter by certified mail](/blog/how-to-send-demand-letter-certified-mail) · [Security deposit deadline calculator](/security-deposit-deadline-calculator)*
+*Also see: [Security deposit refund letter](/blog/security-deposit-refund-letter) · [What a security deposit disposition notice means](/blog/security-deposit-disposition) · [Small claims court for a security deposit](/blog/small-claims-court-security-deposit) · [What to include in a security deposit demand letter](/blog/security-deposit-demand-letter-what-to-include) · [What to do if your landlord won't return your deposit](/blog/what-to-do-if-landlord-wont-return-security-deposit) · [How to send a demand letter by certified mail](/blog/how-to-send-demand-letter-certified-mail) · [Security deposit deadline calculator](/security-deposit-deadline-calculator)*
 
 *This article is general information, not legal advice for your specific situation.*

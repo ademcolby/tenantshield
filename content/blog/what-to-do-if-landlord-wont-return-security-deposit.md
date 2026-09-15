@@ -131,3 +131,5 @@ The demand letter is the move. Send it within the first week after the return de
 TenantShield generates a professional, state-specific demand letter in minutes — with the exact statute citations your state requires. One flat fee. No subscription.
 
 [Generate your demand letter for $39 →](https://gettenantshield.com/generate)
+
+*Also see: [Security deposit refund letter](/blog/security-deposit-refund-letter) · [What a security deposit disposition notice means](/blog/security-deposit-disposition) · [Small claims court for a security deposit](/blog/small-claims-court-security-deposit)*

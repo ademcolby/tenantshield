@@ -159,6 +159,8 @@ TenantShield generates a professional demand letter customized to your state's s
 
 [Generate your demand letter for $39 →](https://gettenantshield.com/generate)
 
+*Also see: [What a security deposit disposition notice means](/blog/security-deposit-disposition) · [Security deposit refund letter](/blog/security-deposit-refund-letter) · [Small claims court for a security deposit](/blog/small-claims-court-security-deposit)*
+
 ---
 
 *This article is for informational purposes only and does not constitute legal advice. Laws change; always verify current statute language for your state. If your situation involves significant amounts or complexity, consult a licensed attorney.*
