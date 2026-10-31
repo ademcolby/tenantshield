@@ -838,3 +838,31 @@ export async function getFunnelOrderStats(
 
   return stats;
 }
+
+/**
+ * Keep-alive probe (Oct 31 2026, Supabase Pro → Free downgrade).
+ *
+ * Free-plan Supabase projects pause after 7 days with no database request.
+ * TenantShield can easily go a week with no orders or sign-ins, and a paused
+ * project would break the first real buyer's order save and account flow.
+ * The daily Vercel cron at /api/cron/keep-alive calls this to issue one tiny
+ * real query against Postgres so the project never sits idle.
+ *
+ * Reads ONE id from orders — touches no order contents, writes nothing.
+ * Returns true if the database answered, false otherwise (never throws).
+ */
+export async function pingDatabase(): Promise<boolean> {
+  const client = getClient();
+  if (!client) return false;
+  try {
+    const { error } = await client.from('orders').select('id').limit(1);
+    if (error) {
+      console.error('pingDatabase failed:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('pingDatabase threw:', err);
+    return false;
+  }
+}
