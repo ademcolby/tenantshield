@@ -20,6 +20,32 @@ import { getAllPosts } from '@/lib/posts'
 // changed, which is what lastmod is for.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// OCT 31, 2026 — TEMPLATE FLOORS.
+//
+// lastVerified (state/city) and publishedAt/updatedAt (blog) only move when the
+// legal facts or a post's own text change. But the SHARED TEMPLATES those pages
+// render through have changed since — and every page's real HTML changed with
+// them. Google showed the cost: 32 pages went "Crawled - currently not indexed"
+// (Sept 18 - Oct 22), most last crawled in June/July, i.e. judged on versions
+// that predate the hub, footer links, FAQ, sources block and preview. A sitemap
+// still saying "unchanged since July 20" gave crawlers no reason to come back.
+//
+// So each page's lastmod = the LATER of its own content date and the date its
+// template last changed in a reader-visible way. This is still a true "this
+// page's HTML last changed on" date — NOT build time, NOT new Date().
+//
+// ⚠️ BUMP THESE BY HAND when the template materially changes (new section,
+// new links, new schema) — never on copy tweaks, never automatically.
+// ⚠️ This does NOT touch lastVerified. That field stays a manual, human-audit
+// claim (MARKETING_TRACKER standing rule); this is a separate signal.
+// ---------------------------------------------------------------------------
+// StatePage.tsx / CityPage.tsx: U1 letter preview + U4 cross-links (e6664ec).
+const STATE_TEMPLATE_UPDATED = '2026-08-08'
+// app/blog/[slug]/page.tsx: FAQPage + BreadcrumbList schema, outbound statute
+// links in new tab (23306e5).
+const BLOG_TEMPLATE_UPDATED = '2026-09-06'
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://gettenantshield.com'
 
@@ -27,9 +53,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // explicit Z can drift a day backwards in negative-offset timezones.
   const asDate = (iso: string) => new Date(`${iso}T00:00:00Z`)
 
+  // Later of two bare ISO dates (YYYY-MM-DD strings sort chronologically).
+  const later = (a: string, b: string) => (a > b ? a : b)
+
   const statePages: MetadataRoute.Sitemap = JURISDICTIONS.map((j) => ({
     url: `${baseUrl}/states/${j.slug}`,
-    lastModified: asDate(j.lastVerified),
+    lastModified: asDate(later(j.lastVerified, STATE_TEMPLATE_UPDATED)),
     changeFrequency: 'monthly',
     priority: 0.8,
   }))
@@ -39,7 +68,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // have no page by design — see the eligibility rule in lib/cityHelpers.ts.
   const cityPages: MetadataRoute.Sitemap = getPageCities().map((c) => ({
     url: `${baseUrl}/states/${c.parentStateSlug}/${toCitySegment(c.slug)}`,
-    lastModified: asDate(c.lastVerified),
+    lastModified: asDate(later(c.lastVerified, STATE_TEMPLATE_UPDATED)),
     changeFrequency: 'monthly',
     priority: 0.7,
   }))
@@ -50,7 +79,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Google. Do not hardcode post slugs here.
   const blogPages: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
+    lastModified: asDate(
+      later((post.updatedAt ?? post.publishedAt).slice(0, 10), BLOG_TEMPLATE_UPDATED),
+    ),
     changeFrequency: 'monthly',
     priority: 0.6,
   }))

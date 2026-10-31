@@ -24,6 +24,11 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.description,
+    // Oct 31 2026: self-referencing canonical, matching the state pages and the
+    // /blog index. Posts were the only indexable pages without one.
+    alternates: {
+      canonical: `https://gettenantshield.com/blog/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
